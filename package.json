@@ -12,14 +12,14 @@
     "build:html": "cp ./web/app.html ./build/index.html",
     "build:js"  : "webpack ./web/app.js ./build/bundle.js",
     "build"     : "mkdir build && npm run build:cms && npm run build:octi && npm run build:css && npm run build:html && npm run build:js",
-    "postbuild" : "explorer ./build",
+    "postbuild" : "explorer .",
 
     "preupdate-ghpages"   : "git checkout gh-pages",
     "update-ghpages"      :"echo \"version %npm_package_version%\" > README.md && git add --all",
     "postupdate-ghpages"  :"rmdir build",
 
     "publish-ghpages"     : "git commit -m \"version %npm_package_version%\" && git push origin gh-pages",
-    "postpublish-ghpages" : "git checkout master && mkdir octicons"
+    "postpublish-ghpages" : "git checkout master"
   },
   "author": "Rodrigo Maximiliano Bellusci",
   "license": "MIT",
