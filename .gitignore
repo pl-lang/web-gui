@@ -1,4 +1,6 @@
 node_modules/
 web/codemirror/
 web/octicons/
+web/bundle.js
+web/index.html
 .git/
