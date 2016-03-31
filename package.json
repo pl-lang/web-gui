@@ -12,18 +12,14 @@
     "build:html": "cp ./web/app.html ./build/index.html",
     "build:js"  : "webpack ./web/app.js ./build/bundle.js",
     "build"     : "mkdir build && npm run build:cms && npm run build:octi && npm run build:css && npm run build:html && npm run build:js",
+    "postbuild" : "explorer ./build",
 
-    "mv:cms"    : "mv --update ./build/codemirror.css ./codemirror.css",
-    "mv:octi"   : "mv --update ./build/octicons.{css,svg,woff,ttf,eot} ./",
-    "mv:css"    : "mv --update ./build/app.css ./app.css",
-    "mv:html"   : "mv --update ./build/index.html ./index.html",
-    "mv:js"     : "mv --update ./build/bundle.js ./bundle.js",
-    "mv"        : "npm run mv:cms && npm run mv:octi && npm run mv:css && npm run mv:html && npm run mv:js && rmdir build",
+    "preupdate-ghpages"   : "git checkout gh-pages",
+    "update-ghpages"      :"echo \"version %npm_package_version%\" > README.md && git add --all",
+    "postupdate-ghpages"  :"rmdir build",
 
-
-    "preupdate-ghpages"   : "npm run build",
-    "update-ghpages"      :"git checkout gh-pages && npm run mv && echo \"version %npm_package_version%\" > README.md && git add --all && git commit -m \"version %npm_package_version%\" && git push origin gh-pages",
-    "postupdate-ghpages"  : "git checkout master && mkdir octicons"
+    "publish-ghpages"     : "git commit -m \"version %npm_package_version%\" && git push origin gh-pages",
+    "postpublish-ghpages" : "git checkout master && mkdir octicons"
   },
   "author": "Rodrigo Maximiliano Bellusci",
   "license": "MIT",
