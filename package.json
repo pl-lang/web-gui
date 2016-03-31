@@ -7,11 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
 
     "build:cms" : "cp --update ./node_modules/codemirror/lib/codemirror.css ./codemirror.css",
-    "build:octi": "cp --update ./node_modules/octicons/octicons/octicons.{css,svg,woff,ttf,eof} ./octicons",
+    "build:octi": "cp --update ./node_modules/octicons/octicons/octicons.{css,svg,woff,ttf,eot} ./octicons",
     "build:css" : "cp --update ./web/app.css ./app.css",
-    "build:js"  : "webpack ./web/app.js ./bundle.js",
     "build:html": "cp --update ./web/app.html ./index.html",
-    "build"     : "npm run build:css && npm run build:cms && npm run build:octi && npm run build:html && npm run build:js",
+    "build:js"  : "webpack ./web/app.js ./bundle.js",
+    "build"     : "npm run build:cms && npm run build:octi && npm run build:css && npm run build:html && npm run build:js",
     "postbuild" : "echo \"version $npm_package_version\" > README.md",
 
     "preupdate-ghpages" : "npm run build",
