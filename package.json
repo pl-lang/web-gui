@@ -1,0 +1,20 @@
+{
+  "name": "web-gui",
+  "version": "1.0.0",
+  "description": "Interfaz web para interprete-pl",
+  "main": "./web/app.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack ./web/app.js ./web/bundle.js"
+  },
+  "author": "Rodrigo Maximiliano Bellusci",
+  "license": "MIT",
+  "devDependencies": {
+    "codemirror": "^5.13.2",
+    "jquery": "^2.2.2",
+    "webpack": "^1.12.14"
+  },
+  "dependencies": {
+    "octicons": "^3.5.0"
+  }
+}
