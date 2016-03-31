@@ -1,0 +1,184 @@
+html {
+  height: 100vh;
+  width: 100vw;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  background-color: orange;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  margin-left: 7px;
+  margin-right: 7px;
+  padding: 2px 5px 2px 5px;
+  border-radius: 2px;
+}
+
+.button-label {
+  padding: 0px 4px 0px 0px;
+  font-weight: bold;
+}
+
+/* Boton 'Ejecutar' */
+
+.boton-ejecutar {
+  background-color: hsl(120, 61%, 53%);
+  color: white;
+  border: 1px solid hsl(120, 61%, 45%);
+}
+
+.boton-ejecutar:hover {
+  background-color: hsl(120, 61%, 45%);
+}
+
+.boton-ejecutar:active {
+  background-color: hsl(120, 61%, 40%);
+}
+
+.boton-ejecutar:disabled {
+  background-color: red;
+}
+
+.octicon-triangle-right {
+  color: white;
+}
+
+/* ---------------- */
+
+
+.flex-row {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.self-align-center {
+  align-self: center;
+}
+
+.center-align {
+  align-items: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.margin-left {
+  margin-left: 10px;
+}
+
+.margin-right {
+  margin-right: 10px;
+}
+
+.container {
+  height: inherit;
+}
+
+#content {
+  width: 100%;
+  height: inherit;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  background-color: blue;
+}
+
+.bar {
+  min-height: 30px;
+  background-color: #ecf0f1;
+}
+
+.bar-bottom-border {
+  border-bottom: 1px solid hsl(192, 15%, 70%);
+}
+
+.bar-top-border {
+  border-top: 1px solid hsl(192, 15%, 70%);
+}
+
+.title {
+  color: black;
+  font-family: monospace;
+  font-size: 14pt;
+  margin-left: 4px;
+  margin-right: 7px;
+}
+
+.divider {
+  height: 100%;
+  width: 5px;
+  background-color: #ecf0f1;
+  border-left: 1px solid hsl(192, 15%, 70%);
+  border-right: 1px solid hsl(192, 15%, 70%);
+
+  width: 1px;
+  background-color: hsl(192, 15%, 70%);
+  border: 0px
+}
+
+#editor-div {
+  height: 100%;
+  width: 60%;
+  background-color: red;
+}
+
+.CodeMirror {
+  width: 100%;
+  height: 100% !important;
+  box-sizing: border-box;
+  border: 0px;
+  font-size: 14px;
+  font-family: "Source Code Pro Regular", "Consolas", monospace;
+}
+
+#status-msg {
+  margin-left: 4px;
+  font-family: "Source Code Pro Regular", "Consolas", monospace;
+  font-size: 14px;
+}
+
+#program-div {
+  height: 100%;
+  width: 40%;
+  background-color: green;
+}
+
+/*WINDOW CSS*/
+
+#window {
+  display : flex;
+  flex-flow : column nowrap;
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  font-family: monospace;
+  font-size: 14px;
+  color: black;
+}
+
+.line {
+  margin-left: 4px;
+}
+
+#prompt {
+  height: 100%;
+  resize: none;
+}
+
+textarea {
+  outline: none;
+  font-family: "Source Code Pro Regular", "Consolas", monospace;
+  padding: 0px;
+  border: 0px;
+  margin-left: 4px;
+}
