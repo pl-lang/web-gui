@@ -14,8 +14,8 @@
     "build"     : "npm run build:css && npm run build:cms && npm run build:octi && npm run build:html && npm run build:js",
     "postbuild" : "echo \"version $npm_package_version\" > README.md",
 
-    "preupdate-ghpages" : "git checkout gh-pages",
-    "update-ghpages"    :"npm run build && git add --all && git commit -m \"version $npm_package_version\" && git push origin gh-pages",
+    "preupdate-ghpages" : "npm run build",
+    "update-ghpages"    :"git checkout gh-pages && git add --all && git commit -m \"version $npm_package_version\" && git push origin gh-pages",
     "postupdate-ghpages" : "git checkout master"
   },
   "author": "Rodrigo Maximiliano Bellusci",
