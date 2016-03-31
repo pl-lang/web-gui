@@ -5,11 +5,12 @@
   "main": "./web/app.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    
+
     "build:dir" : "cd ./web && mkdir codemirror && mkdir octicons && cd ..",
     "build:cms" : "cp ./node_modules/codemirror/lib/codemirror.css ./web/codemirror/codemirror.css",
     "build:octi": "cp ./node_modules/octicons/octicons/octicons.{css,svg,woff,ttf,eot} ./web/octicons/",
-    "build"     : "npm run build:dir && npm run build:cms && npm run build:octi && node use_bundle.js",
+    "build:js"  : "webpack ./web/app.js ./web/bundle.js",
+    "build"     : "npm run build:dir && npm run build:cms && npm run build:octi && npm run build:js && node use_bundle.js",
     "postbuild" : "echo \"Done.\""
   },
   "author": "Rodrigo Maximiliano Bellusci",
