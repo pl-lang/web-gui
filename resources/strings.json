@@ -4,14 +4,14 @@
       "title":[
         {
           "tag":"div",
-          "class":"bar small-bar",
+          "class":"bar small-bar flex-row center-align",
           "content":[
             {
-              "tag":"span",
-              "class":"title small-title error-title",
+              "tag":"pre",
+              "class":"title small-title",
               "content":[
                 "No se reconoce el operador ",
-                {"tag":"span", "class":"code", "content":["{var unexpectedChar}"]}
+                {"tag":"span", "class":"code", "content":["${var unexpectedChar}"]}
               ]
             }
           ]
