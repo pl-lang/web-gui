@@ -148,8 +148,16 @@ pre {
 /* ---- MessagePanel ----*/
 
 #message_list {
-  max-height: 200px;
   overflow-y: scroll;
+}
+
+.msg_list-collapsed {
+  height: 0px;
+}
+
+.msg_list-expanded {
+  height: 200px;
+  max-height: 200px;
 }
 
 .error-msg-container {

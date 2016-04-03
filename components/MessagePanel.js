@@ -61,7 +61,7 @@ class MessagePanel extends Emitter {
   setUp() {
     this.status_bar = new StatusBar(this.container)
 
-    this.message_list = $('<div id="message_list" class="flex-col"></div>')
+    this.message_list = $('<div id="message_list" class="flex-col msg_list-collapsed"></div>')
 
     this.container.append(this.message_list)
   }
@@ -118,6 +118,14 @@ class MessagePanel extends Emitter {
     }
 
     this.message_list.append(element)
+
+    this.message_list.addClass('msg_list-expanded')
+  }
+
+  reset() {
+    this.message_list.toggleClass('msg_list-expanded')
+    this.setTitle('Listo')
+    this.message_list.empty()
   }
 }
 

@@ -39,6 +39,8 @@ compiler.on('syntax-error', (info, error) => {
 ejecutar.on('click', () => {
   ejecutar.prop('disabled', true)
 
+  panel_de_mensajes.reset()
+
   let window_container = $('#window')
 
   window_container.empty()
@@ -49,7 +51,7 @@ ejecutar.on('click', () => {
 
   if (!report.error) {
     window.run(report.result)
-    mensaje_de_estado.text('Listo')
+    panel_de_mensajes.setTitle('Listo')
   }
   else {
     console.log(report.result)
