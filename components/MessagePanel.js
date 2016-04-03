@@ -1,6 +1,6 @@
 'use strict'
 
-const templateParser = require('../tools/templateParser')
+const templateToHTML = require('../tools/templateToHTML')
 
 const message_templates = require('../resources/strings.json')
 
@@ -82,17 +82,17 @@ class MessagePanel extends Emitter {
     let title = null, description = null, suggestion = null
 
     if ('title' in template) {
-      title = templateParser(template.title, data)
+      title = templateToHTML(template.title, data)
       element.append($(title))
     }
 
     if ('description' in template) {
-      description = templateParser(template.description, data)
+      description = templateToHTML(template.description, data)
       element.append($(description))
     }
 
     if ('suggestion' in template) {
-      suggestion = templateParser(template.suggestion, data)
+      suggestion = templateToHTML(template.suggestion, data)
       element.append($(suggestion))
     }
 
