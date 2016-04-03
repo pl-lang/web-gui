@@ -20,6 +20,10 @@ button {
   border-radius: 2px;
 }
 
+pre {
+  margin: 0px;
+}
+
 .button-label {
   font-weight: bold;
 }
@@ -91,10 +95,6 @@ button {
   background-color: #ecf0f1;
 }
 
-.small-bar {
-  max-height: 20px;
-}
-
 .bar-bottom-border {
   border-bottom: 1px solid hsl(192, 15%, 70%);
 }
@@ -144,29 +144,34 @@ button {
 /* ---- MessagePanel ----*/
 
 #message_list {
-  max-height: 300px;
+  max-height: 200px;
   overflow: auto;
 }
 
 .error-msg-container {
-  border-top: 1px solid hsla(1, 94%, 54%, 1);
-  border-bottom: 1px solid hsla(1, 94%, 54%, 1);
-  color: black;
+  margin-top: 3px;
+  border-bottom: 1px solid hsla(1, 94%, 30%, 1);
   font-family: "Source Code Pro Regular", "Consolas", monospace;
-  margin-bottom: 5px;
-  margin-top: 5px;
+  background-color: hsl(0, 100%, 94%);
+}
+
+.error-bar {
+  background-color: hsl(0, 100%, 58%);
+  border-top: 1px solid hsla(1, 94%, 30%, 1);
+  border-bottom: 1px solid hsla(1, 94%, 30%, 1);
 }
 
 .error-title {
-  /*background-color: hsl(1, 94%, 54%);*/
-  color: black;
+  color: white;
 }
 
 .code {
   border-radius: 2px;
-  border: 1px solid hsl(0, 0%, 70%);
+  border: 1px solid hsl(0, 0%, 50%);
   background-color: hsl(0, 0%, 82%);
   color: black;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 /* ---------------------*/
