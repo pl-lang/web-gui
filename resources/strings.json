@@ -17,9 +17,20 @@
           ]
         }
       ],
-      "title":"<div class='bar small-bar flex-row center-align'><span class='title small-title error-title'>No se reconoce el operador <span class='code'>{var unexpectedChar}</span>.</span></div>",
-      "description":"<p>Se encontró un caracter desconocido al leer el código.</p>",
-      "suggestion":"<p>Debes borrar el caracter desconocido.</p>"
+      "description":[
+        {
+          "tag":"p",
+          "content":["Se encontró un caracter desconocido al leer el código"],
+          "class":""
+        }
+      ],
+      "suggestion":[
+        {
+          "tag":"p",
+          "content":["Para corregir el error, elimina el caracter desconocido"],
+          "class":""
+        }
+      ]
     }
   }
 }
