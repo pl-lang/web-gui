@@ -12,7 +12,7 @@ class StatusBar {
     this.container = container
 
     this.element = this.container.append($(
-      `<div id="status_bar" class="bar bar-top-border flex-row center-align"><span id="status_msg" class="title small-title"></span></div>`
+      `<div id="status_bar" class="bar bar-top-border bar-bottom-border flex-row center-align"><span id="status_msg" class="title small-title"></span></div>`
     ))
 
     this.status_msg = this.element.find('#status_msg')
