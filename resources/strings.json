@@ -4,7 +4,7 @@
       "title":[
         {
           "tag":"div",
-          "class":"bar flex-row center-align error-bar",
+          "class":"bar flex-row space-between center-align error-bar",
           "content":[
             {
               "tag":"pre",

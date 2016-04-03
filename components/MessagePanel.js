@@ -81,20 +81,34 @@ class MessagePanel extends Emitter {
 
     let title = null, description = null, suggestion = null
 
+    let extra_info_container = $('<div id="extra_info" class="collapsable"></div>')
+
     if ('title' in template) {
-      title = templateToHTML(template.title, data)
-      element.append($(title))
+      title = $(templateToHTML(template.title, data))
+
+      let expand_button = $('<span class="octicon octicon-chevron-up"></span>')
+
+      expand_button.on('click', () => {
+        extra_info_container.toggleClass('expanded')
+        expand_button.toggleClass('chevron-restored')
+      })
+
+      title.append(expand_button)
+
+      element.append(title)
     }
 
     if ('description' in template) {
       description = templateToHTML(template.description, data)
-      element.append($(description))
+      extra_info_container.append($(description))
     }
 
     if ('suggestion' in template) {
       suggestion = templateToHTML(template.suggestion, data)
-      element.append($(suggestion))
+      extra_info_container.append($(suggestion))
     }
+
+    element.append(extra_info_container)
 
     if ('atLine' in data && 'atColumn' in data) {
       element.on('click', () => {
