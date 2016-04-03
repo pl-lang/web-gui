@@ -7,7 +7,6 @@ body {
   height: 100vh;
   width: 100vw;
   margin: 0;
-  background-color: orange;
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
@@ -85,12 +84,15 @@ button {
   flex-flow: row nowrap;
   justify-content: center;
   align-items: center;
-  background-color: blue;
 }
 
 .bar {
   min-height: 30px;
   background-color: #ecf0f1;
+}
+
+.small-bar {
+  max-height: 20px;
 }
 
 .bar-bottom-border {
@@ -128,7 +130,6 @@ button {
 #editor-div {
   height: 100%;
   width: 60%;
-  background-color: red;
 }
 
 .CodeMirror {
@@ -139,6 +140,36 @@ button {
   font-size: 14px;
   font-family: "Source Code Pro Regular", "Consolas", monospace;
 }
+
+/* ---- MessagePanel ----*/
+
+#message_list {
+  max-height: 300px;
+  overflow: auto;
+}
+
+.error-msg-container {
+  border-top: 1px solid hsla(1, 94%, 54%, 1);
+  border-bottom: 1px solid hsla(1, 94%, 54%, 1);
+  color: black;
+  font-family: "Source Code Pro Regular", "Consolas", monospace;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.error-title {
+  /*background-color: hsl(1, 94%, 54%);*/
+  color: black;
+}
+
+.code {
+  border-radius: 2px;
+  border: 1px solid hsl(0, 0%, 70%);
+  background-color: hsl(0, 0%, 82%);
+  color: black;
+}
+
+/* ---------------------*/
 
 #program-div {
   height: 100%;
