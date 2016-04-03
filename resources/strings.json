@@ -1,6 +1,22 @@
 {
   "lexical-error":{
     "unknownToken":{
+      "title":[
+        {
+          "tag":"div",
+          "class":"bar small-bar",
+          "content":[
+            {
+              "tag":"span",
+              "class":"title small-title error-title",
+              "content":[
+                "No se reconoce el operador ",
+                {"tag":"span", "class":"code", "content":["{var unexpectedChar}"]}
+              ]
+            }
+          ]
+        }
+      ],
       "title":"<div class='bar small-bar flex-row center-align'><span class='title small-title error-title'>No se reconoce el operador <span class='code'>{var unexpectedChar}</span>.</span></div>",
       "description":"<p>Se encontró un caracter desconocido al leer el código.</p>",
       "suggestion":"<p>Debes borrar el caracter desconocido.</p>"
