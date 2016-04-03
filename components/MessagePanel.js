@@ -61,9 +61,9 @@ class MessagePanel extends Emitter {
   setUp() {
     this.status_bar = new StatusBar(this.container)
 
-    this.message_list = this.container.append($(
-      '<div id="message_list"></div>'
-    ))
+    this.message_list = $('<div id="message_list" class="flex-col"></div>')
+
+    this.container.append(this.message_list)
   }
 
   setErrorCount(error_count) {
