@@ -20,24 +20,31 @@ let compiler = new Compiler({event_logging:true})
 
 let panel_de_mensajes = new MessagePanel($('#message_panel'), editor)
 
+let error_count = 0
+
 compiler.on('type-error', (info, error) => {
-  panel_de_mensajes.setErrorCount(1)
+  error_count++
+  panel_de_mensajes.setErrorCount(error_count)
   console.log(error)
 })
 
 compiler.on('lexical-error', (ev_name, info) => {
-  panel_de_mensajes.setErrorCount(1)
+  error_count++
+  panel_de_mensajes.setErrorCount(error_count)
   panel_de_mensajes.addMessage('lexical-error', info)
   console.log(info)
 })
 
 compiler.on('syntax-error', (info, error) => {
-  panel_de_mensajes.setErrorCount(1)
+  error_count++
+  panel_de_mensajes.setErrorCount(error_count)
   console.log(error)
 })
 
 ejecutar.on('click', () => {
-  ejecutar.prop('disabled', true)
+  ejecutar.prop('disabled', true
+
+  error_count = 0
 
   panel_de_mensajes.reset()
 
