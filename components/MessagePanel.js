@@ -79,9 +79,17 @@ class MessagePanel extends Emitter {
 
     let element = $('<div class="error-msg-container"></div>')
 
+    element.on('click', (event) => {
+      event.stopPropagation()
+    })
+
     let title = null, description = null, suggestion = null
 
     let extra_info_container = $('<div id="extra_info" class="collapsable"></div>')
+
+    extra_info_container.on('click', (event) => {
+      event.stopPropagation()
+    })
 
     if ('title' in template) {
       title = $(templateToHTML(template.title, data))
@@ -90,9 +98,10 @@ class MessagePanel extends Emitter {
 
       expand_button.attr('title', 'Expandir o contraer este panel')
 
-      expand_button.on('click', () => {
+      expand_button.on('click', (event) => {
         extra_info_container.toggleClass('expanded')
         expand_button.toggleClass('chevron-restored')
+        event.stopPropagation()
       })
 
       title.attr('title', 'Mover cursor al error')
