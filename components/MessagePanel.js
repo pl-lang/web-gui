@@ -1,5 +1,9 @@
 'use strict'
 
+const templateParser = require('../tools/templateParser')
+
+const message_templates = require('../resources/strings.json')
+
 const Emitter = require('emitter')
 const $ = require('jquery')
 
@@ -44,10 +48,12 @@ class StatusBar {
 
 
 class MessagePanel extends Emitter {
-  constructor(container) {
+  constructor(container, editor_instance) {
     super([])
 
     this.container = container
+
+    this.editor_instance = editor_instance
 
     this.setUp()
   }
@@ -66,6 +72,23 @@ class MessagePanel extends Emitter {
 
   setTitle(title) {
     this.status_bar.setTitle(title)
+  }
+
+  addMessage(category, data) {
+    let template = 'reason' in data ? message_templates[category][data.reason]:message_templates[category].default
+
+    let message_html = templateParser(template.title, data)
+
+    let message_element = $(`<p>${message_html}</p>`)
+
+    if ('atLine' in data && 'atColumn' in data) {
+      message_element.on('click', () => {
+        this.editor_instance.focus()
+        this.editor_instance.setCursor({line:data.atLine, ch:data.atColumn})
+      })
+    }
+
+    this.message_list.append(message_element)
   }
 }
 
