@@ -144,7 +144,7 @@ pre {
 
 #message_list {
   overflow-y: scroll;
-  transition: height 1s linear;
+  transition: height 150ms;
 }
 
 .msg_list-collapsed {
@@ -189,9 +189,7 @@ pre {
   color: white;
   margin-right: 4px;
   transform: rotate(180deg);
-  transition-property: transform;
-  transition-timing-function: linear;
-  transition-duration: 200ms;
+  transition: transform 300ms;
 }
 
 .chevron-restored {
