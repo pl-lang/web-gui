@@ -4,11 +4,11 @@
       "title":[
         {
           "tag":"div",
-          "class":"bar small-bar flex-row center-align",
+          "class":"bar flex-row center-align error-bar",
           "content":[
             {
               "tag":"pre",
-              "class":"title small-title",
+              "class":"title small-title error-title",
               "content":[
                 "No se reconoce el operador ",
                 {"tag":"span", "class":"code", "content":["${var unexpectedChar}"]}
