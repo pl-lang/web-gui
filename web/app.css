@@ -121,11 +121,6 @@ pre {
 
 .divider {
   height: 100%;
-  width: 5px;
-  background-color: #ecf0f1;
-  border-left: 1px solid hsl(192, 15%, 70%);
-  border-right: 1px solid hsl(192, 15%, 70%);
-
   width: 1px;
   background-color: hsl(192, 15%, 70%);
   border: 0px
