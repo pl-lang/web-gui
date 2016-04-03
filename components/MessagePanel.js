@@ -17,7 +17,7 @@ class StatusBar {
 
     this.status_msg = this.element.find('#status_msg')
 
-    this.setTitle('Listo.')
+    this.setTitle('Listo')
   }
 
   setTitle(title) {
@@ -28,7 +28,7 @@ class StatusBar {
     this.status_msg.empty()
 
     if (error_count === 0) {
-      this.status_msg.text('Listo.')
+      this.status_msg.text('Listo')
     }
     else {
       if (error_count >= 1) {
@@ -123,7 +123,7 @@ class MessagePanel extends Emitter {
   }
 
   reset() {
-    this.message_list.toggleClass('msg_list-expanded')
+    this.message_list.removeClass('msg_list-expanded')
     this.setTitle('Listo')
     this.message_list.empty()
   }

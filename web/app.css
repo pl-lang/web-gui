@@ -144,6 +144,7 @@ pre {
 
 #message_list {
   overflow-y: scroll;
+  transition: height 1s linear;
 }
 
 .msg_list-collapsed {
