@@ -88,10 +88,14 @@ class MessagePanel extends Emitter {
 
       let expand_button = $('<span class="octicon octicon-chevron-up"></span>')
 
+      expand_button.attr('title', 'Expandir o contraer este panel')
+
       expand_button.on('click', () => {
         extra_info_container.toggleClass('expanded')
         expand_button.toggleClass('chevron-restored')
       })
+
+      title.attr('title', 'Mover cursor al error')
 
       title.append(expand_button)
 

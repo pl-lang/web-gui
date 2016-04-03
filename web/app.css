@@ -179,6 +179,7 @@ pre {
   background-color: hsl(0, 100%, 58%);
   border-top: 1px solid hsla(1, 94%, 30%, 1);
   border-bottom: 1px solid hsla(1, 94%, 30%, 1);
+  cursor: pointer;
 }
 
 .error-title {
@@ -190,6 +191,11 @@ pre {
   margin-right: 4px;
   transform: rotate(180deg);
   transition: transform 300ms;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  cursor: initial;
 }
 
 .chevron-restored {

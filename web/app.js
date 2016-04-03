@@ -42,7 +42,7 @@ compiler.on('syntax-error', (info, error) => {
 })
 
 ejecutar.on('click', () => {
-  ejecutar.prop('disabled', true
+  ejecutar.prop('disabled', true)
 
   error_count = 0
 
