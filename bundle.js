@@ -56,31 +56,43 @@
 
 	const Window = __webpack_require__(3)
 
+	const MessagePanel = __webpack_require__(33)
+
 	const Compiler = __webpack_require__(4).Compiler
 
 	let ejecutar = $('#ejecutar')
 
 	let compiler = new Compiler({event_logging:true})
 
-	let mensaje_de_estado = $('#status-msg')
+	let panel_de_mensajes = new MessagePanel($('#message_panel'), editor)
+
+	let error_count = 0
 
 	compiler.on('type-error', (info, error) => {
-	  mensaje_de_estado.text('Se encontró un error de tipo al compilar tu programa. Debes corregir el error antes de continuar.')
+	  error_count++
+	  panel_de_mensajes.setErrorCount(error_count)
 	  console.log(error)
 	})
 
-	compiler.on('lexical-error', (info, error) => {
-	  mensaje_de_estado.text('Se encontró un error léxico al compilar tu programa. Debes corregir el error antes de continuar.')
-	  console.log(error)
+	compiler.on('lexical-error', (ev_name, info) => {
+	  error_count++
+	  panel_de_mensajes.setErrorCount(error_count)
+	  panel_de_mensajes.addMessage('lexical-error', info)
+	  console.log(info)
 	})
 
 	compiler.on('syntax-error', (info, error) => {
-	  mensaje_de_estado.text('Se encontró un error de sintaxis al compilar tu programa. Debes corregir el error antes de continuar.')
+	  error_count++
+	  panel_de_mensajes.setErrorCount(error_count)
 	  console.log(error)
 	})
 
 	ejecutar.on('click', () => {
 	  ejecutar.prop('disabled', true)
+
+	  error_count = 0
+
+	  panel_de_mensajes.reset()
 
 	  let window_container = $('#window')
 
@@ -92,7 +104,7 @@
 
 	  if (!report.error) {
 	    window.run(report.result)
-	    mensaje_de_estado.text('Listo')
+	    panel_de_mensajes.setTitle('Listo')
 	  }
 	  else {
 	    console.log(report.result)
@@ -18858,7 +18870,7 @@
 	'use strict'
 
 	const Interpreter = __webpack_require__(4).Interpreter
-	const Prompt = __webpack_require__(42)
+	const Prompt = __webpack_require__(31)
 	const $ = __webpack_require__(2)
 	const jquery = $
 
@@ -18922,7 +18934,7 @@
 	'use strict'
 
 	const Interpreter = __webpack_require__(5)
-	const Compiler    = __webpack_require__(19)
+	const Compiler    = __webpack_require__(21)
 
 	module.exports = {
 	  Compiler:Compiler,
@@ -18952,7 +18964,7 @@
 	 */
 
 	const Evaluator       = __webpack_require__(6)
-	const Emitter         = __webpack_require__(18)
+	const Emitter         = __webpack_require__(7)
 
 	class Interpreter extends Emitter {
 	  constructor(program_modules) {
@@ -18982,12 +18994,12 @@
 	    // Esto es necesario porque el interprete se "pausa" cuando un modulo hace
 	    // una llamada a leer
 	    if (this.paused) {
-	      this.emit({name:'program-resumed', origin:'interpreter'})
+	      this.emit('program-resumed')
 	      this.paused = false
 	      this.running = true
 	    }
 	    else {
-	      this.emit({name:'program-started', origin:'interpreter'})
+	      this.emit('program-started')
 	    }
 
 	    let evaluation_report
@@ -19003,10 +19015,10 @@
 	    }
 
 	    if (this.paused) {
-	      this.emit({name:'program-paused', origin:'interpreter'})
+	      this.emit('program-paused')
 	    }
 	    else {
-	      this.emit({name:'program-finished', origin:'interpreter'})
+	      this.emit('program-finished')
 	    }
 
 	    return evaluation_report
@@ -19054,8 +19066,9 @@
 
 	'use strict'
 
-	const Expression = __webpack_require__(7)
-	const Emitter = __webpack_require__(18)
+	const Emitter = __webpack_require__(7)
+
+	const expressionFromString = __webpack_require__(8)
 
 	/*
 	  Un evaluador sirve para ejecutar las acciones/enunciados de un modulo.
@@ -19143,13 +19156,13 @@
 	      return this.evaluateExp(expression, expression.expression_type)
 	    })
 
-	    this.emit({name:'write', origin:'evaluator'}, value_list)
+	    this.emit('write', value_list)
 	  }
 
 	  sendReadEvent(call) {
 	    let varname_list = call.args
 
-	    this.emit({name:'read', origin:'evaluator'}, varname_list)
+	    this.emit('read', varname_list)
 
 	    // pausar la ejecucion (hasta q se reciban los datos de la lectura)
 	    this.running = false
@@ -19169,16 +19182,16 @@
 	      let index_list = target_info.indexes.map(expression => this.evaluateExp(expression) - 1)
 
 	      if (target_info.bounds_checked === false)  {
-	        let bound_check = this.indexWithinBounds(index_list, target_variable.dimensions)
+	        let bound_check = this.indexWithinBounds(index_list, target_variable.dimension)
 	        if (bound_check.error === true) {
 	          this.running = false
-	          this.emit({name:'evaluation-error'}, bound_check.result)
+	          this.emit('evaluation-error', bound_check.result)
 	          return
 	        }
 	      }
 	      // NOTE: Por ahora, no se revisa si hay un error al evaluar un indice
 
-	      let index = this.calculateIndex(target_info.indexes.map(a => this.evaluateExp(a) - 1), target_variable.dimensions)
+	      let index = this.calculateIndex(target_info.indexes.map(a => this.evaluateExp(a) - 1), target_variable.dimension)
 	      target_variable.values[index] = this.evaluateExp(expression)
 	    }
 	    else {
@@ -19201,7 +19214,7 @@
 	    let i = 0
 	    while (i < varname_list.length && !error) {
 	      // TODO: mover el parseo de la expreson al compilador
-	      let exp = Expression.fromString(data_list[i])
+	      let exp = expressionFromString(data_list[i])
 
 	      if (exp.error) {
 	        // TODO
@@ -19264,14 +19277,14 @@
 
 	        if (bound_check.error === true) {
 	          this.running = false
-	          this.emit({name:'evaluation-error'}, bound_check.result)
+	          this.emit('evaluation-error', bound_check.result)
 	        }
 	      }
 
-	      let index = this.calculateIndex(index_values, variable.dimensions)
+	      let index = this.calculateIndex(index_values, variable.dimension)
 	      if (variable.values[index] === undefined) {
 	        this.running = false
-	        this.emit({name:'evaluation-error', origin:'evaluator'})
+	        this.emit('evaluation-error')
 	      }
 	      else {
 	        return variable.values[index]
@@ -19280,7 +19293,7 @@
 	    else {
 	      if (variable.value === null) {
 	        this.running = false
-	        this.emit({name:'evaluation-error', origin:'evaluator'})
+	        this.emit('evaluation-error')
 	      }
 	      else {
 	        return variable.value
@@ -19370,14 +19383,17 @@
 	  indexWithinBounds(index_values, dimensions_lengths) {
 	    let i = 0
 
+	    // NOTE: en las condiciones de abajo sumo 1 porque en index_values se le
+	    // restó 1 a cada elemento para que sea un indice válido en JS
+
 	    while (i < index_values.length) {
-	      if (i < 1) {
+	      if ((index_values[i] + 1) < 1) {
 	        this.running = false
 	        let reason = 'index-less-than-one'
 	        let bad_index = i
 	        return {error:true, result:{reason, bad_index}}
 	      }
-	      else if (i > variable.dimension[i]) {
+	      else if ((index_values[i] + 1) > dimensions_lengths[i]) {
 	        out_of_bounds_index = true
 	        let reason = 'index-out-of-bounds'
 	        let bad_index = i
@@ -19436,324 +19452,164 @@
 
 /***/ },
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	'use strict'
 
-	const Source = __webpack_require__(8)
-	const Parser = __webpack_require__(9)
-	const TokenQueue = __webpack_require__(17)
+	class Emitter {
+	  constructor(public_event_list) {
+	    this.public_events = new Set(public_event_list)
+	    this.callbacks = {}
+	  }
 
-	let precedence_by_op = {
-	  'power'       : 6 ,
-	  'div'         : 5 ,
-	  'mod'         : 5 ,
-	  'times'       : 5 ,
-	  'divide'      : 5 ,
-	  'minus'       : 4 ,
-	  'plus'        : 4 ,
-	  'minor-than'  : 3 ,
-	  'minor-equal' : 3 ,
-	  'major-than'  : 3 ,
-	  'major-equal' : 3 ,
-	  'equal'       : 2 ,
-	  'diff-than'   : 2 ,
-	  'and'         : 1 ,
-	  'or'          : 0
-	}
-
-	let operator_names = new Set(Object.getOwnPropertyNames(precedence_by_op))
-
-	class UnaryExpression {
-	  static capture(source) {
-	    let op_found = false
-	    let op
-	    let current = source.current()
-	    if (current.kind == 'minus' || current.kind == 'not' || current.kind == 'plus') {
-	      op_found = true
-	      if (current.kind == 'plus') {
-	        op_found = false
-	      }
-	      else {
-	        op = current.kind == 'minus' ? 'unary-minus' : 'not'
-	      }
-	      source.next()
-	    }
-
-	    let exp = PrimaryExpression.capture(source)
-
-	    if (exp.error) {
-	      return exp
+	  on(event_name, callback) {
+	    if (event_name in this.callbacks) {
+	      this.callbacks[event_name].push(callback)
 	    }
 	    else {
-	      if (op_found) {
-	        let expression_type = 'unary-operation'
-	        let operand = exp.result
-	        let result = {expression_type, op, operand}
-	        let error = false
-	        return {error, result}
+	      this.callbacks[event_name] = [callback]
+	    }
+	  }
+
+	  emit(event_name) {
+	    // Se encarga de llamar a los callbacks de los eventos.
+	    // Si se registro un callback para 'any' entonces se lo llama para cada evento que sea emitido. Es el callback por defecto.
+	    // Si un evento tiene registrado un callback entonces este se ejecuta despues del callback por defecto.
+	    if (this.callbacks.hasOwnProperty('any')) {
+	      for (let callback of this.callbacks.any) {
+	        callback(...arguments)
 	      }
-	      else {
-	        let error = false
-	        let result = exp.result
-	        return {error, result}
+	    }
+
+	    if (this.callbacks.hasOwnProperty(event_name)) {
+	      for (let callback of this.callbacks[event_name]) {
+	        callback(...arguments)
 	      }
+	    }
+	  }
+
+	  repeat(event_name, emitter, make_public) {
+	    if (make_public === true) {
+	      this.public_events.add(event_name)
+	    }
+	    let self = this
+	    emitter.on(event_name, function () {
+	      self.emit(...arguments)
+	    })
+	  }
+
+	  repeatAllPublicEvents(emitter) {
+	    // Esta funcion sive para emitir los eventos de otro emisor como si fueran propios.
+	    for (let event_name of emitter.public_events) {
+	      this.repeat(event_name, emitter, true)
 	    }
 	  }
 	}
 
-	class PrimaryExpression {
-	  static capture(source) {
-	    let current = source.current()
-	    if (current.kind == 'word') {
-	      if (source.peek().kind != 'left-par') {
-
-	        // NOTE: Es necesario requerir VariablePattern acá para evitar que
-	        // Expression exporte un objeto vacio ( {} )
-	        //
-	        // El problema con esto es que se hace una llamada a require cada vez
-	        // que se usa esta funcion. Esta funcion (PrimaryExpression.capture) se
-	        // usa cada vez q se debe leer una expresion (al compilar y al ejecutar)
-	        //
-	        // No se que impacto tendrá esto en el desempeño.
-	        //
-	        // Otra solución es meter los contendiso de VariablePattern en este
-	        // archivo
-
-	        const VariablePattern = require('./VariablePattern')
-
-	        let report = VariablePattern.capture(source)
-
-	        if (report.error === true) {
-	          return report
-	        }
-
-	        let name    = report.result.name
-	        let isArray = report.result.isArray
-	        let indexes = report.result.indexes
-
-	        let error = false
-	        let expression_type = 'invocation'
-	        let result = {expression_type, name, isArray, indexes}
-
-	        return {error, result}
-
-	      }
-	      else {
-
-	      }
-	    }
-	    else if (current.kind == 'verdadero' || current.kind == 'falso') {
-	      let error = false
-	      let expression_type = 'literal'
-	      let value = current.kind == 'verdadero'
-	      let type = 'logico'
-	      let result = {expression_type, value, type}
-	      source.next()
-	      return {error, result}
-	    }
-	    else if (current.kind == 'entero' || current.kind == 'real' || current.kind == 'string') {
-	      let error = false
-	      let expression_type = 'literal'
-	      let value = current.value
-	      let type = current.kind
-	      let result = {expression_type, value, type}
-
-	      if (type == 'string') {
-	        result.length = value.length
-	      }
-
-	      source.next()
-	      return {error, result}
-	    }
-	    else if (current.kind == 'left-par') {
-	      source.next()
-	      let exp = ExpressionAST.fromQueue(source)
-	      if (exp.error) {
-	        return exp
-	      }
-	      else {
-	        if (source.current().kind == 'right-par') {
-	          source.next()
-	          let error = false
-	          let expression_type = 'expression'
-	          let expression = exp.result
-	          let result = {expression_type, expression}
-	          return {error, result}
-	        }
-	        else {
-	          let unexpectedToken = source.current().kind
-	          let expectedToken   = 'right-par'
-	          let atColumn        = source.current().columnNumber
-	          let atLine          = source.current().lineNumber
-
-	          let error = false
-	          let result = {unexpectedToken, expectedToken, atColumn, atLine}
-
-	          return {error, result}
-	        }
-	      }
-	    }
-	    else {
-	      let unexpectedToken = current.kind
-	      let expectedToken   = ['entero', 'real', 'cadena', 'verdadero', 'falso', '(expresion)']
-	      let atColumn        = current.columnNumber
-	      let atLine          = current.lineNumber
-
-	      let error           = true
-	      let result          = {unexpectedToken, expectedToken, atColumn, atLine}
-
-	      return {error, result}
-	    }
-	  }
-	}
-
-	class streamToRPN {
-	  static capture(source) {
-	    let operator_stack = []
-	    let output_stack = []
-
-	    while ( source.current().kind != 'eol' && source.current().kind != 'eof' && source.current().kind != 'comma' && source.current().kind != 'right-par' && source.current().kind != 'right-bracket') {
-	      let operand_exp  = UnaryExpression.capture(source)
-	      if (operand_exp.error) {
-	        return operand_exp
-	      }
-	      else {
-	        output_stack.push(operand_exp.result)
-	      }
-
-	      if (operator_names.has(source.current().kind)) {
-	        while (operator_stack.length > 0 && precedence_by_op[source.current().kind] <= precedence_by_op[operator_stack[operator_stack.length-1]]) {
-	          output_stack.push(operator_stack.pop())
-	        }
-	        operator_stack.push(source.current().kind)
-	        source.next()
-	      }
-	    }
-
-	    while (operator_stack.length > 0) {
-	      output_stack.push(operator_stack.pop())
-	    }
-
-	    return {error:false, result:output_stack}
-	  }
-	}
-
-	function RPNtoTree(rpn_stack) {
-	  let last_token = rpn_stack.pop()
-
-	  if (operator_names.has(last_token)) {
-	    let op = last_token
-	    let operands = [RPNtoTree(rpn_stack)]
-	    operands.unshift(RPNtoTree(rpn_stack))
-	    let expression_type = 'operation'
-	    return {expression_type, op, operands}
-	  }
-	  else {
-	    return last_token
-	  }
-	}
-
-	class ExpressionAST {
-	  static fromQueue(source) {
-	    let rpn = streamToRPN.capture(source)
-
-	    if (rpn.error) {
-	      return rpn
-	    }
-	    else {
-	      let tree = RPNtoTree(rpn.result)
-	      return {error:false, result:tree}
-	    }
-	  }
-
-	  static fromString(string) {
-	    let source = new Source(string)
-	    let tokenizer = new Parser(source)
-
-	    let tokenArray = []
-	    let t = tokenizer.nextToken()
-
-	    while ( t.kind !== 'eof') {
-	      tokenArray.push(t)
-	      t = tokenizer.nextToken()
-	    }
-	    tokenArray.push(t)
-
-	    let tokenq = new TokenQueue(tokenArray)
-
-	    return ExpressionAST.fromQueue(tokenq)
-	  }
-	}
-
-	module.exports = ExpressionAST
+	module.exports = Emitter
 
 
 /***/ },
 /* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	const Source = __webpack_require__(9)
+	const Lexer = __webpack_require__(10)
+
+	const TokenQueue = __webpack_require__(18)
+	const Patterns = __webpack_require__(19)
+	const match = Patterns.match
+
+	function expressionFromString(string) {
+	  let source = new Source(string)
+	  let tokenizer = new Lexer(source)
+
+	  let tokenArray = []
+	  let t = tokenizer.nextToken()
+
+	  while ( t.kind !== 'eof') {
+	    tokenArray.push(t)
+	    t = tokenizer.nextToken()
+	  }
+	  tokenArray.push(t)
+
+	  let tokenq = new TokenQueue(tokenArray)
+
+	  return match(Patterns.Expression).from(tokenq)
+	}
+
+	module.exports = expressionFromString
+
+
+/***/ },
+/* 9 */
 /***/ function(module, exports) {
 
 	"use strict"
 
 	let EOF_REACHED = -2
-	let EON_REACHED = -1
-	let READING_LINE = 0
+	let EOL_REACHED = -1
+	let READING = 0
 
 	class Source {
 	  constructor(string) {
-	    this.EON = '\n'
+	    this.EOL = '\n'
 	    this.EOF = String.fromCharCode(0)
 
-	    this.lines = string.split(/\n|\r/g).filter(Boolean)
-	    this.lineAmount = this.lines.length
+	    this._source = string.replace(/\r/g, '')
 
-	    this.currentLine = this.lines[0]
+	    this._index = 0
 
-	    this._currentCharIndex = 0
-	    this._currentLineIndex = 0
+	    this._current_column = 0
+	    this._current_line = 0
 
-	    this.state = READING_LINE
+	    this.updateState()
 	  }
 
 	  currentChar() {
-	    if (this.state === EON_REACHED)
-	      return this.EON
-	    else if (this.state === EOF_REACHED)
+	    if (this.state === EOF_REACHED) {
 	      return this.EOF
-	    else
-	      return this.currentLine[this._currentCharIndex]
+	    }
+	    else {
+	      return this._source[this._index]
+	    }
 	  }
 
 	  nextChar() {
-	    if (this.state === EON_REACHED)
-	      this.advanceLine()
-	    else if (this.state !== EOF_REACHED)
-	      if (this._currentCharIndex + 1 < this.currentLine.length)
-	        ++this._currentCharIndex
-	      else if (this._currentCharIndex + 1 === this.currentLine.length)
-	        if (this._currentLineIndex + 1 < this.lineAmount) {
-	          this.state = EON_REACHED
-	        }
-	        else
-	          this.state = EOF_REACHED
-
+	    this._index++
+	    this.updateState()
+	    this.updatePosition()
 	    return this.currentChar()
 	  }
 
 	  peekChar() {
-	    if (this._currentCharIndex + 1 < this.currentLine.length) {
-	      return this.currentLine[this._currentCharIndex + 1]
+	    if (this._index + 1 === this._source.length) {
+	      return this.EOF
 	    }
 	    else {
+	      return this._source[this._index + 1]
 	    }
-	      return this.EON
 	  }
 
-	  advanceLine() {
-	    ++this._currentLineIndex
-	    this.currentLine = this.lines[this._currentLineIndex]
-	    this._currentCharIndex = 0
-	    this.state = READING_LINE
+	  updateState() {
+	    if (this._index === this._source.length) {
+	      this.state = EOF_REACHED
+	    }
+	    else {
+	      this.state = READING
+	    }
+	  }
+
+	  updatePosition() {
+	    if (this._source[this._index - 1] === this.EOL) {
+	      this._current_line++
+	      this._current_column = 0
+	    }
+	    else {
+	      this._current_column++
+	    }
 	  }
 	}
 
@@ -19761,18 +19617,18 @@
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
-	const SpecialSymbolToken = __webpack_require__(10)
-	const StringMethods = __webpack_require__(11)
-	const UnknownToken = __webpack_require__(12)
-	const NumberToken = __webpack_require__(13)
-	const StringToken = __webpack_require__(14)
-	const WordToken = __webpack_require__(15)
-	const EoFToken = __webpack_require__(16)
-	const Source = __webpack_require__(8)
+	const SpecialSymbolToken = __webpack_require__(11)
+	const StringMethods = __webpack_require__(12)
+	const UnknownToken = __webpack_require__(13)
+	const NumberToken = __webpack_require__(14)
+	const StringToken = __webpack_require__(15)
+	const WordToken = __webpack_require__(16)
+	const EoFToken = __webpack_require__(17)
+	const Source = __webpack_require__(9)
 
 	const isSpecialSymbolChar = SpecialSymbolToken.isSpecialSymbolChar
 	const isWhiteSpace        = StringMethods.isWhiteSpace
@@ -19782,9 +19638,9 @@
 	/**
 	 * Clase para convertir una cadena en fichas.
 	 */
-	class Parser {
+	class Lexer {
 	  /**
-	   * Crea un Parser.
+	   * Crea un Lexer.
 	   * @param  {source} source Fuente a utilizar para construir las fichas
 	   */
 	  constructor(source) {
@@ -19846,24 +19702,24 @@
 	  }
 
 	  skipWhiteSpace() {
-	    let comment = false
-	    while( isWhiteSpace(this.currentChar()) || (comment = this.isCommentLine()) )
-	      if (comment) {
-	        this.skipCommment()
-	        comment = false
-	      }
-	      else
-	        this.nextChar()
+	    while (isWhiteSpace(this.currentChar())) {
+	      this.nextChar()
+	    }
 	  }
 
 	  skipCommment() {
-	    while ( this.currentChar() !== this._source.EON )
+	    while (this.currentChar() !== this._source.EOL && this.currentChar() !== this._source.EOF) {
 	      this.nextChar()
+	    }
 	  }
 
 	  nextToken() {
 
-	    if (isWhiteSpace(this.currentChar()) || this.isCommentLine())
+	    if (this.isCommentLine()) {
+	      this.skipCommment()
+	    }
+
+	    if (isWhiteSpace(this.currentChar()))
 	      this.skipWhiteSpace()
 
 	    let c = this.currentChar()
@@ -19887,11 +19743,11 @@
 	  }
 	}
 
-	module.exports = Parser
+	module.exports = Lexer
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	'use strict'
@@ -19917,8 +19773,8 @@
 
 	class SpecialSymbolToken {
 	  constructor(source) {
-	    this.lineNumber = source._currentLineIndex
-	    this.columnNumber = source._currentCharIndex
+	    this.lineNumber = source._current_line
+	    this.columnNumber = source._current_column
 	    this.extract(source)
 	  }
 
@@ -20009,7 +19865,7 @@
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	'use strict'
@@ -20024,7 +19880,7 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	'use strict'
@@ -20033,8 +19889,8 @@
 	  constructor(source) {
 	    this.kind = 'LEXICAL_ERROR'
 	    this.unexpectedChar = source.currentChar()
-	    this.atLine = source._currentLineIndex
-	    this.atColumn = source._currentCharIndex
+	    this.atLine = source._current_line
+	    this.atColumn = source._current_column
 	    this.reason = 'unknownToken'
 	    source.nextChar()
 	  }
@@ -20044,11 +19900,11 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
-	const StringMethods = __webpack_require__(11)
+	const StringMethods = __webpack_require__(12)
 	const isDigit = StringMethods.isDigit
 
 	class NumberToken {
@@ -20056,8 +19912,8 @@
 	    // todos los numeros son enteros hasta que se 'demuestre' lo contrario
 	    this.kind = 'entero'
 	    this.text = ''
-	    this.lineNumber = source._currentLineIndex
-	    this.columnNumber = source._currentCharIndex
+	    this.lineNumber = source._current_line
+	    this.columnNumber = source._current_column
 	    this.extract(source)
 	  }
 
@@ -20085,8 +19941,8 @@
 	        this.kind = 'LEXICAL_ERROR'
 	        this.unexpectedChar = source.currentChar()
 	        this.expectedChar   = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-	        this.atLine         = source._currentLineIndex
-	        this.atColumn       = source._currentCharIndex
+	        this.atLine         = source._current_line
+	        this.atColumn       = source._current_column
 	        this.reason         = 'unexpectedCharAtFloat'
 	      }
 	    }
@@ -20102,7 +19958,7 @@
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict'
@@ -20111,8 +19967,8 @@
 	  constructor(source) {
 	    this.kind = 'string'
 	    this.value = ''
-	    this.lineNumber = source._currentLineIndex
-	    this.columnNumer = source._currentCharIndex
+	    this.lineNumber = source._current_line
+	    this.columnNumer = source._current_column
 	    this.extract(source)
 	  }
 
@@ -20134,8 +19990,8 @@
 	      this.kind = 'LEXICAL_ERROR'
 	      this.unexpectedChar = '\n'
 	      this.expectedChar = ['caracteres', '"']
-	      this.atColumn = source._currentCharIndex
-	      this.atLine = source._currentLineIndex
+	      this.atColumn = source._current_column
+	      this.atLine = source._current_line
 	      this.reason = 'unexpectedCharAtString'
 	    }
 
@@ -20149,13 +20005,13 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
-	let StringMethods = __webpack_require__(11)
+	const StringMethods = __webpack_require__(12)
 
-	var list = [
+	let list = [
 	  'variables'         ,
 	  'inicio'            ,
 	  'fin'               ,
@@ -20188,18 +20044,125 @@
 	  'falso'
 	]
 
-	var reserved = new Set(list)
-
 	let isDigit = StringMethods.isDigit
 
 	let isLetter = StringMethods.isLetter
+
+	function isReservedWord(word) {
+	  switch (word.length) {
+	    case 2:
+	      switch (word) {
+	        case 'si':
+	        case 'or':
+	          return true
+	        default:
+	          return false
+	      }
+	    case 3:
+	      switch (word) {
+	        case 'fin':
+	        case 'que':
+	        case 'div':
+	        case 'and':
+	        case 'not':
+	        case 'mod':
+	          return true
+	        default:
+	          return false
+	      }
+	    case 4:
+	      switch (word) {
+	        case 'sino':
+	        case 'para':
+	        case 'real':
+	          return true
+	        default:
+	          return false
+	      }
+	    case 5:
+	      switch (word) {
+	        case 'finsi':
+	        case 'hasta':
+	        case 'hasta':
+	        case 'falso':
+	          return true
+	        default:
+	          return false
+	      }
+	    case 6:
+	      switch (word) {
+	        case 'inicio':
+	        case 'entero':
+	        case 'logico':
+	          return true
+	        default:
+	          return false
+	      }
+	    case 7:
+	      switch (word) {
+	        case 'finpara':
+	        case 'repetir':
+	        case 'funcion':
+	          return true
+	        default:
+	          return false
+	      }
+	    case 8:
+	      switch (word) {
+	        case 'entonces':
+	        case 'mientras':
+	        case 'caracter':
+	          return true
+	        default:
+	          return false
+	      }
+	    case 9:
+	      switch (word) {
+	        case 'variables':
+	        case 'verdadero':
+	          return true
+	        default:
+	          return false
+	      }
+	    case 10:
+	      switch (word) {
+	        case 'finfuncion':
+	          return true
+	        default:
+	          return false
+	      }
+	    case 11:
+	      switch (word) {
+	        case 'finmientras':
+	          return true
+	        default:
+	          return false
+	      }
+	    case 13:
+	      switch (word) {
+	        case 'procedimiento':
+	          return true
+	        default:
+	          return false
+	      }
+	    case 16:
+	      switch (word) {
+	        case 'finprocedimiento':
+	          return true
+	        default:
+	          return false
+	      }
+	    default:
+	      return false
+	  }
+	}
 
 	class WordToken {
 	  constructor(source) {
 	    this.kind = 'word'
 	    this.text = ''
-	    this.lineNumber = source._currentLineIndex
-	    this.columnNumber = source._currentCharIndex
+	    this.lineNumber = source._current_line
+	    this.columnNumber = source._current_column
 	    this.extract(source)
 	  }
 
@@ -20216,7 +20179,7 @@
 	      source.nextChar()
 	    }
 
-	    if (reserved.has(this.text.toLowerCase()))
+	    if (isReservedWord(this.text.toLowerCase()))
 	      this.kind = this.text.toLowerCase()
 	  }
 	}
@@ -20225,7 +20188,7 @@
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	'use strict'
@@ -20234,8 +20197,8 @@
 	  constructor(source) {
 	    this.kind = 'eof'
 	    if (source) {
-	      this.columnNumber = source._currentCharIndex
-	      this.lineNumber   = source._currentLineIndex
+	      this.columnNumber = source._current_column
+	      this.lineNumber   = source._current_line
 	    }
 	  }
 	}
@@ -20244,11 +20207,11 @@
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
-	const EoFToken = __webpack_require__(16)
+	const EoFToken = __webpack_require__(17)
 
 	class TokenQueue {
 	  constructor(array) {
@@ -20288,76 +20251,746 @@
 
 
 /***/ },
-/* 18 */
-/***/ function(module, exports) {
-
-	'use strict'
-
-	class Emitter {
-	  constructor(public_event_list) {
-	    this.public_events = new Set(public_event_list)
-	    this.callbacks = {}
-	  }
-
-	  on(event_name, callback) {
-	    if (event_name in this.callbacks) {
-	      this.callbacks[event_name].push(callback)
-	    }
-	    else {
-	      this.callbacks[event_name] = [callback]
-	    }
-	  }
-
-	  emit(event_info) {
-	    // Se encarga de llamar a los callbacks de los eventos.
-	    // Si se registro un callback para 'any' entonces se lo llama para cada evento que sea emitido. Es el callback por defecto.
-	    // Si un evento tiene registrado un callback entonces este se ejecuta despues del callback por defecto.
-	    if (this.callbacks.hasOwnProperty('any')) {
-	      for (let callback of this.callbacks.any) {
-	        callback(...arguments)
-	      }
-	    }
-
-	    if (this.callbacks.hasOwnProperty(event_info.name)) {
-	      for (let callback of this.callbacks[event_info.name]) {
-	        callback(...arguments)
-	      }
-	    }
-	  }
-
-	  repeat(event_name, emitter, make_public) {
-	    if (make_public === true) {
-	      this.public_events.add(event_name)
-	    }
-	    let self = this
-	    emitter.on(event_name, function () {
-	      self.emit(...arguments)
-	    })
-	  }
-
-	  repeatAllPublicEvents(emitter) {
-	    // Esta funcion sive para emitir los eventos de otro emisor como si fueran propios.
-	    for (let event_name of emitter.public_events) {
-	      this.repeat(event_name, emitter, true)
-	    }
-	  }
-	}
-
-	module.exports = Emitter
-
-
-/***/ },
 /* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	const Emitter = __webpack_require__(18)
-	const Scanner = __webpack_require__(20)
-	const TokenQueue = __webpack_require__(17)
-	const Source = __webpack_require__(8)
-	const Parser = __webpack_require__(9)
-	const TypeChecker = __webpack_require__(41)
+	const Report = __webpack_require__(20)
+
+	/**
+	 * Funcion que intenta capturar un token numerico
+	 * @param {TokenQueue} source Fuente en la que hay que buscar el numero
+	 * @return {Report} reporte con el resultado
+	 */
+	function Number(source) {
+	  let current = source.current()
+
+	  if (current.kind == 'real' || current.kind == 'entero') {
+	    source.next()
+	    let result = {value:current.value, type:current.kind}
+	    return new Report(false, result)
+	  }
+	  else {
+	    let unexpected  = current.kind
+	    let expected    = ['entero', 'real']
+	    let atColumn    = current.columnNumber
+	    let atLine      = current.lineNumber
+
+	    return new Report(true, {unexpected, expected, atColumn, atLine})
+	  }
+	}
+
+	/**
+	 * Captura un token de tipo 'entero'
+	 * @param {TokenQueue} source fuente desde la cual se debe capturar
+	 * @return {Report}
+	 */
+	function Integer(source) {
+	  let current = source.current()
+
+	  if (current.kind === 'entero') {
+	    // consumir el token actual y...
+	    source.next()
+	    // ...devolver los datos importantes o...
+	    return new Report(false, current.value)
+	  }
+	  else {
+	    // ...devolver informacion sobre el error
+	    let unexpected = current.kind
+	    let expected = 'entero'
+	    let atColumn = current.columnNumber
+	    let atLine = current.lineNumber
+
+	    return new Report(true, {unexpected, expected, atColumn, atLine})
+	  }
+	}
+
+	function ArrayDimension(source) {
+	  let indexes = []
+
+	  let index_report = Integer(source)
+
+	  if (index_report.error) {
+	    return index_report
+	  }
+	  else {
+	    indexes.push(index_report.result)
+	  }
+
+	  if (source.current().kind === 'comma') {
+	    source.next()
+
+	    let following_indexes = ArrayDimension(source)
+
+	    if (following_indexes.error) {
+	      return following_indexes
+	    }
+	    else {
+	      indexes = indexes.concat(following_indexes.result)
+	      return new Report(false, indexes)
+	    }
+	  }
+	  else {
+	    return new Report(false, indexes)
+	  }
+	}
+
+	function Word(source) {
+	  let current = source.current()
+
+	  if (current.kind === 'word') {
+	    source.next()
+	    return new Report(false, current.text)
+	  }
+	  else {
+	    let unexpected = current.kind
+	    let expected = 'word'
+	    let atColumn = current.columnNumber
+	    let atLine = current.lineNumber
+
+	    return new Report(true, {unexpected, expected, atColumn, atLine})
+	  }
+	}
+
+	function VariableDeclaration(source) {
+	  let variable = {
+	      data    : {isArray : false, type:'unknown'}
+	    , name    : ''
+	  }
+
+	  let text = Word(source)
+
+	  if (text.error) {
+	    return text
+	  }
+	  else {
+	    variable.name = text.result
+	    if (source.current().kind === 'left-bracket') {
+	      source.next()
+	      let dimension = ArrayDimension(source)
+	      if (dimension.error) {
+	        return dimension
+	      }
+	      else {
+	        variable.data.isArray = true
+	        variable.data.dimension = dimension.result
+	        if (source.current().kind === 'right-bracket') {
+	          source.next()
+	          return new Report(false, variable)
+	        }
+	        else {
+	          let current = source.current()
+
+	          let unexpected = current.kind
+	          let expected   = 'right-bracket'
+	          let atColumn        = current.columnNumber
+	          let atLine          = current.lineNumber
+
+	          return new Report(true, {unexpected, expected, atColumn, atLine})
+	        }
+	      }
+	    }
+	    else {
+	      return new Report(false, variable)
+	    }
+	  }
+	}
+
+	function VariableList(source) {
+	  let variables = []
+	  let partial_match = false
+
+	  let name_report = VariableDeclaration(source)
+
+	  if (name_report.error) {
+	    return name_report
+	  }
+	  else {
+	    variables.push(name_report.result)
+
+	    if (source.current().kind === 'comma') {
+	      source.next()
+	      let var_list_match = VariableList(source)
+
+	      if (var_list_match.error) {
+	        return new Report(false, variables)
+	      }
+	      else {
+	        return new Report(false, variables.concat(var_list_match.result))
+	      }
+	    }
+	    else {
+	      return new Report(false, variables)
+	    }
+	  }
+	}
+
+	let isType = string => {return /entero|real|logico|caracter/.test(string)}
+
+	function TypeName(source) {
+	  let current = source.current()
+
+	  if ( isType(current.kind) ) {
+	    source.next()
+	    return new Report(false, current.kind)
+	  }
+	  else {
+	    let unexpected = current.kind
+	    let expected  = ['entero', 'real', 'logico', 'caracter']
+	    let atColumn        = current.columnNumber
+	    let atLine          = current.lineNumber
+	    let reason          = 'nonexistent-type'
+
+	    return new Report(true, {unexpected, expected, atColumn, atLine, reason})
+	  }
+	}
+
+	function Declaration(source) {
+	  let declarations = {}
+
+	  let typename = TypeName(source)
+
+	  if (typename.error)
+	    return typename
+	  else {
+	    let var_list_match = VariableList(source)
+
+	    if (var_list_match.error) {
+	      return var_list_match
+	    }
+
+	    for (let variable of var_list_match.result) {
+	      let name = variable.name
+
+	      if (declarations.hasOwnProperty(name)) {
+	        return new Report(true, {reason:'repeatead-var-name', name})
+	      }
+
+	      let var_object = variable.data
+	      var_object.type = typename.result
+
+	      if (var_object.isArray === true) {
+	        let size = var_object.dimension.reduce((acumulador, elemento) => {
+	          return acumulador * elemento
+	        })
+	        var_object.values = new Array(size)
+	      }
+	      else {
+	        var_object.value = null
+	      }
+
+	      declarations[name] = var_object
+
+	    }
+	    let comma_found = false
+	    let eol_found = false
+
+	    if (source.current().kind === 'comma') {
+	      source.next()
+	      comma_found = true
+	    }
+	    else if (source.current().kind == 'eol') {
+	      source.next()
+	      eol_found = true
+	    }
+
+	    let nextDeclaration = Declaration(source)
+
+	    if ((comma_found || eol_found) && nextDeclaration.error && source.current().kind != 'inicio') {
+	      return nextDeclaration
+	    }
+	    else if (nextDeclaration.error === false) {
+	      for (let name in nextDeclaration.result) {
+	        if (declarations.hasOwnProperty(name)) {
+	          return new Report(true, {reason:'repeatead-var-name', name})
+	        }
+	        else {
+	          declarations[name] = nextDeclaration.result[name]
+	        }
+	      }
+	    }
+	    return new Report(false, declarations)
+	  }
+	}
+
+	function IndexExpression(source) {
+	  let indexes = []
+
+	  let index_report = Expression(source)
+
+	  if (index_report.error === true) {
+	    return index_report
+	  }
+	  else {
+	    indexes.push(index_report.result)
+
+	    if (source.current().kind === 'comma') {
+	      source.next()
+
+	      let another_index_report = Expression(source)
+
+	      if (another_index_report.error === true) {
+	        return another_index_report
+	      }
+	      else {
+	        indexes = indexes.concat(another_index_report.result)
+
+	        return new Report(false, indexes)
+	      }
+	    }
+	    else {
+	      return new Report(false, indexes)
+	    }
+	  }
+	}
+
+	function Variable(source) {
+	  let name = '', isArray = false, indexes = null
+
+	  let word_match = Word(source)
+
+	  if (word_match.error === true) {
+	    return word_match
+	  }
+	  else {
+	    name = word_match.result
+
+	    if (source.current().kind === 'left-bracket') {
+	      source.next()
+
+	      let index_expressions_match = IndexExpression(source)
+
+	      if (index_expressions_match.error === true) {
+	        return index_expressions_match
+	      }
+
+	      isArray = true
+	      indexes = index_expressions_match.result
+
+	      if (source.current().kind === 'right-bracket') {
+	        source.next()
+
+	        return new Report(false, {name, isArray, indexes})
+	      }
+	      else {
+	        let current = source.current()
+
+	        let unexpected  = current.kind
+	        let expected    = 'right-bracket'
+	        let atColumn    = current.columnNumber
+	        let atLine      = current.lineNumber
+
+	        return new Report(true, {unexpected, expected, atColumn, atLine})
+	      }
+	    }
+	    else {
+	      return new Report(false, {name, isArray, indexes})
+	    }
+	  }
+	}
+
+	let precedence_by_op = {
+	  'power'       : 6 ,
+	  'div'         : 5 ,
+	  'mod'         : 5 ,
+	  'times'       : 5 ,
+	  'divide'      : 5 ,
+	  'minus'       : 4 ,
+	  'plus'        : 4 ,
+	  'minor-than'  : 3 ,
+	  'minor-equal' : 3 ,
+	  'major-than'  : 3 ,
+	  'major-equal' : 3 ,
+	  'equal'       : 2 ,
+	  'diff-than'   : 2 ,
+	  'and'         : 1 ,
+	  'or'          : 0
+	}
+
+	let operator_names = new Set(Object.getOwnPropertyNames(precedence_by_op))
+
+	function UnaryExpression(source) {
+	  let op_found = false
+	  let op
+	  let current = source.current()
+	  if (current.kind == 'minus' || current.kind == 'not' || current.kind == 'plus') {
+	    op_found = true
+	    if (current.kind == 'plus') {
+	      op_found = false
+	    }
+	    else {
+	      op = current.kind == 'minus' ? 'unary-minus' : 'not'
+	    }
+	    source.next()
+	  }
+
+	  let exp = PrimaryExpression(source)
+
+	  if (exp.error) {
+	    return exp
+	  }
+	  else {
+	    if (op_found) {
+	      let expression_type = 'unary-operation'
+	      let operand = exp.result
+	      let result = {expression_type, op, operand}
+	      let error = false
+	      return new Report(error, result)
+	    }
+	    else {
+	      let error = false
+	      let result = exp.result
+	      return new Report(error, result)
+	    }
+	  }
+	}
+
+	function PrimaryExpression(source) {
+	  let current = source.current()
+	  if (current.kind == 'word') {
+	    if (source.peek().kind != 'left-par') {
+
+	      let variable_match = Variable(source)
+
+	      if (variable_match.error === true) {
+	        return variable_match
+	      }
+
+	      let name    = variable_match.result.name
+	      let isArray = variable_match.result.isArray
+	      let indexes = variable_match.result.indexes
+
+	      let error = false
+	      let expression_type = 'invocation'
+	      let result = {expression_type, name, isArray, indexes}
+
+	      return new Report(error, result)
+	    }
+	    else {
+
+	    }
+	  }
+	  else if (current.kind == 'verdadero' || current.kind == 'falso') {
+	    let error = false
+	    let expression_type = 'literal'
+	    let value = current.kind == 'verdadero'
+	    let type = 'logico'
+	    let result = {expression_type, value, type}
+	    source.next()
+	    return new Report(error, result)
+	  }
+	  else if (current.kind == 'entero' || current.kind == 'real' || current.kind == 'string') {
+	    let error = false
+	    let expression_type = 'literal'
+	    let value = current.value
+	    let type = current.kind
+	    let result = {expression_type, value, type}
+
+	    if (type == 'string') {
+	      result.length = value.length
+	    }
+
+	    source.next()
+
+	    return new Report(error, result)
+	  }
+	  else if (current.kind == 'left-par') {
+	    source.next()
+	    let exp = Expression(source)
+	    if (exp.error) {
+	      return exp
+	    }
+	    else {
+	      if (source.current().kind == 'right-par') {
+	        source.next()
+	        let error = false
+	        let expression_type = 'expression'
+	        let expression = exp.result
+	        let result = {expression_type, expression}
+	        return new Report(error, result)
+	      }
+	      else {
+	        let unexpected = source.current().kind
+	        let expected   = 'right-par'
+	        let atColumn        = source.current().columnNumber
+	        let atLine          = source.current().lineNumber
+
+	        let error = false
+	        let result = {unexpected, expected, atColumn, atLine}
+
+	        return new Report(error, result)
+	      }
+	    }
+	  }
+	  else {
+	    let unexpected = current.kind
+	    let expected   = ['entero', 'real', 'cadena', 'verdadero', 'falso', '(expresion)']
+	    let atColumn        = current.columnNumber
+	    let atLine          = current.lineNumber
+
+	    let error           = true
+	    let result          = {unexpected, expected, atColumn, atLine}
+
+	    return new Report(error, result)
+	  }
+	}
+
+	function queueToRPN(source) {
+	  let operator_stack = []
+	  let output_stack = []
+
+	  while ( source.current().kind != 'eol' && source.current().kind != 'eof' && source.current().kind != 'comma' && source.current().kind != 'right-par' && source.current().kind != 'right-bracket') {
+	    let operand_exp  = UnaryExpression(source)
+	    if (operand_exp.error) {
+	      return operand_exp
+	    }
+	    else {
+	      output_stack.push(operand_exp.result)
+	    }
+
+	    if (operator_names.has(source.current().kind)) {
+	      while (operator_stack.length > 0 && precedence_by_op[source.current().kind] <= precedence_by_op[operator_stack[operator_stack.length-1]]) {
+	        output_stack.push(operator_stack.pop())
+	      }
+	      operator_stack.push(source.current().kind)
+	      source.next()
+	    }
+	  }
+
+	  while (operator_stack.length > 0) {
+	    output_stack.push(operator_stack.pop())
+	  }
+
+	  return new Report(false, output_stack)
+	}
+
+	function RPNtoTree(rpn_stack) {
+	  let last_token = rpn_stack.pop()
+
+	  if (operator_names.has(last_token)) {
+	    let op = last_token
+	    let operands = [RPNtoTree(rpn_stack)]
+	    operands.unshift(RPNtoTree(rpn_stack))
+	    let expression_type = 'operation'
+	    return {expression_type, op, operands}
+	  }
+	  else {
+	    return last_token
+	  }
+	}
+
+	function Expression(source) {
+	  let rpn = queueToRPN(source)
+
+	  if (rpn.error) {
+	    return rpn
+	  }
+	  else {
+	    let tree = RPNtoTree(rpn.result)
+	    return new Report(false, tree)
+	  }
+	}
+
+	function Assignment(source) {
+
+	  let variable_match = Variable(source)
+
+	  if (variable_match.error === true) {
+	    return variable_match
+	  }
+
+	  let name = variable_match.result.name
+	  let isArray = variable_match.result.isArray
+	  let indexes = variable_match.result.indexes
+	  let bounds_checked = false
+	  let target = {name, isArray, indexes, bounds_checked}
+
+	  let current = source.current()
+
+	  if (current.kind === 'assignment') {
+	    source.next()
+
+	    let payload_variable_match = Expression(source)
+
+	    if (payload_variable_match.error === true) {
+	      return payload
+	    }
+	    else {
+	      let payload = payload_variable_match.result
+	      let data = {action:'assignment', target, payload}
+	      return new Report(false, data)
+	    }
+	  }
+	  else {
+	    let unexpected      = source.current().kind
+	    let expected        = 'assignment'
+	    let atColumn        = source.current().columnNumber
+	    let atLine          = source.current().lineNumber
+
+	    let result = {unexpected, expected, atColumn, atLine}
+
+	    return new Report(true, result)
+	  }
+	}
+
+	function ArgumentList(source) {
+	  let args = []
+	  let exp = Expression(source)
+
+	  if (exp.error) {
+	    return exp
+	  }
+	  else {
+	    args.push(exp.result)
+
+	    if (source.current().kind == 'comma') {
+	      source.next()
+	      let next_args = ArgumentList(source)
+	      if (next_args.error) {
+	        return next_args
+	      }
+	      else {
+	        args = args.concat(next_args.result)
+	        return new Report(false, args)
+	      }
+	    }
+	    else {
+	      return new Report(false, args)
+	    }
+	  }
+	}
+
+	function ModuleCall(source) {
+	  let name = Word(source)
+
+	  if (source.current().kind != 'left-par') {
+	    let current = source.current()
+	    let unexpected  = current.kind
+	    let expected    = 'right-par'
+	    let atColumn    = current.columnNumber
+	    let atLine      = current.lineNumber
+
+	    return new Report(true, {unexpected, expected, atColumn, atLine})
+	  }
+	  else {
+	    source.next()
+	  }
+
+	  if (source.current().kind != 'right-par') {
+
+	    let args = ArgumentList(source)
+
+	    if (args.error) {
+	      return arguments
+	    }
+	    else {
+	      if (source.current().kind == 'right-par') {
+	        source.next()
+	        let data = {
+	          args:args.result,
+	          name:name.result,
+	          action:'module_call',
+	          expression_type:'module_call'
+	        }
+	        return new Report(false, data)
+	      }
+	      else {
+	        let current = source.current()
+	        let unexpected  = current.kind
+	        let expected    = 'right-par'
+	        let atColumn    = current.columnNumber
+	        let atLine      = current.lineNumber
+
+	        return new Report(true, {unexpected, expected, atColumn, atLine})
+	      }
+	    }
+	  }
+	  else {
+	    source.next()
+	    let data = {
+	      args:[],
+	      name:name.result,
+	      action:'module_call',
+	      expression_type:'module_call'
+	    }
+	    return new Report(false, data)
+	  }
+	}
+
+	/**
+	 * Funcion que, dada una funcion de captura y una fuente devuelve un reporte
+	 * @param {Function} pattern_matcher Funcion que captura tokens
+	 */
+	function match(pattern_matcher) {
+	  return {
+	    from: (source) => {
+	      return pattern_matcher(source)
+	    }
+	  }
+	}
+
+	module.exports = {
+	  match                   : match,
+	  Integer                 : Integer,
+	  ArrayDimension          : ArrayDimension,
+	  Word                    : Word,
+	  VariableDeclaration     : VariableDeclaration,
+	  VariableList            : VariableList,
+	  TypeName                : TypeName,
+	  Declaration             : Declaration,
+	  IndexExpression         : IndexExpression,
+	  Variable                : Variable,
+	  Expression              : Expression,
+	  Assignment              : Assignment,
+	  ArgumentList            : ArgumentList,
+	  ModuleCall              : ModuleCall
+	}
+
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	'use strict'
+
+	class Report {
+	  /**
+	   * Construye un reporte. Se usa para operaciones que pueden fallar.
+	   * @param  {bool} error_ocurred indica si ocurrió un error durante la operacion
+	   * @param  {any} result      resultado de la operación o causa del error
+	   * @return {Report}             reporte
+	   */
+	  constructor(error_ocurred, result) {
+	    this.error = error_ocurred
+	    if (result) {
+	      this.result = result
+	    }
+	    else {
+	      this.result = null
+	    }
+	  }
+	}
+
+	module.exports = Report
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	const Emitter = __webpack_require__(7)
+
+	const Scanner = __webpack_require__(22)
+	const TokenQueue = __webpack_require__(18)
+	const Patterns = __webpack_require__(19), match = Patterns.match
+
+	const Source = __webpack_require__(9)
+	const Lexer = __webpack_require__(10)
+
+	const TypeChecker = __webpack_require__(30)
 
 	const defaults = {
 	  event_logging : false
@@ -20409,14 +21042,14 @@
 
 	  constructor(config) {
 	    super([
-	        'compilation-started']
+	        'compilation-started'
 	      , 'lexical-error'
 	      , 'syntax-error'
 	      , 'compilation-finished'
 	      , 'type-check-started'
 	      , 'type-error'
 	      , 'type-check-finished'
-	    )
+	    ])
 
 	    if (config) {
 	      this.config = applyConfig(defaults, config)
@@ -20429,12 +21062,12 @@
 	      this.on('any', genericHandler)
 	    }
 
-	    this.parser = new Parser()
+	    this.parser = new Lexer()
 	  }
 
 	  compile(source_code_string, run_type_checker) {
 
-	    this.emit({name:'compilation-started'})
+	    this.emit('compilation-started')
 
 	    let source_wrapper = new Source(source_code_string)
 
@@ -20442,9 +21075,9 @@
 
 	    if (parse_report.error) {
 	      for (let bad_token of parse_report.result) {
-	        this.emit({name:'lexical-error',  origin:'controller'}, bad_token)
+	        this.emit('lexical-error', bad_token)
 	      }
-	      this.emit({name:'compilation-finished', origin:'controller'}, {error:true, result:'parse_errors'})
+	      this.emit('compilation-finished', {error:true, result:'parse_errors'})
 	      return {error:true, result:'parse_errors'}
 	    }
 
@@ -20453,9 +21086,9 @@
 	    let scan_report = scanner.getModules()
 
 	    if (scan_report.error) {
-	      this.emit({name:'syntax-error', origin:'controller'}, scan_report.result)
+	      this.emit('syntax-error', scan_report.result)
 
-	      this.emit({name:'compilation-finished', origin:'controller'}, {error:true, result:'syntax_error'})
+	      this.emit('compilation-finished', {error:true, result:'syntax_error'})
 
 	      return {error:true, result:'syntax_error'}
 	    }
@@ -20468,10 +21101,15 @@
 	      let main = modules.main
 
 	      let type_checker = new TypeChecker(main.statements, {}, main.variables, main.variables)
+
 	      // TODO: agregar a Emitter la posibilidad de tener handlers que se
 	      // ejecuten solo una vez
-	      type_checker.on('type-error', () => {
+
+	      let error_info = null
+
+	      type_checker.on('type-error', (ev_info, error_report) => {
 	        type_error = true
+	        error_info = error_report
 	      })
 
 	      this.repeatAllPublicEvents(type_checker)
@@ -20479,12 +21117,12 @@
 	      type_checker.lookForErrors()
 
 	      if (type_error) {
-	        this.emit({name:'compilation-finished'}, {error:true, result:'type_error'})
+	        this.emit('compilation-finished', {error:true, result:error_info})
 	        return {error:true, result:'type_error'}
 	      }
 	    }
 
-	    this.emit({name:'compilation-finished', origin:'controller'}, {error:false})
+	    this.emit('compilation-finished', {error:false})
 
 	    return {error:false, result:scan_report.result}
 	  }
@@ -20494,13 +21132,13 @@
 
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	const MainModuleScanner = __webpack_require__(21)
-	const TokenQueue = __webpack_require__(17)
+	const MainModuleScanner = __webpack_require__(23)
+	const TokenQueue = __webpack_require__(18)
 
 	class Scanner {
 	  constructor(queue) {
@@ -20535,17 +21173,21 @@
 
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	const DeclarationPattern = __webpack_require__(22)
-	const StatementCollector = __webpack_require__(29)
+	const Report = __webpack_require__(20)
+
+	const StatementCollector = __webpack_require__(24)
+
+	const Patterns = __webpack_require__(19)
+	const match = Patterns.match
 
 	function skipWhiteSpace(source) {
 	  let current = source.current()
-	  while (current.kind == 'eol') {
+	  while (current.kind === 'eol') {
 	    current = source.next()
 	  }
 	}
@@ -20553,7 +21195,7 @@
 	class MainModuleScanner {
 
 	  static capture(source) {
-	    let moduleData = {
+	    let module_data = {
 	        statements      : []
 	      , variables       : {}
 	      , atColumn        : 0
@@ -20563,60 +21205,59 @@
 
 	    let current = source.current()
 
-	    if (current.kind == 'eol')
+	    if (current.kind === 'eol') {
 	      skipWhiteSpace(source)
+	    }
 
-	    if (current.kind != 'variables') {
-	      return {
-	          error   : true
-	        , result  : {
-	            unexpected  : current.kind
-	          , expected    : 'variables'
-	          , atColumn    : current.columnNumber
-	          , atLine      : current.lineNumber
-	          , reason      : 'missing-var-declaration'
-	        }
-	      }
+	    current = source.current()
+
+	    if (current.kind !== 'variables') {
+	      let unexpected  = current.kind
+	      let expected    = 'variables'
+	      let atColumn    = current.columnNumber
+	      let atLine      = current.lineNumber
+	      let reason      = 'missing-var-declaration'
+	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
 	    }
 	    else {
 	      current = source.next()
 	    }
 
-	    if (current.kind == 'eol')
+	    if (current.kind === 'eol') {
 	      skipWhiteSpace(source)
+	    }
 
-	    let varDeclaration = DeclarationPattern.capture(source)
+	    let declaration_match = match(Patterns.Declaration).from(source)
 
-	    if (varDeclaration.error && !(varDeclaration.result.reason == 'nonexistent-type' && varDeclaration.result.unexpectedToken == 'inicio')) {
-	      return varDeclaration
+	    if (declaration_match.error && !(declaration_match.result.reason === 'nonexistent-type' && declaration_match.result.unexpected === 'inicio')) {
+	      return declaration_match
 	    }
 	    else {
-	      moduleData.variables = varDeclaration.result
+	      module_data.variables = declaration_match.result
 	    }
 	    current = source.current()
 
-	    if (current.kind == 'eol')
+	    if (current.kind === 'eol') {
 	      skipWhiteSpace(source)
+	    }
 
 	    current = source.current()
-	    if (current.kind != 'inicio') {
-	      return {
-	          error   : true
-	        , result  : {
-	            unexpected  : current.kind
-	          , expected    : 'inicio'
-	          , atColumn    : current.columnNumber
-	          , atLine      : current.lineNumber
-	          , reason      : 'missing-inicio'
-	        }
-	      }
+	    if (current.kind !== 'inicio') {
+	      let unexpected  = current.kind
+	      let expected    = 'inicio'
+	      let atColumn    = current.columnNumber
+	      let atLine      = current.lineNumber
+	      let reason      = 'missing-inicio'
+
+	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
 	    }
 	    else {
 	      current = source.next()
 	    }
 
-	    if (current.kind == 'eol')
+	    if (current.kind === 'eol') {
 	      skipWhiteSpace(source)
+	    }
 
 	    let statements = StatementCollector.capture(source)
 
@@ -20624,34 +21265,33 @@
 	      return statements
 	    }
 	    else {
-	      moduleData.statements = statements.result
+	      module_data.statements = statements.result
 	    }
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol') {
 	      skipWhiteSpace(source)
+	    }
 
 	    current = source.current()
 
-	    if (current.kind != 'fin') {
-	      return {
-	          error   : true
-	        , result  : {
-	            unexpected  : current.kind
-	          , expected    : 'fin'
-	          , atColumn    : current.columnNumber
-	          , atLine      : current.lineNumber
-	          , reason      : 'missing-fin'
-	        }
-	      }
+	    if (current.kind !== 'fin') {
+	      let unexpected  = current.kind
+	      let expected    = 'fin'
+	      let atColumn    = current.columnNumber
+	      let atLine      = current.lineNumber
+	      let reason      = 'missing-fin'
+
+	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
 	    }
 	    else {
 	      source.next()
 	    }
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol') {
 	      skipWhiteSpace(source)
+	    }
 
-	    return {error:false, result:moduleData}
+	    return new Report(false, module_data)
 	  }
 	}
 
@@ -20659,389 +21299,29 @@
 
 
 /***/ },
-/* 22 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-	let VariableListPattern = __webpack_require__(23)
-	let TypePattern = __webpack_require__(28)
-
-	class DeclarationPattern {
-	  static capture(source) {
-	    let declarations = {}
-
-	    let typename = TypePattern.capture(source)
-
-	    if (typename.error)
-	      return typename
-	    else {
-	      let varList = VariableListPattern.capture(source)
-
-	      if (varList.error)
-	        return varList
-	      else {
-	        for (let variable of varList.result) {
-	          let name = variable.name
-
-	          let var_object = variable.data
-	          var_object.type = typename.result
-
-	          if (var_object.isArray === true) {
-	            let size = var_object.dimension.reduce((acumulador, elemento) => {
-	              return acumulador * elemento
-	            })
-	            var_object.values = new Array(size)
-	          }
-	          else {
-	            var_object.value = null
-	          }
-
-	          if (declarations.hasOwnProperty(name)) {
-	            return {
-	                result  : {reason:'repeatead-var-name'}
-	              , error   : true
-	            }
-	          }
-	          else {
-	            declarations[name] = var_object
-	          }
-	        }
-
-	        {
-	          let commaFound = false
-	          let eolFound = false
-	          if (source.current().kind === 'comma') {
-	            source.next()
-	            commaFound = true
-	          }
-	          else if (source.current().kind == 'eol') {
-	            source.next()
-	            eolFound = true
-	          }
-	          let nextDeclaration = this.capture(source)
-	          if ((commaFound || eolFound) && nextDeclaration.error && source.current().kind != 'inicio')
-	            return nextDeclaration
-	          else if (nextDeclaration.error === false) {
-	            for (let name in nextDeclaration.result) {
-	              if (declarations.hasOwnProperty(name)) {
-	                return {
-	                    result  : {reason:'repeatead-var-name'}
-	                  , error   : true
-	                }
-	              }
-	              else {
-	                declarations[name] = nextDeclaration.result[name]
-	              }
-	            }
-	          }
-	        }
-
-	        return {
-	            result  : declarations
-	          , error   : false
-	        }
-	      }
-	    }
-	  }
-	}
-
-	module.exports = DeclarationPattern
-
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-	let VariableNamePattern = __webpack_require__(24)
-
-	class VariableListPattern {
-	  static capture(source) {
-	    let variables = []
-	    let partialMatch = false
-
-	    let capture = VariableNamePattern.capture(source)
-
-	    if (capture.error)
-	      return capture
-	    else {
-	      variables.push(capture.result)
-	      partialMatch = true
-	      if (source.current().kind === 'comma') {
-	        source.next()
-	        let varList = this.capture(source)
-
-	        if (varList.error)
-	            if (partialMatch === false)
-	              return varList
-	            else
-	              return {
-	                  result  : variables
-	                , error   : false
-	              }
-	        else {
-	          return {
-	              result  : variables.concat(varList.result)
-	            , error   : false
-	          }
-	        }
-	      }
-	      else
-	        return {
-	            result  : variables
-	          , error   : false
-	        }
-	    }
-	  }
-	}
-
-	module.exports = VariableListPattern
-
-
-/***/ },
 /* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
-	let WordPattern = __webpack_require__(25)
-	let IntegerIndexesPattern = __webpack_require__(26)
 
-	class VariableNamePattern {
-	  static capture(source) {
-	    let variable = {
-	        data    : {isArray : false, type:'unknown'}
-	      , name    : ''
-	    }
+	const Patterns = __webpack_require__(19)
+	const match = Patterns.match
 
-	    let text = WordPattern.capture(source)
+	const TokenQueue = __webpack_require__(18)
 
-	    if (text.error)
-	      return text
-	    else {
-	      variable.name = text.result
+	const Report = __webpack_require__(20)
 
-	      if (source.current().kind === 'left-bracket') {
-	        source.next()
-	        let dimension = IntegerIndexesPattern.capture(source)
-	        if (dimension.error)
-	          return dimension
-	        else {
-	          variable.data.isArray = true
-	          variable.data.dimension = dimension.result
-	          if (source.current().kind === 'right-bracket') {
-	            source.next()
-	            return {
-	                result : variable
-	              , error  : false
-	            }
-	          }
-	          else
-	            return {
-	                result : {
-	                    unexpectedToken : source.current().kind
-	                  , expectedToken   : 'right-bracket'
-	                  , atColumn        : source.current().columnNumber
-	                  , atLine          : source.current().lineNumber
-	                }
-	              , error  : true
-	            }
-	        }
-	      }
-	      else
-	        return {
-	            result : variable
-	          , error  : false
-	        }
-
-	    }
-
-	  }
-	}
-
-	module.exports = VariableNamePattern
-
-
-/***/ },
-/* 25 */
-/***/ function(module, exports) {
-
-	'use strict'
-
-	class WordPattern {
-	  static capture(source) {
-	    let current = source.current()
-
-	    if (current.kind === 'word') {
-	      source.next()
-
-	      return {
-	          error  : false
-	        , result : current.text
-	      }
-
-	    }
-	    else {
-	      return {
-	          error  : true
-	        , result : {
-	            expectedToken   : 'word'
-	          , unexpectedToken : current.kind
-	          , atColumn        : current.columnNumber
-	          , atLine          : current.lineNumber
-	        }
-	      }
-	    }
-	  }
-	}
-
-	module.exports = WordPattern
-
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	// TODO: hace falta reescribir esto?
-
-	let IntegerPattern = __webpack_require__(27)
-
-	class IntegerIndexesPattern {
-	  static capture(source) {
-	    let indexes = []
-
-	    if (source.current().kind === 'entero') {
-	      indexes.push(IntegerPattern.capture(source).result)
-	      let current = source.current()
-
-	      if (current.kind === 'comma') {
-	        source.next()
-	        let list = this.capture(source)
-	        if (list.error)
-	          return list
-	        else {
-	          return {
-	              error  : false
-	            , result : indexes.concat(list.result)
-	          }
-	        }
-	      }
-	      else {
-	        return {
-	            error  : false
-	          , result : indexes
-	        }
-	      }
-
-	    }
-	    else {
-	      return {
-	          error  : true
-	        , result : IntegerPattern.capture(source).result // Esto va a tirar informacion incorrecta sobre el error (xq source fue avanzada en el primer llamado, más arriba)
-	      }
-	    }
-	  }
-	}
-
-	module.exports = IntegerIndexesPattern
-
-
-/***/ },
-/* 27 */
-/***/ function(module, exports) {
-
-	'use strict'
-
-	class IntegerPattern {
-	  // source is an instance of TokenQueue
-	  static capture(source) {
-	    let current = source.current()
-
-	    if (current.kind === 'entero') {
-	      // consumir el token actual y...
-	      source.next()
-	      // ...devolver los datos importantes o...
-	      return {
-	          error  : false
-	        , result : current.value
-	      }
-	    }
-	    else {
-	      // ...devolver informacion sobre el error
-	      return {
-	          error   :  true
-	        , result  : {
-	            expectedToken   : 'entero'
-	          , unexpectedToken : current.kind
-	          , atColumn        : current.columnNumber
-	          , atLine          : current.lineNumber
-	        }
-	       }
-	    }
-	  }
-	}
-
-	module.exports = IntegerPattern
-
-
-/***/ },
-/* 28 */
-/***/ function(module, exports) {
-
-	'use strict'
-	// String -> Bool
-	let isType = string => {return /entero|real|logico|caracter/.test(string)}
-
-	class TypePattern {
-	  static capture(source) {
-	    let current = source.current()
-
-	    if ( isType(current.kind) ) {
-	      source.next()
-	      return {
-	          result  : current.kind
-	        , error   : false
-	      }
-	    }
-	    else
-	      return {
-	          result  : {
-	              unexpectedToken : current.kind
-	            , expectedTokens  : ['entero', 'real', 'logico', 'caracter']
-	            , atColumn        : current.columnNumber
-	            , atLine          : current.lineNumber
-	            , reason          : 'nonexistent-type'
-	          }
-	        , error   : true
-	      }
-	  }
-	}
-
-	module.exports = TypePattern
-
-
-/***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	const AssignmentPattern = __webpack_require__(30)
-	const ModuleCallPattern = __webpack_require__(34)
-	const Expression = __webpack_require__(7)
-	const TokenQueue = __webpack_require__(17)
-	const BranchingNode = __webpack_require__(36)
-	const IfNode = __webpack_require__(37)
-	const WhileNode = __webpack_require__(39)
-	const UntilNode = __webpack_require__(40)
-	const LinkedList = __webpack_require__(38).LinkedList
-	const getChainLength = __webpack_require__(38).getChainLength
-	const getLastNode = __webpack_require__(38).getLastNode
+	const Node = __webpack_require__(25)
+	const IfNode = __webpack_require__(26)
+	const WhileNode = __webpack_require__(28)
+	const UntilNode = __webpack_require__(29)
+	const LinkedList = __webpack_require__(27).LinkedList
+	const getChainLength = __webpack_require__(27).getChainLength
+	const getLastNode = __webpack_require__(27).getLastNode
 
 	function skipWhiteSpace(source) {
 	  let current = source.current()
-	  while (current.kind == 'eol') {
+	  while (current.kind === 'eol') {
 	    current = source.next()
 	  }
 	}
@@ -21054,21 +21334,19 @@
 
 	    source.next() // consume 'mientras'
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol')
 	      skipWhiteSpace(source)
 
-	    if (source.current().kind == 'left-par') {
+	    if (source.current().kind === 'left-par') {
 	      source.next()
 	    }
 	    else {
-	      let error = true
 	      let current = source.current()
 	      let unexpected = current.kind
 	      let expected = 'left-par'
 	      let atColumn = current.columnNumber
 	      let atLine = current.lineNumber
-	      let result = {unexpected, expected, atColumn, atLine}
-	      return {error, result}
+	      return new Report(true, {unexpected, expected, atColumn, atLine})
 	    }
 
 	    // Esto arma un TokenQueue con los tokens de la condicion del bucle
@@ -21081,23 +21359,21 @@
 	      current_token = source.next()
 	    }
 
-	    if (source.current().kind == 'right-par') {
+	    if (source.current().kind === 'right-par') {
 	      source.next()
 	    }
 	    else {
-	      let error = true
 	      let current = source.current()
 	      let unexpected = current.kind
 	      let expected = 'right-par'
 	      let atColumn = current.columnNumber
 	      let atLine = current.lineNumber
-	      let result = {unexpected, expected, atColumn, atLine}
-	      return {error, result}
+	      return new Report(true, {unexpected, expected, atColumn, atLine})
 	    }
 
 	    let expression_q = new TokenQueue(token_array)
 
-	    let condition_exp = Expression.fromQueue(expression_q)
+	    let condition_exp = match(Patterns.Expression).from(expression_q)
 
 	    if (condition_exp.error) {
 	      return condition_exp
@@ -21106,7 +21382,7 @@
 	      condition = condition_exp.result
 	    }
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol')
 	      skipWhiteSpace(source)
 
 	    let statements = StatementCollector.capture(source)
@@ -21118,34 +21394,30 @@
 	      body = statements.result
 	    }
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol')
 	      skipWhiteSpace(source)
 
-	    if (source.current().kind == 'finmientras') {
+	    if (source.current().kind === 'finmientras') {
 	      source.next()
 	    }
 	    else {
-	      let error = true
 	      let current = source.current()
 	      let unexpected = current.kind
 	      let expected = 'finmientras'
 	      let atColumn = current.columnNumber
 	      let atLine = current.lineNumber
-	      let result = {unexpected, expected, atColumn, atLine}
-	      return {error, result}
+	      return new Report(true, {unexpected, expected, atColumn, atLine})
 	    }
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol')
 	      skipWhiteSpace(source)
 
 	    let action = 'while'
-	    let error = false
 
 	    node.data = {action, condition}
 	    node.loop_body_root = body
-	    let result = node
 
-	    return {error, result}
+	    return new Report(false, node)
 	  }
 	}
 
@@ -21156,7 +21428,7 @@
 
 	    source.next()
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol')
 	      skipWhiteSpace(source)
 
 
@@ -21169,52 +21441,46 @@
 	      body_root_node = statements.result
 	    }
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol')
 	      skipWhiteSpace(source)
 
-	    if (source.current().kind == 'hasta') {
+	    if (source.current().kind === 'hasta') {
 	      source.next()
 	    }
 	    else {
-	      return {
-	          error   : true
-	        , result  : {
-	            unexpected  : source.current().kind
-	          , expected    : 'hasta'
-	          , atColumn    : source.current().columnNumber
-	          , atLine      : source.current().lineNumber
-	        }
-	      }
+	      let current = source.current()
+	      let unexpected  = current.kind
+	      let expected    = 'hasta'
+	      let atColumn    = current.columnNumber
+	      let atLine      = current.lineNumber
+
+	      return new Report(true, {unexpected, expected, atColumn, atLine})
 	    }
 
-	    if (source.current().kind == 'que') {
+	    if (source.current().kind === 'que') {
 	      source.next()
 	    }
 	    else {
-	      return {
-	          error   : true
-	        , result  : {
-	            unexpected  : source.current().kind
-	          , expected    : 'que'
-	          , atColumn    : source.current().columnNumber
-	          , atLine      : source.current().lineNumber
-	        }
-	      }
+	      let current = source.current()
+	      let unexpected  = current.kind
+	      let expected    = 'que'
+	      let atColumn    = current.columnNumber
+	      let atLine      = current.lineNumber
+
+	      return new Report(true, {unexpected, expected, atColumn, atLine})
 	    }
 
-	    if (source.current().kind == 'left-par') {
+	    if (source.current().kind === 'left-par') {
 	      source.next()
 	    }
 	    else {
-	      return {
-	          error   : true
-	        , result  : {
-	            unexpected  : source.current().kind
-	          , expected    : 'left-par'
-	          , atColumn    : source.current().columnNumber
-	          , atLine      : source.current().lineNumber
-	        }
-	      }
+	      let current = source.current()
+	      let unexpected  = current.kind
+	      let expected    = 'letf-par'
+	      let atColumn    = current.columnNumber
+	      let atLine      = current.lineNumber
+
+	      return new Report(true, {unexpected, expected, atColumn, atLine})
 	    }
 
 	    let token_array = []
@@ -21225,24 +21491,22 @@
 	      current_token = source.next()
 	    }
 
-	    if (current_token.kind == 'right-par') {
+	    if (current_token.kind === 'right-par') {
 	      source.next()
 	    }
 	    else {
-	      return {
-	          error   : true
-	        , result  : {
-	            unexpected  : source.current().kind
-	          , expected    : 'right-par'
-	          , atColumn    : source.current().columnNumber
-	          , atLine      : source.current().lineNumber
-	        }
-	      }
+	      let current = source.current()
+	      let unexpected  = current.kind
+	      let expected    = 'right-par'
+	      let atColumn    = current.columnNumber
+	      let atLine      = current.lineNumber
+
+	      return new Report(true, {unexpected, expected, atColumn, atLine})
 	    }
 
 	    let expression_q = new TokenQueue(token_array)
 
-	    let condition_exp = Expression.fromQueue(expression_q)
+	    let condition_exp = match(Patterns.Expression).from(expression_q)
 
 	    if (condition_exp.error) {
 	      return condition_exp
@@ -21251,7 +21515,7 @@
 	      condition = condition_exp.result
 	    }
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol')
 	      skipWhiteSpace(source)
 
 	    let action = 'repeat'
@@ -21263,10 +21527,7 @@
 	    let last_body_node = getLastNode(body_root_node)
 	    last_body_node.setNext(until_node)
 
-	    let error = false
-	    let result = body_root_node
-
-	    return {error, result}
+	    return new Report(false, body_root_node)
 	  }
 	}
 
@@ -21279,45 +21540,43 @@
 
 	    source.next() // consumir el 'si'
 
-	    if (source.current().kind == 'left-par') {
+	    if (source.current().kind === 'left-par') {
 	      source.next()
 	    } else {
-	      let error = true
-	      let result = {
-	          unexpected  : source.current().kind
-	        , expected    : 'left-par'
-	        , atColumn    : source.current().columnNumber
-	        , atLine      : source.current().lineNumber
-	        , reason      : 'missing-par-at-if'
-	      }
-	      return {error, result}
+	      let current = source.current()
+	      let unexpected  = source.current().kind
+	      let expected    = 'left-par'
+	      let atColumn    = source.current().columnNumber
+	      let atLine      = source.current().lineNumber
+	      let reason      = 'missing-par-at-if'
+
+	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
 	    }
 
 	    let token_array = []
 	    let current_token = source.current()
 
-	    while (current_token.kind != 'right-par' && current_token.kind != 'eof') {
+	    while (current_token.kind !== 'right-par' && current_token.kind !== 'eof') {
 	      token_array.push(current_token)
 	      current_token = source.next()
 	    }
 
-	    if (current_token.kind == 'right-par') {
+	    if (current_token.kind ==='right-par') {
 	      source.next()
 	    } else {
-	      let error = true
-	      let result = {
-	          unexpected  : source.current().kind
-	        , expected    : 'right-par'
-	        , atColumn    : source.current().columnNumber
-	        , atLine      : source.current().lineNumber
-	        , reason      : 'missing-par-at-if'
-	      }
-	      return {error, result}
+	      let current = source.current()
+	      let unexpected  = source.current().kind
+	      let expected    = 'right-par'
+	      let atColumn    = source.current().columnNumber
+	      let atLine      = source.current().lineNumber
+	      let reason      = 'missing-par-at-if'
+
+	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
 	    }
 
 	    let expression_q = new TokenQueue(token_array)
 
-	    let condition_exp = Expression.fromQueue(expression_q)
+	    let condition_exp = match(Patterns.Expression).from(expression_q)
 
 	    if (condition_exp.error) {
 	      return condition_exp
@@ -21326,21 +21585,20 @@
 	      condition = condition_exp.result
 	    }
 
-	    if (source.current().kind == 'entonces') {
+	    if (source.current().kind === 'entonces') {
 	      source.next() // consumir el token
 	    } else {
-	      let error = false
-	      let result = {
-	          unexpected  : source.current().kind
-	        , expected    : 'entonces'
-	        , atColumn    : source.current().columnNumber
-	        , atLine      : source.current().lineNumber
-	        , reason      : 'missing-entonces-at-if'
-	      }
-	      return {error, result}
+	      let current = source.current()
+	      let unexpected  = source.current().kind
+	      let expected    = 'entonces'
+	      let atColumn    = source.current().columnNumber
+	      let atLine      = source.current().lineNumber
+	      let reason      = 'missing-entonces-at-if'
+
+	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
 	    }
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol')
 	      skipWhiteSpace(source)
 
 	    let statements = StatementCollector.capture(source)
@@ -21352,13 +21610,13 @@
 	      true_branch = statements.result
 	    }
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol')
 	      skipWhiteSpace(source)
 
-	    if (source.current().kind == 'sino') {
+	    if (source.current().kind === 'sino') {
 	      source.next() // consumir sino
 
-	      if (source.current().kind == 'eol')
+	      if (source.current().kind === 'eol')
 	        skipWhiteSpace(source)
 
 	      let statements = StatementCollector.capture(source)
@@ -21371,13 +21629,13 @@
 	      }
 	    }
 
-	    if (source.current().kind == 'eol')
+	    if (source.current().kind === 'eol')
 	      skipWhiteSpace(source)
 
-	    if (source.current().kind == 'finsi') {
+	    if (source.current().kind === 'finsi') {
 	      source.next() // consumir finsi
 
-	      if (source.current().kind == 'eol')
+	      if (source.current().kind === 'eol')
 	        skipWhiteSpace(source)
 
 	      if (false_branch !== null) {
@@ -21391,20 +21649,16 @@
 	      let data = {condition, action:'if'}
 	      node.data = data
 
-	      let error = false
-	      let result = node
-
-	      return {error, result}
+	      return new Report(false, node)
 	    } else {
-	      let error = true
-	      let result = {
-	          unexpected  : source.current().kind
-	        , expected    : ['finsi', 'sino']
-	        , atColumn    : source.current().columnNumber
-	        , atLine      : source.current().lineNumber
-	        , reason      : 'missing-sino-finsi-at-if'
-	      }
-	      return {error, result}
+	      let current = source.current()
+	      let unexpected  = source.current().kind
+	      let expected    = ['finsi', 'sino']
+	      let atColumn    = source.current().columnNumber
+	      let atLine      = source.current().lineNumber
+	      let reason      = 'missing-sino-finsi-at-if'
+
+	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
 	    }
 	  }
 	}
@@ -21422,35 +21676,34 @@
 	class StatementCollector {
 	  static capture(source) {
 	    let list  = new LinkedList()
-	    let error   = false
 
 	    let current = source.current()
 
 	    let done = false
-	    let eof_reached = current.kind == 'eof'
+	    let eof_reached = current.kind === 'eof'
 
 	    while ( !eof_reached && !done) {
 	      current = source.current()
 
-	      if (current.kind == 'word' && source.peek().kind == 'left-par') {
-	        let call = ModuleCallPattern.capture(source)
+	      if (current.kind === 'word' && source.peek().kind === 'left-par') {
+	        let call = match(Patterns.ModuleCall).from(source)
 	        if (call.error) {
 	          return call
 	        }
 	        else {
-	          list.addNode(call.result)
+	          list.addNode(new Node(call.result))
 	        }
 	      }
-	      else if (current.kind == 'word') {
-	        let assignment = AssignmentPattern.capture(source)
+	      else if (current.kind === 'word') {
+	        let assignment = match(Patterns.Assignment).from(source)
 	        if (assignment.error) {
 	          return assignment
 	        }
 	        else {
-	          list.addNode(assignment.result)
+	          list.addNode(new Node(assignment.result))
 	        }
 	      }
-	      else if (current.kind == 'si') {
+	      else if (current.kind === 'si') {
 	        let if_block = IfScanner.capture(source)
 
 	        if (if_block.error) {
@@ -21484,14 +21737,12 @@
 	        done = true
 	      }
 	      current = source.current()
-	      if (current.kind == 'eol') {
+	      if (current.kind === 'eol') {
 	        skipWhiteSpace(source)
 	      }
 	    }
 
-	    let result = list.firstNode
-
-	    return {error, result}
+	    return new  Report(false, list.firstNode)
 	  }
 	}
 
@@ -21499,69 +21750,7 @@
 
 
 /***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	const Node = __webpack_require__(31)
-
-	const Expression = __webpack_require__(7)
-	const VariablePattern = __webpack_require__(32)
-
-	class AssignmentPattern {
-	  static capture(source) {
-
-	    let report = VariablePattern.capture(source)
-
-	    if (report.error === true) {
-	      return report
-	    }
-
-	    let name = report.result.name
-	    let isArray = report.result.isArray
-	    let indexes = report.result.indexes
-	    let bounds_checked = false
-	    let target = {name, isArray, indexes, bounds_checked}
-
-	    let current = source.current()
-
-	    if (current.kind === 'assignment') {
-	      source.next()
-
-	      let payload_report = Expression.fromQueue(source)
-
-	      if (payload_report.error === true) {
-	        return payload
-	      }
-	      else {
-	        let error = false
-	        let payload = payload_report.result
-	        let data = {action:'assignment', target, payload}
-	        let result = new Node(data)
-	        return {error, result}
-	      }
-	    }
-	    else {
-	      let error = true
-
-	      let unexpectedToken = source.current().kind
-	      let expectedToken   = 'assignment'
-	      let atColumn        = source.current().columnNumber
-	      let atLine          = source.current().lineNumber
-
-	      let result = {unexpectedToken, expectedToken, atColumn, atLine}
-
-	      return {error, result}
-	    }
-	  }
-	}
-
-	module.exports = AssignmentPattern
-
-
-/***/ },
-/* 31 */
+/* 25 */
 /***/ function(module, exports) {
 
 	'use strict'
@@ -21594,288 +21783,12 @@
 
 
 /***/ },
-/* 32 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	const WordPattern = __webpack_require__(25)
-	const ExpressionIndexPattern = __webpack_require__(33)
-
-	class Report {
-	  /**
-	   * Construye un reporte. Se usa para operaciones que pueden fallar.
-	   * @param  {bool} error_ocurred indica si ocurrió un error durante la operacion
-	   * @param  {any} result      resultado de la operación o causa del error
-	   * @return {Report}             reporte
-	   */
-	  constructor(error_ocurred, result) {
-	    this.error = error_ocurred
-	    this.result = result
-	  }
-	}
-
-	class VariablePattern {
-	  static capture(source) {
-	    let name = '', isArray = false, indexes = null
-
-	    let word_report = WordPattern.capture(source)
-
-	    if (word_report.error === true) {
-	      return word_report
-	    }
-	    else {
-	      name = word_report.result
-
-	      if (source.current().kind === 'left-bracket') {
-	        source.next()
-
-	        let index_expressions_report = ExpressionIndexPattern.capture(source)
-
-	        if (index_expressions_report.error === true) {
-	          return index_expressions_report
-	        }
-
-	        isArray = true
-	        indexes = index_expressions_report.result
-
-	        if (source.current().kind === 'right-bracket') {
-	          source.next()
-
-	          return new Report(false, {name, isArray, indexes})
-	        }
-	        else {
-	          let current = source.current()
-	          let unexpectedToken = current.kind
-	          let expectedToken   = 'right-bracket'
-	          let atColumn        = current.columnNumber
-	          let atLine          = current.lineNumber
-
-	          return new Report(true, {unexpectedToken, expectedToken, atColumn, atLine})
-	        }
-	      }
-	      else {
-	        return new Report(false, {name, isArray, indexes})
-	      }
-	    }
-	  }
-	}
-
-	module.exports = VariablePattern
-
-
-/***/ },
-/* 33 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	const Expression = __webpack_require__(7)
-
-	class ExpressionIndexPattern {
-	  static capture(source) {
-	    let indexes = []
-
-	    let index_report = Expression.fromQueue(source)
-
-	    if (index_report.error === true) {
-	      return index_report
-	    }
-	    else {
-	      indexes.push(index_report.result)
-
-	      if (source.current().kind === 'comma') {
-	        source.next()
-
-	        let another_index_report = Expression.fromQueue(source)
-
-	        if (another_index_report.error === true) {
-	          return another_index_report
-	        }
-	        else {
-	          indexes = indexes.concat(another_index_report.result)
-
-	          return {error:false, result:indexes}
-	        }
-	      }
-	      else {
-	        return {error:false, result:indexes}
-	      }
-	    }
-	  }
-	}
-
-	module.exports = ExpressionIndexPattern
-
-
-/***/ },
-/* 34 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	const WordPattern = __webpack_require__(25)
-	const ArgumentListPattern = __webpack_require__(35)
-	const Node = __webpack_require__(31)
-
-	class ModuleCallPattern {
-	  static capture(source) {
-	    let name = WordPattern.capture(source)
-
-	    if (source.current().kind != 'left-par') {
-	      return {
-	          result  : {
-	              unexpected  : source.current().kind
-	            , expected    : 'left-par'
-	            , atColumn    : source.current().columnNumber
-	            , atLine      : source.current().lineNumber
-	          }
-	        , error   : true
-	      }
-	    }
-	    else {
-	      source.next()
-	    }
-
-	    if (source.current().kind != 'right-par') {
-
-	      let args = ArgumentListPattern.capture(source)
-
-	      if (args.error) {
-	        return arguments
-	      }
-	      else {
-	        if (source.current().kind == 'right-par') {
-	          source.next()
-	          let error = false
-	          let data = {
-	            args:args.result,
-	            name:name.result,
-	            action:'module_call',
-	            expression_type:'module_call'
-	          }
-	          let result = new Node(data)
-	          return {error, result}
-	        }
-	        else {
-	          return {
-	              result  : {
-	                  unexpected  : source.current().kind
-	                , expected    : 'right-par'
-	                , atColumn    : source.current().columnNumber
-	                , atLine      : source.current().lineNumber
-	              }
-	            , error   : true
-	          }
-	        }
-	      }
-	    }
-	    else {
-	      source.next()
-	      let error = false
-	      let data = {
-	        args:[],
-	        name:name.result,
-	        action:'module_call',
-	        expression_type:'module_call'
-	      }
-	      let result = new Node(data)
-	      return {error, result}
-	    }
-	  }
-	}
-
-	module.exports = ModuleCallPattern
-
-
-/***/ },
-/* 35 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	const Expression = __webpack_require__(7)
-
-	class ArgumentListPattern {
-	  static capture(source) {
-	    let args = []
-	    let exp = Expression.fromQueue(source)
-
-	    if (exp.error) {
-	      return exp
-	    }
-	    else {
-	      args.push(exp.result)
-
-	      if (source.current().kind == 'comma') {
-	        source.next()
-	        let next_args = ArgumentListPattern.capture(source)
-	        if (next_args.error) {
-	          return next_args
-	        }
-	        else {
-	          args = args.concat(next_args.result)
-	          return {error:false, result:args}
-	        }
-	      }
-	      else {
-	        return {error:false, result:args}
-	      }
-	    }
-	  }
-	}
-
-	module.exports = ArgumentListPattern
-
-
-/***/ },
-/* 36 */
-/***/ function(module, exports) {
-
-	'use strict'
-
-	/**
-	 * Clase que representa una bifurcacion en la lista. Adhiere a la interfaz de
-	 * Nodo (la clase debe tener setNext y getNext) estableciendo que setNext
-	 * altera el valor de leftBranchNode. No hay metodo para modificar
-	 * rightBranchNode, se lo pude modificar directamente. Para decidir que camino
-	 * tomar, getNext toma un boolean.
-	 */
-	class BranchingNode {
-	  constructor(data) {
-	    if (data) {
-	      this.data = data
-	    } else {
-	      this.data = null
-	    }
-
-	    this.leftBranchNode = null
-	    this.rightBranchNode = null
-	  }
-
-	  setNext(nextNode) {
-	    this.leftBranchNode = nextNode
-	  }
-
-	  getNext(getRight) {
-	    if (getRight) {
-	      return this.rightBranchNode
-	    } else {
-	      return this.leftBranchNode
-	    }
-	  }
-	}
-
-	module.exports = BranchingNode
-
-
-/***/ },
-/* 37 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	const getLastNode = __webpack_require__(38).getLastNode
+	const getLastNode = __webpack_require__(27).getLastNode
 
 	/**
 	 * Este nodo va a ser utilizado para representar una if [else]
@@ -21952,7 +21865,7 @@
 
 
 /***/ },
-/* 38 */
+/* 27 */
 /***/ function(module, exports) {
 
 	'use strict'
@@ -22011,12 +21924,12 @@
 
 
 /***/ },
-/* 39 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	const getLastNode = __webpack_require__(38).getLastNode
+	const getLastNode = __webpack_require__(27).getLastNode
 
 	class WhileNode {
 	  constructor(data) {
@@ -22088,7 +22001,7 @@
 
 
 /***/ },
-/* 40 */
+/* 29 */
 /***/ function(module, exports) {
 
 	'use strict'
@@ -22143,7 +22056,7 @@
 
 
 /***/ },
-/* 41 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
@@ -22159,10 +22072,10 @@
 	// TODO: cual hay q devolver si los dos tienen errores? (renglon 232)
 
 
-	const WhileNode = __webpack_require__(39)
-	const UntilNode = __webpack_require__(40)
-	const IfNode    = __webpack_require__(37)
-	const Emitter   = __webpack_require__(18)
+	const WhileNode = __webpack_require__(28)
+	const UntilNode = __webpack_require__(29)
+	const IfNode    = __webpack_require__(26)
+	const Emitter   = __webpack_require__(7)
 
 	let math_operators = new Set([
 	    'plus'
@@ -22309,14 +22222,14 @@
 	  lookForErrors() {
 	    let current_node = this.module_root
 
-	    this.emit({name:'type-check-started'})
+	    this.emit('type-check-started')
 
 	    while (current_node !== null) {
 	      this.checkNode(current_node)
 	      current_node = current_node.getNext()
 	    }
 
-	    this.emit({name:'type-check-finished'})
+	    this.emit('type-check-finished')
 	  }
 
 	  /**
@@ -22335,7 +22248,7 @@
 	    else if (node instanceof UntilNode) {
 	      this.checkUntilNode(node)
 	    }
-	    else if (node.data.action === 'assigment') {
+	    else if (node.data.action === 'assignment') {
 	      this.checkAssignment(node.data)
 	    }
 	  }
@@ -22350,7 +22263,7 @@
 	    let condition_report = this.checkCondition(node.data.condition)
 
 	    if (condition_report.error === true) {
-	      this.emit({name:'type-error'}, condition_report.result)
+	      this.emit('type-error', condition_report.result)
 	    }
 
 	    let current_node = node.rightBranchNode
@@ -22383,7 +22296,7 @@
 	    let condition_report = this.checkCondition(node.data.condition)
 
 	    if (condition_report.error === true) {
-	      this.emit({name:'type-error'}, condition_report.result)
+	      this.emit('type-error', condition_report.result)
 	    }
 
 	    let current_node = node.loop_body_root
@@ -22409,7 +22322,7 @@
 	    let condition_report = this.checkCondition(node.data.condition)
 
 	    if (condition_report.error === true) {
-	      this.emit({name:'type-error'}, condition_report.result)
+	      this.emit('type-error', condition_report.result)
 	    }
 
 	    node.setCurrentBranchTo('program_body')
@@ -22443,25 +22356,25 @@
 
 	  /**
 	   * Revisa que no haya errores en un enunciado de asignacion dado
-	   * @param  {object} assigment_data propiedad data de un nodo de asignacion
+	   * @param  {object} assignment_data propiedad data de un nodo de asignacion
 	   * @return {void}
 	   */
-	  checkAssignment(assigment_data) {
-	    if (this.variableExists(assigment_data.target.name) === true) {
-	      let target = this.getVariable(assigment_data.target.name)
+	  checkAssignment(assignment_data) {
+	    if (this.variableExists(assignment_data.target.name) === true) {
+	      let target = this.getVariable(assignment_data.target.name)
 
-	      if (target.isArray === true || assigment_data.target.isArray === true) {
-	        let report = this.checkArrayInvocation(target, assigment_data.target)
+	      if (target.isArray === true || assignment_data.target.isArray === true) {
+	        let report = this.checkArrayInvocation(target, assignment_data.target)
 
 	        if (report.error === true) {
-	          this.emit({name:'type-error'}, report.result)
+	          this.emit('type-error', report.result)
 	        }
 	      }
 
-	      let expression_type_report = this.getExpressionReturnType(assigment_data.payload)
+	      let expression_type_report = this.getExpressionReturnType(assignment_data.payload)
 
 	      if (expression_type_report.error === true) {
-	        this.emit({name:'type-error'}, expression_type_report.result)
+	        this.emit('type-error', expression_type_report.result)
 	      }
 	      else {
 	        let payload_data_type = expression_type_report.result
@@ -22470,15 +22383,15 @@
 	          let reason = 'incompatible-types-at-assignment'
 	          let target_type = target.type, payload_type = payload_data_type
 	          let error_info = {reason, target_type, payload_type}
-	          this.emit({name:'type-error'}, error_info)
+	          this.emit('type-error', error_info)
 	        }
 	      }
 
 	    }
 	    else {
-	      this.emit({name:'type-error'}, {
+	      this.emit('type-error', {
 	        reason:'undeclared-variable',
-	        name:assigment_data.target.name
+	        name:assignment_data.target.name
 	      })
 	    }
 	  }
@@ -22565,32 +22478,32 @@
 
 	    let error_found = false
 
-	    this.emit({name:'type-check-started'})
+	    this.emit('type-check-started')
 
 	    while (current_node !== null) {
 	      if (current_node.data.action === 'assignment') {
 	        let report = this.validateAssignment(current_node.data)
 	        if (report.error) {
 	          error_found = true
-	          this.emit({name:'type-error', origin:'type-checker'}, report.result)
+	          this.emit('type-error', report.result)
 	        }
 	      }
 	      current_node = current_node.getNext()
 	    }
 
-	    this.emit({name:'type-check-finished'})
+	    this.emit('type-check-started')
 
 	    return {errof:error_found}
 
 	  }
 
-	  validateAssignment(assigment) {
-	    if (this.variableExists(assigment.target.name)) {
-	      let target = this.getVariable(assigment.target.name)
+	  validateAssignment(assignment) {
+	    if (this.variableExists(assignment.target.name)) {
+	      let target = this.getVariable(assignment.target.name)
 
 	      let target_type = target.type
 
-	      let payload_type_report = this.getExpressionReturnType(assigment.payload)
+	      let payload_type_report = this.getExpressionReturnType(assignment.payload)
 
 	      if (payload_type_report.error) {
 	        return payload_type_report
@@ -22738,12 +22651,12 @@
 
 
 /***/ },
-/* 42 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
-	const EventEmitter = __webpack_require__(43)
+	const EventEmitter = __webpack_require__(32)
 
 	const $ = __webpack_require__(2)
 
@@ -22793,7 +22706,7 @@
 
 
 /***/ },
-/* 43 */
+/* 32 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -23094,6 +23007,322 @@
 	function isUndefined(arg) {
 	  return arg === void 0;
 	}
+
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+
+	const templateToHTML = __webpack_require__(34)
+
+	const message_templates = __webpack_require__(35)
+
+	const Emitter = __webpack_require__(36)
+	const $ = __webpack_require__(2)
+
+	class StatusBar {
+	  constructor(container) {
+	    this.container = container
+
+	    this.element = this.container.append($(
+	      `<div id="status_bar" class="bar bar-top-border bar-bottom-border flex-row center-align"><span id="status_msg" class="title small-title"></span></div>`
+	    ))
+
+	    this.status_msg = this.element.find('#status_msg')
+
+	    this.setTitle('Listo')
+	  }
+
+	  setTitle(title) {
+	    this.status_msg.text(title)
+	  }
+
+	  setErrorCount(error_count) {
+	    this.status_msg.empty()
+
+	    if (error_count === 0) {
+	      this.status_msg.text('Listo')
+	    }
+	    else {
+	      if (error_count >= 1) {
+	        let icon = '<span class="octicon octicon-alert"></span>'
+
+	        if (error_count === 1) {
+	          this.status_msg.html(`${icon} Se ha encontrado un error en tu programa.`)
+	        }
+	        else {
+	          this.status_msg.html(`${icon} Se han encontrado ${error_count} errores en tu programa.`)
+	        }
+	      }
+	    }
+	  }
+
+	}
+
+
+	class MessagePanel extends Emitter {
+	  constructor(container, editor_instance) {
+	    super([])
+
+	    this.container = container
+
+	    this.editor_instance = editor_instance
+
+	    this.setUp()
+	  }
+
+	  setUp() {
+	    this.status_bar = new StatusBar(this.container)
+
+	    this.message_list = $('<div id="message_list" class="flex-col msg_list-collapsed"></div>')
+
+	    this.container.append(this.message_list)
+	  }
+
+	  setErrorCount(error_count) {
+	    this.status_bar.setErrorCount(error_count)
+	  }
+
+	  setTitle(title) {
+	    this.status_bar.setTitle(title)
+	  }
+
+	  addMessage(category, data) {
+	    let template = 'reason' in data ? message_templates[category][data.reason]:message_templates[category].default
+
+	    let element = $('<div class="error-msg-container"></div>')
+
+	    element.on('click', (event) => {
+	      event.stopPropagation()
+	    })
+
+	    let title = null, description = null, suggestion = null
+
+	    let extra_info_container = $('<div id="extra_info" class="collapsable"></div>')
+
+	    extra_info_container.on('click', (event) => {
+	      event.stopPropagation()
+	    })
+
+	    if ('title' in template) {
+	      title = $(templateToHTML(template.title, data))
+
+	      let expand_button = $('<span class="octicon octicon-chevron-up"></span>')
+
+	      expand_button.attr('title', 'Expandir o contraer este panel')
+
+	      expand_button.on('click', (event) => {
+	        extra_info_container.toggleClass('expanded')
+	        expand_button.toggleClass('chevron-restored')
+	        event.stopPropagation()
+	      })
+
+	      title.attr('title', 'Mover cursor al error')
+
+	      title.append(expand_button)
+
+	      element.append(title)
+	    }
+
+	    if ('description' in template) {
+	      description = templateToHTML(template.description, data)
+	      extra_info_container.append($(description))
+	    }
+
+	    if ('suggestion' in template) {
+	      suggestion = templateToHTML(template.suggestion, data)
+	      extra_info_container.append($(suggestion))
+	    }
+
+	    element.append(extra_info_container)
+
+	    if ('atLine' in data && 'atColumn' in data) {
+	      element.on('click', () => {
+	        this.editor_instance.focus()
+	        this.editor_instance.setCursor({line:data.atLine, ch:data.atColumn})
+	      })
+	    }
+
+	    this.message_list.append(element)
+
+	    this.message_list.addClass('msg_list-expanded')
+	  }
+
+	  reset() {
+	    this.message_list.removeClass('msg_list-expanded')
+	    this.setTitle('Listo')
+	    this.message_list.empty()
+	  }
+	}
+
+	module.exports = MessagePanel
+
+
+/***/ },
+/* 34 */
+/***/ function(module, exports) {
+
+	'use strict'
+
+	function parseTagObj(element, data) {
+	  let content = ''
+
+	  let attributes = ''
+
+	  for (let att_label in element) {
+	    if (att_label !== 'tag' && att_label !== 'content') {
+	      let attribute = `${att_label}="${parseTemplate(element[att_label], data)}"`
+	      attributes += attribute
+	    }
+	  }
+
+	  for (let template of element.content) {
+	    content += parseTemplate(template, data)
+	  }
+
+	  return `<${element.tag} ${attributes}>${content}</${element.tag}>`
+	}
+
+	function parseTemplate(template, data) {
+	  console.log(template)
+	  let pattern = /\${[^}]+}/
+
+	  if (typeof template === 'object') {
+	    return parseTagObj(template, data)
+	  }
+	  else {
+	    if (pattern.test(template) === true) {
+	      return (data[template.match(/\w+/g)[1]])
+	    }
+	    else {
+	      return template.toString()
+	    }
+	  }
+	}
+
+	function templateToHTML(template, data) {
+	  let result = ''
+
+	  for (let element of template) {
+	    result += parseTemplate(element, data)
+	  }
+
+	  return result
+	}
+
+	module.exports = templateToHTML
+
+
+/***/ },
+/* 35 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"lexical-error": {
+			"unknownToken": {
+				"title": [
+					{
+						"tag": "div",
+						"class": "bar flex-row space-between center-align error-bar",
+						"content": [
+							{
+								"tag": "pre",
+								"class": "title small-title error-title",
+								"content": [
+									"No se reconoce el operador ",
+									{
+										"tag": "span",
+										"class": "code",
+										"content": [
+											"${var unexpectedChar}"
+										]
+									}
+								]
+							}
+						]
+					}
+				],
+				"description": [
+					{
+						"tag": "p",
+						"content": [
+							"Se encontró un caracter desconocido al leer el código"
+						],
+						"class": ""
+					}
+				],
+				"suggestion": [
+					{
+						"tag": "p",
+						"content": [
+							"Para corregir el error, elimina el caracter desconocido"
+						],
+						"class": ""
+					}
+				]
+			}
+		}
+	};
+
+/***/ },
+/* 36 */
+/***/ function(module, exports) {
+
+	'use strict'
+
+	class Emitter {
+	  constructor(public_event_list) {
+	    this.public_events = new Set(public_event_list)
+	    this.callbacks = {}
+	  }
+
+	  on(event_name, callback) {
+	    if (event_name in this.callbacks) {
+	      this.callbacks[event_name].push(callback)
+	    }
+	    else {
+	      this.callbacks[event_name] = [callback]
+	    }
+	  }
+
+	  emit(event_name) {
+	    // Se encarga de llamar a los callbacks de los eventos.
+	    // Si se registro un callback para 'any' entonces se lo llama para cada evento que sea emitido. Es el callback por defecto.
+	    // Si un evento tiene registrado un callback entonces este se ejecuta despues del callback por defecto.
+	    if (this.callbacks.hasOwnProperty('any')) {
+	      for (let callback of this.callbacks.any) {
+	        callback(...arguments)
+	      }
+	    }
+
+	    if (this.callbacks.hasOwnProperty(event_name)) {
+	      for (let callback of this.callbacks[event_name]) {
+	        callback(...arguments)
+	      }
+	    }
+	  }
+
+	  repeat(event_name, emitter, make_public) {
+	    if (make_public === true) {
+	      this.public_events.add(event_name)
+	    }
+	    let self = this
+	    emitter.on(event_name, function () {
+	      self.emit(...arguments)
+	    })
+	  }
+
+	  repeatAllPublicEvents(emitter) {
+	    // Esta funcion sive para emitir los eventos de otro emisor como si fueran propios.
+	    for (let event_name of emitter.public_events) {
+	      this.repeat(event_name, emitter, true)
+	    }
+	  }
+	}
+
+	module.exports = Emitter
 
 
 /***/ }
