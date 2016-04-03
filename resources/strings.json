@@ -1,0 +1,9 @@
+{
+  "lexical-error":{
+    "unknownToken":{
+      "title":"No se reconoce el operador <span class='code'>{var atLine}</span>.",
+      "description":"Se encontró un caracter desconocido al leer el código.",
+      "suggestion":"Debes borrar el caracter desconocido."
+    }
+  }
+}
