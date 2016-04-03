@@ -36,4 +36,4 @@ function templateToHTML(template, data) {
   return result
 }
 
-module.exports = parse
+module.exports = templateToHTML
