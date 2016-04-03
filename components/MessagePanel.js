@@ -77,18 +77,33 @@ class MessagePanel extends Emitter {
   addMessage(category, data) {
     let template = 'reason' in data ? message_templates[category][data.reason]:message_templates[category].default
 
-    let message_html = templateParser(template.title, data)
+    let element = $('<div class="error-msg-container"></div>')
 
-    let message_element = $(`<p>${message_html}</p>`)
+    let title = null, description = null, suggestion = null
+
+    if ('title' in template) {
+      title = templateParser(template.title, data)
+      element.append($(title))
+    }
+
+    if ('description' in template) {
+      description = templateParser(template.description, data)
+      element.append($(description))
+    }
+
+    if ('suggestion' in template) {
+      suggestion = templateParser(template.suggestion, data)
+      element.append($(suggestion))
+    }
 
     if ('atLine' in data && 'atColumn' in data) {
-      message_element.on('click', () => {
+      element.on('click', () => {
         this.editor_instance.focus()
         this.editor_instance.setCursor({line:data.atLine, ch:data.atColumn})
       })
     }
 
-    this.message_list.append(message_element)
+    this.message_list.append(element)
   }
 }
 
