@@ -103,10 +103,14 @@ button {
 
 .title {
   color: black;
-  font-family: monospace;
+  font-family: "Source Code Pro Regular", "Consolas", monospace;
   font-size: 14pt;
   margin-left: 4px;
-  margin-right: 7px;
+  margin-right: 4px;
+}
+
+.small-title {
+  font-size: 14px;
 }
 
 .divider {
@@ -134,12 +138,6 @@ button {
   border: 0px;
   font-size: 14px;
   font-family: "Source Code Pro Regular", "Consolas", monospace;
-}
-
-#status-msg {
-  margin-left: 4px;
-  font-family: "Source Code Pro Regular", "Consolas", monospace;
-  font-size: 14px;
 }
 
 #program-div {

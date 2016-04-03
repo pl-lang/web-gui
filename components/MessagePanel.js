@@ -8,7 +8,7 @@ class StatusBar {
     this.container = container
 
     this.element = this.container.append($(
-      `<div id="status_bar" class="bar bar-top-border flex-row center-align"><span id="status_msg"></span></div>`
+      `<div id="status_bar" class="bar bar-top-border flex-row center-align"><span id="status_msg" class="title small-title"></span></div>`
     ))
 
     this.status_msg = this.element.find('#status_msg')
@@ -20,7 +20,7 @@ class StatusBar {
     this.status_msg.text(title)
   }
 
-  setErrorTitle(error_count) {
+  setErrorCount(error_count) {
     this.status_msg.empty()
 
     if (error_count === 0) {
@@ -45,6 +45,8 @@ class StatusBar {
 
 class MessagePanel extends Emitter {
   constructor(container) {
+    super([])
+
     this.container = container
 
     this.setUp()
@@ -56,6 +58,14 @@ class MessagePanel extends Emitter {
     this.message_list = this.container.append($(
       '<div id="message_list"></div>'
     ))
+  }
+
+  setErrorCount(error_count) {
+    this.status_bar.setErrorCount(error_count)
+  }
+
+  setTitle(title) {
+    this.status_bar.setTitle(title)
   }
 }
 

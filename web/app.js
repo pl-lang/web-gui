@@ -10,26 +10,28 @@ const jquery = $
 
 const Window = require('../components/Window')
 
+const MessagePanel = require('../components/MessagePanel')
+
 const Compiler = require('interprete-pl').Compiler
 
 let ejecutar = $('#ejecutar')
 
 let compiler = new Compiler({event_logging:true})
 
-let mensaje_de_estado = $('#status-msg')
+let panel_de_mensajes = new MessagePanel($('#message_panel'))
 
 compiler.on('type-error', (info, error) => {
-  mensaje_de_estado.text('Se encontró un error de tipo al compilar tu programa. Debes corregir el error antes de continuar.')
+  panel_de_mensajes.setErrorCount(1)
   console.log(error)
 })
 
 compiler.on('lexical-error', (info, error) => {
-  mensaje_de_estado.text('Se encontró un error léxico al compilar tu programa. Debes corregir el error antes de continuar.')
+  panel_de_mensajes.setErrorCount(1)
   console.log(error)
 })
 
 compiler.on('syntax-error', (info, error) => {
-  mensaje_de_estado.text('Se encontró un error de sintaxis al compilar tu programa. Debes corregir el error antes de continuar.')
+  panel_de_mensajes.setErrorCount(1)
   console.log(error)
 })
 
