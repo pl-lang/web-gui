@@ -10,7 +10,8 @@
     "build:octi": "cp ./node_modules/octicons/octicons/octicons.{css,svg,woff,ttf,eot} ./web/octicons/",
     "build:js": "webpack ./web/app.js ./web/bundle.js",
     "build": "npm run build:dir && npm run build:cms && npm run build:octi && npm run build:js && node use_bundle.js",
-    "postbuild": "echo \"Done.\""
+    "postbuild": "echo \"Done.\"",
+    "serve":"moduleserve --transform babel web/"
   },
   "author": "Rodrigo Maximiliano Bellusci",
   "license": "MIT",
