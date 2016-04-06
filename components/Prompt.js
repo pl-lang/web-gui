@@ -1,12 +1,10 @@
 'use strict'
 
-const EventEmitter = require('events')
+import EventEmitter from 'events'
 
-const $ = require('jquery')
+import $ from 'jquery'
 
-const jquery = $
-
-class Prompt extends EventEmitter {
+export default class Prompt extends EventEmitter {
   constructor(container, total) {
     super()
     this._data_read = []
@@ -45,5 +43,3 @@ class Prompt extends EventEmitter {
     this._textarea.focus()
   }
 }
-
-module.exports = Prompt

@@ -1,0 +1,38 @@
+const strings = {
+  "lexical-error":{
+    "unknownToken":{
+      "title":[
+        {
+          "tag":"div",
+          "class":"bar flex-row space-between center-align error-bar",
+          "content":[
+            {
+              "tag":"pre",
+              "class":"title small-title error-title",
+              "content":[
+                "No se reconoce el operador ",
+                {"tag":"span", "class":"code", "content":["${var unexpectedChar}"]}
+              ]
+            }
+          ]
+        }
+      ],
+      "description":[
+        {
+          "tag":"p",
+          "content":["Se encontró un caracter desconocido al leer el código"],
+          "class":""
+        }
+      ],
+      "suggestion":[
+        {
+          "tag":"p",
+          "content":["Para corregir el error, elimina el caracter desconocido"],
+          "class":""
+        }
+      ]
+    }
+  }
+}
+
+export default strings

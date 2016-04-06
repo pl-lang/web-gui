@@ -36,7 +36,7 @@ function parseTemplate(template, data) {
   }
 }
 
-function templateToHTML(template, data) {
+export default function templateToHTML(template, data) {
   let result = ''
 
   for (let element of template) {
@@ -45,5 +45,3 @@ function templateToHTML(template, data) {
 
   return result
 }
-
-module.exports = templateToHTML

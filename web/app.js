@@ -1,18 +1,12 @@
 'use strict'
 
-const CodeMirror = require('codemirror')
+import CodeMirror from 'codemirror'
+import $ from 'jquery'
+import Window from '../components/Window.js'
+import MessagePanel from '../components/MessagePanel.js'
+import { Compiler } from 'interprete-pl'
 
 const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {lineNumbers:true})
-
-const $ = require('jquery')
-
-const jquery = $
-
-const Window = require('../components/Window')
-
-const MessagePanel = require('../components/MessagePanel')
-
-const Compiler = require('interprete-pl').Compiler
 
 let ejecutar = $('#ejecutar')
 

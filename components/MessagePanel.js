@@ -1,11 +1,9 @@
 'use strict'
 
-const templateToHTML = require('../tools/templateToHTML')
-
-const message_templates = require('../resources/strings.json')
-
-const Emitter = require('emitter')
-const $ = require('jquery')
+import templateToHTML from '../tools/templateToHTML.js'
+import message_templates from '../resources/strings.js'
+import Emitter from 'emitter'
+import $ from 'jquery'
 
 class StatusBar {
   constructor(container) {
@@ -47,7 +45,7 @@ class StatusBar {
 }
 
 
-class MessagePanel extends Emitter {
+export default class MessagePanel extends Emitter {
   constructor(container, editor_instance) {
     super([])
 
@@ -141,5 +139,3 @@ class MessagePanel extends Emitter {
     this.message_list.empty()
   }
 }
-
-module.exports = MessagePanel

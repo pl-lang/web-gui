@@ -1,11 +1,10 @@
 'use strict'
 
-const Interpreter = require('interprete-pl').Interpreter
-const Prompt = require("./Prompt")
-const $ = require('jquery')
-const jquery = $
+import { Interpreter } from 'interprete-pl'
+import Prompt from "./Prompt"
+import $ from 'jquery'
 
-class Window {
+export default class Window {
   constructor(container) {
     this.container = container
     this.interpreter = null
@@ -54,5 +53,3 @@ class Window {
     this.interpreter.run()
   }
 }
-
-module.exports = Window
