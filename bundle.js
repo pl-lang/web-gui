@@ -44,75 +44,81 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	const CodeMirror = __webpack_require__(1)
+	var _codemirror = __webpack_require__(1);
 
-	const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {lineNumbers:true})
+	var _codemirror2 = _interopRequireDefault(_codemirror);
 
-	const $ = __webpack_require__(2)
+	var _jquery = __webpack_require__(2);
 
-	const jquery = $
+	var _jquery2 = _interopRequireDefault(_jquery);
 
-	const Window = __webpack_require__(3)
+	var _Window = __webpack_require__(3);
 
-	const MessagePanel = __webpack_require__(33)
+	var _Window2 = _interopRequireDefault(_Window);
 
-	const Compiler = __webpack_require__(4).Compiler
+	var _MessagePanel = __webpack_require__(25);
 
-	let ejecutar = $('#ejecutar')
+	var _MessagePanel2 = _interopRequireDefault(_MessagePanel);
 
-	let compiler = new Compiler({event_logging:true})
+	var _interpretePl = __webpack_require__(4);
 
-	let panel_de_mensajes = new MessagePanel($('#message_panel'), editor)
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	let error_count = 0
+	var editor = _codemirror2.default.fromTextArea(document.getElementById('editor'), { lineNumbers: true });
 
-	compiler.on('type-error', (info, error) => {
-	  error_count++
-	  panel_de_mensajes.setErrorCount(error_count)
-	  console.log(error)
-	})
+	var ejecutar = (0, _jquery2.default)('#ejecutar');
 
-	compiler.on('lexical-error', (ev_name, info) => {
-	  error_count++
-	  panel_de_mensajes.setErrorCount(error_count)
-	  panel_de_mensajes.addMessage('lexical-error', info)
-	  console.log(info)
-	})
+	var compiler = new _interpretePl.Compiler({ event_logging: true });
 
-	compiler.on('syntax-error', (info, error) => {
-	  error_count++
-	  panel_de_mensajes.setErrorCount(error_count)
-	  console.log(error)
-	})
+	var panel_de_mensajes = new _MessagePanel2.default((0, _jquery2.default)('#message_panel'), editor);
 
-	ejecutar.on('click', () => {
-	  ejecutar.prop('disabled', true)
+	var error_count = 0;
 
-	  error_count = 0
+	compiler.on('type-error', function (info, error) {
+	  error_count++;
+	  panel_de_mensajes.setErrorCount(error_count);
+	  console.log(error);
+	});
 
-	  panel_de_mensajes.reset()
+	compiler.on('lexical-error', function (ev_name, info) {
+	  error_count++;
+	  panel_de_mensajes.setErrorCount(error_count);
+	  panel_de_mensajes.addMessage('lexical-error', info);
+	  console.log(info);
+	});
 
-	  let window_container = $('#window')
+	compiler.on('syntax-error', function (info, error) {
+	  error_count++;
+	  panel_de_mensajes.setErrorCount(error_count);
+	  console.log(error);
+	});
 
-	  window_container.empty()
+	ejecutar.on('click', function () {
+	  ejecutar.prop('disabled', true);
 
-	  let window = new Window($('#window'))
+	  error_count = 0;
 
-	  let report = compiler.compile(editor.getValue(), true)
+	  panel_de_mensajes.reset();
+
+	  var window_container = (0, _jquery2.default)('#window');
+
+	  window_container.empty();
+
+	  var window = new _Window2.default((0, _jquery2.default)('#window'));
+
+	  var report = compiler.compile(editor.getValue(), true);
 
 	  if (!report.error) {
-	    window.run(report.result)
-	    panel_de_mensajes.setTitle('Listo')
-	  }
-	  else {
-	    console.log(report.result)
+	    window.run(report.result);
+	    panel_de_mensajes.setTitle('Listo');
+	  } else {
+	    console.log(report.result);
 	  }
 
-	  ejecutar.prop('disabled', false)
-	})
-
+	  ejecutar.prop('disabled', false);
+	});
 
 /***/ },
 /* 1 */
@@ -18867,86 +18873,152 @@
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	const Interpreter = __webpack_require__(4).Interpreter
-	const Prompt = __webpack_require__(31)
-	const $ = __webpack_require__(2)
-	const jquery = $
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	class Window {
-	  constructor(container) {
-	    this.container = container
-	    this.interpreter = null
-	    this.setUp()
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _interpretePl = __webpack_require__(4);
+
+	var _Prompt = __webpack_require__(23);
+
+	var _Prompt2 = _interopRequireDefault(_Prompt);
+
+	var _jquery = __webpack_require__(2);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Window = function () {
+	  function Window(container) {
+	    _classCallCheck(this, Window);
+
+	    this.container = container;
+	    this.interpreter = null;
+	    this.setUp();
 	  }
 
-	  setUp() {
-	    this.container.append($('<div class="line"></div>'))
-	  }
-
-	  write(values_array) {
-	    let new_line = ($('<div class="line"></div>'))
-	    this.container.append(new_line)
-	    for (let value of values_array) {
-	      new_line.append($(`<span>${value}</span>`))
+	  _createClass(Window, [{
+	    key: 'setUp',
+	    value: function setUp() {
+	      this.container.append((0, _jquery2.default)('<div class="line"></div>'));
 	    }
-	  }
+	  }, {
+	    key: 'write',
+	    value: function write(values_array) {
+	      var new_line = (0, _jquery2.default)('<div class="line"></div>');
+	      this.container.append(new_line);
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
 
-	  read(varlist) {
-	    let prompt = new Prompt(this.container, varlist.length)
-	    let interpreter = this.interpreter
-	    prompt.on('submit-data', function (data) {
-	      this.close()
-	      interpreter.sendReadData(varlist, data)
-	      interpreter.run()
-	    })
-	  }
+	      try {
+	        for (var _iterator = values_array[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var value = _step.value;
 
-	  run(program) {
-	    this.interpreter = new Interpreter(program, {event_logging:true})
+	          new_line.append((0, _jquery2.default)('<span>' + value + '</span>'));
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator.return) {
+	            _iterator.return();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'read',
+	    value: function read(varlist) {
+	      var prompt = new _Prompt2.default(this.container, varlist.length);
+	      var interpreter = this.interpreter;
+	      prompt.on('submit-data', function (data) {
+	        this.close();
+	        interpreter.sendReadData(varlist, data);
+	        interpreter.run();
+	      });
+	    }
+	  }, {
+	    key: 'run',
+	    value: function run(program) {
+	      var _this = this;
 
-	    this.interpreter.on('write', (event, values) => {
-	      this.write(values)
-	    })
+	      this.interpreter = new _interpretePl.Interpreter(program, { event_logging: true });
 
-	    this.interpreter.on('read', (event, varlist) => {
-	      this.read(varlist)
-	    })
+	      this.interpreter.on('write', function (event, values) {
+	        _this.write(values);
+	      });
 
-	    this.interpreter.on('program-finished', () => {
-	      this.container.append($('<br>'))
-	      this.container.append($('<div class="line"><span>Programa finalizado</span></div>'))
-	      console.log('programa finalizado')
-	    })
+	      this.interpreter.on('read', function (event, varlist) {
+	        _this.read(varlist);
+	      });
 
-	    this.interpreter.run()
-	  }
-	}
+	      this.interpreter.on('program-finished', function () {
+	        _this.container.append((0, _jquery2.default)('<br>'));
+	        _this.container.append((0, _jquery2.default)('<div class="line"><span>Programa finalizado</span></div>'));
+	        console.log('programa finalizado');
+	      });
 
-	module.exports = Window
+	      this.interpreter.run();
+	    }
+	  }]);
 
+	  return Window;
+	}();
+
+	exports.default = Window;
 
 /***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	const Interpreter = __webpack_require__(5)
-	const Compiler    = __webpack_require__(21)
+	// Esto NO funcionaba porque ambos archivos solo tienen un export: "default"
+	// export { Interpreter } from './src/interpreter/Interpreter.js'
+	// export { Compiler } from './src/parser/Compiler.js'
 
-	module.exports = {
-	  Compiler:Compiler,
-	  Interpreter:Interpreter
-	}
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
+	var _Interpreter = __webpack_require__(5);
+
+	Object.defineProperty(exports, 'Interpreter', {
+	  enumerable: true,
+	  get: function get() {
+	    return _interopRequireDefault(_Interpreter).default;
+	  }
+	});
+
+	var _Compiler = __webpack_require__(16);
+
+	Object.defineProperty(exports, 'Compiler', {
+	  enumerable: true,
+	  get: function get() {
+	    return _interopRequireDefault(_Compiler).default;
+	  }
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ },
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
 	/**
 	 * Responsabilidades de esta clase:
@@ -18963,112 +19035,163 @@
 	 * 	- evaluation-error (repite el de un Evaluator)
 	 */
 
-	const Evaluator       = __webpack_require__(6)
-	const Emitter         = __webpack_require__(7)
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	class Interpreter extends Emitter {
-	  constructor(program_modules) {
-	    super(['program-started', 'program-resumed', 'program-paused', 'program-finished'])
-	    this.current_program = program_modules
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _Evaluator = __webpack_require__(6);
+
+	var _Evaluator2 = _interopRequireDefault(_Evaluator);
+
+	var _Emitter2 = __webpack_require__(7);
+
+	var _Emitter3 = _interopRequireDefault(_Emitter2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Interpreter = function (_Emitter) {
+	  _inherits(Interpreter, _Emitter);
+
+	  function Interpreter(program_modules) {
+	    _classCallCheck(this, Interpreter);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Interpreter).call(this, ['program-started', 'program-resumed', 'program-paused', 'program-finished']));
+
+	    _this.current_program = program_modules;
+	    return _this;
 	  }
 
-	  set current_program(program_modules) {
-	    this._current_program = program_modules
-	    let main = program_modules.main
-	    let main_evaluator = new Evaluator(main.variables, main.variables, main.statements, {})
-	    // NOTE: exposeChildrenEvents va a ser reemplazada mas adelante
-	    this.bindEvaluatorEvents(main_evaluator)
-	    this.stack = []
-	    this.stack.push(main_evaluator)
-	    this.running = true
-	    this.paused = false
-	    this.current_module = null
-	  }
+	  _createClass(Interpreter, [{
+	    key: 'run',
+	    value: function run() {
 
-	  get current_program() {
-	    return this._current_program
-	  }
-
-	  run() {
-
-	    // Esto es necesario porque el interprete se "pausa" cuando un modulo hace
-	    // una llamada a leer
-	    if (this.paused) {
-	      this.emit('program-resumed')
-	      this.paused = false
-	      this.running = true
-	    }
-	    else {
-	      this.emit('program-started')
-	    }
-
-	    let evaluation_report
-
-	    while (this.stack.length > 0 && this.running) {
-	      this.current_module = this.stack.pop()
-	      evaluation_report = this.current_module.run()
-	      // if 'module_return' in evaluation_report.result
-	      // pasar el valor al modulo que realizó la llamada
-	      if (!this.paused) {
-	        this.running = !evaluation_report.error
+	      // Esto es necesario porque el interprete se "pausa" cuando un modulo hace
+	      // una llamada a leer
+	      if (this.paused) {
+	        this.emit('program-resumed');
+	        this.paused = false;
+	        this.running = true;
+	      } else {
+	        this.emit('program-started');
 	      }
+
+	      var evaluation_report = void 0;
+
+	      while (this.stack.length > 0 && this.running) {
+	        this.current_module = this.stack.pop();
+	        evaluation_report = this.current_module.run();
+	        // if 'module_return' in evaluation_report.result
+	        // pasar el valor al modulo que realizó la llamada
+	        if (!this.paused) {
+	          this.running = !evaluation_report.error;
+	        }
+	      }
+
+	      if (this.paused) {
+	        this.emit('program-paused');
+	      } else {
+	        this.emit('program-finished');
+	      }
+
+	      return evaluation_report;
 	    }
+	  }, {
+	    key: 'bindEvaluatorEvents',
+	    value: function bindEvaluatorEvents(evaluator) {
+	      var _this2 = this;
 
-	    if (this.paused) {
-	      this.emit('program-paused')
+	      this.repeat('write', evaluator, false);
+
+	      // Las llamadas a leer pausan la ejecucion para poder realizar la lectura
+	      evaluator.on('read', function () {
+	        _this2.running = false;
+	        _this2.paused = true;
+	        _this2.stack.push(_this2.current_module);
+	      });
+
+	      this.repeat('read', evaluator, false);
+	      evaluator.on('evaluation-error', this.evaluationErrorHandler);
+	      evaluator.on('module_call', this.moduleCallHandler);
 	    }
-	    else {
-	      this.emit('program-finished')
+	  }, {
+	    key: 'moduleCallHandler',
+	    value: function moduleCallHandler() {
+	      // Poner el modulo (A) que realizó la llamada en la pila
+	      this.stack.push(this.current_module);
+	      // Poner el nuevo modulo (B) en la pila
+	      this.stack.push();
+	      // Luego dentro del bucle de run (cuando se reanude A ) se envía el retorno
+	      // de B a A
 	    }
+	  }, {
+	    key: 'evaluationErrorHandler',
+	    value: function evaluationErrorHandler() {
+	      // Repetir este evento ?
+	    }
+	  }, {
+	    key: 'sendReadData',
+	    value: function sendReadData(varname_list, data) {
+	      this.current_module.assignReadData(varname_list, data);
+	    }
+	  }, {
+	    key: 'current_program',
+	    set: function set(program_modules) {
+	      this._current_program = program_modules;
+	      var main = program_modules.main;
+	      var main_evaluator = new _Evaluator2.default(main.variables, main.variables, main.statements, {});
+	      // NOTE: exposeChildrenEvents va a ser reemplazada mas adelante
+	      this.bindEvaluatorEvents(main_evaluator);
+	      this.stack = [];
+	      this.stack.push(main_evaluator);
+	      this.running = true;
+	      this.paused = false;
+	      this.current_module = null;
+	    },
+	    get: function get() {
+	      return this._current_program;
+	    }
+	  }]);
 
-	    return evaluation_report
-	  }
+	  return Interpreter;
+	}(_Emitter3.default);
 
-	  bindEvaluatorEvents(evaluator) {
-	    this.repeat('write', evaluator, false)
-
-	    // Las llamadas a leer pausan la ejecucion para poder realizar la lectura
-	    evaluator.on('read', () => {
-	      this.running = false
-	      this.paused = true
-	      this.stack.push(this.current_module)
-	    })
-
-	    this.repeat('read', evaluator, false)
-	    evaluator.on('evaluation-error', this.evaluationErrorHandler)
-	    evaluator.on('module_call', this.moduleCallHandler)
-	  }
-
-	  moduleCallHandler() {
-	    // Poner el modulo (A) que realizó la llamada en la pila
-	    this.stack.push(this.current_module)
-	    // Poner el nuevo modulo (B) en la pila
-	    this.stack.push()
-	    // Luego dentro del bucle de run (cuando se reanude A ) se envía el retorno
-	    // de B a A
-	  }
-
-	  evaluationErrorHandler() {
-	    // Repetir este evento ?
-	  }
-
-	  sendReadData(varname_list, data) {
-	    this.current_module.assignReadData(varname_list, data)
-	  }
-	}
-
-	module.exports = Interpreter
-
+	exports.default = Interpreter;
 
 /***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	const Emitter = __webpack_require__(7)
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	const expressionFromString = __webpack_require__(8)
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _Emitter2 = __webpack_require__(7);
+
+	var _Emitter3 = _interopRequireDefault(_Emitter2);
+
+	var _expressionFromString = __webpack_require__(8);
+
+	var _expressionFromString2 = _interopRequireDefault(_expressionFromString);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	/*
 	  Un evaluador sirve para ejecutar las acciones/enunciados de un modulo.
@@ -19089,964 +19212,1066 @@
 	 * 	- module-call
 	 */
 
-	class Evaluator extends Emitter {
-	  constructor(globals, locals, body_root_node, modules_info ) {
-	    super(['read', 'write', 'evaluation-error'])
-	    this.globals = globals
-	    this.locals = locals
-	    this.current_node = body_root_node
-	    this.modules_info = modules_info
-	    this.error = false
-	    this.return_value = null // para mas adelante
-	    this.running = true
+	var Evaluator = function (_Emitter) {
+	  _inherits(Evaluator, _Emitter);
+
+	  function Evaluator(globals, locals, body_root_node, modules_info) {
+	    _classCallCheck(this, Evaluator);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Evaluator).call(this, ['read', 'write', 'evaluation-error']));
+
+	    _this.globals = globals;
+	    _this.locals = locals;
+	    _this.current_node = body_root_node;
+	    _this.modules_info = modules_info;
+	    _this.error = false;
+	    _this.return_value = null; // para mas adelante
+	    _this.running = true;
+	    return _this;
 	  }
 
 	  /**
 	   * Funcion que ejecuta un programa
 	   * @return {[type]} [description]
 	   */
-	  run() {
 
-	    while (this.current_node !== null && this.running) {
 
-	      let statement = this.current_node.data
+	  _createClass(Evaluator, [{
+	    key: 'run',
+	    value: function run() {
 
-	      switch (statement.action) {
-	        case  'assignment':
-	        this.assignToVar(statement.target, statement.payload)
-	        break
+	      while (this.current_node !== null && this.running) {
 
-	        case  'module_call':
-	        if (statement.name == 'escribir') {
-	          this.writeCall(statement)
+	        var statement = this.current_node.data;
+
+	        switch (statement.action) {
+	          case 'assignment':
+	            this.assignToVar(statement.target, statement.payload);
+	            break;
+
+	          case 'module_call':
+	            if (statement.name == 'escribir') {
+	              this.writeCall(statement);
+	            } else if (statement.name == 'leer') {
+	              this.sendReadEvent(statement);
+	            }
+	            break;
+
+	          case 'if':
+	            {
+	              var branch_name = this.evaluateExp(statement.condition) ? 'true_branch' : 'false_branch';
+	              this.current_node.setCurrentBranchTo(branch_name);
+	            }
+	            break;
+
+	          case 'repeat':
+	            {
+	              var _branch_name = !this.evaluateExp(statement.condition) ? 'loop_body' : 'program_body';
+	              this.current_node.setCurrentBranchTo(_branch_name);
+	            }
+	            break;
+
+	          case 'while':
+	            {
+	              var _branch_name2 = this.evaluateExp(statement.condition) ? 'loop_body' : 'program_body';
+	              this.current_node.setCurrentBranchTo(_branch_name2);
+	            }
+	            break;
 	        }
-	        else if (statement.name == 'leer') {
-	          this.sendReadEvent(statement)
+
+	        this.current_node = this.current_node.getNext();
+	      }
+
+	      // TODO: hacer que esta funcion reporte error:true cuando ocurran errores de evaluacion
+	      return { error: this.error };
+	    }
+	  }, {
+	    key: 'writeCall',
+	    value: function writeCall(call) {
+	      var _this2 = this;
+
+	      var value_list = call.args.map(function (expression) {
+	        return _this2.evaluateExp(expression, expression.expression_type);
+	      });
+
+	      this.emit('write', value_list);
+	    }
+	  }, {
+	    key: 'sendReadEvent',
+	    value: function sendReadEvent(call) {
+	      var varname_list = call.args;
+
+	      this.emit('read', varname_list);
+
+	      // pausar la ejecucion (hasta q se reciban los datos de la lectura)
+	      this.running = false;
+	    }
+
+	    /**
+	     * Asigna el resultado de una expresión a una variable o a un elemento de un
+	     * arreglo.
+	     * @param  {[type]} target_info [description]
+	     * @param  {[type]} expression  [description]
+	     * @return {[type]}             [description]
+	     */
+
+	  }, {
+	    key: 'assignToVar',
+	    value: function assignToVar(target_info, expression) {
+	      var _this3 = this;
+
+	      var target_variable = this.getVariable(target_info.name);
+
+	      if (target_info.isArray === true) {
+	        var index_list = target_info.indexes.map(function (expression) {
+	          return _this3.evaluateExp(expression) - 1;
+	        });
+
+	        if (target_info.bounds_checked === false) {
+	          var bound_check = this.indexWithinBounds(index_list, target_variable.dimension);
+	          if (bound_check.error === true) {
+	            this.running = false;
+	            this.emit('evaluation-error', bound_check.result);
+	            return;
+	          }
 	        }
-	        break
+	        // NOTE: Por ahora, no se revisa si hay un error al evaluar un indice
 
-	        case 'if':{
-	          let branch_name = this.evaluateExp(statement.condition) ? 'true_branch':'false_branch'
-	          this.current_node.setCurrentBranchTo(branch_name)
+	        var index = this.calculateIndex(target_info.indexes.map(function (a) {
+	          return _this3.evaluateExp(a) - 1;
+	        }), target_variable.dimension);
+	        target_variable.values[index] = this.evaluateExp(expression);
+	      } else {
+	        target_variable.value = this.evaluateExp(expression);
+	      }
+
+	      // Por ahora...
+	      return { error: false };
+	    }
+
+	    /**
+	     * Crea expresiones con los resultados de una lectura, las evalua, y las asigna
+	     * a la variable/elemento de arreglo correspondiente.
+	     * @param  {[type]} varname_list [description]
+	     * @param  {[type]} data_list    [description]
+	     * @return {[type]}              [description]
+	     */
+
+	  }, {
+	    key: 'assignReadData',
+	    value: function assignReadData(varname_list, data_list) {
+	      var error = 0;
+	      var i = 0;
+	      while (i < varname_list.length && !error) {
+	        // TODO: mover el parseo de la expreson al compilador
+	        var exp = (0, _expressionFromString2.default)(data_list[i]);
+
+	        if (exp.error) {
+	          // TODO
+	        } else {
+	            // NOTE: assignToVar debe chequear los tipos
+	            var assignment_report = this.assignToVar(varname_list[i], exp.result);
+	          }
+
+	        i++;
+	      }
+
+	      // Si no hubo un error durante la lectura poner running en verdadero
+	      // para que el evaluador pueda ser reanudado
+	      if (!error) {
+	        this.running = true;
+	      }
+	    }
+
+	    /**
+	     * Delega la evaluación de una expresión a la función apropiada según el tipo
+	     * de dicha expresión
+	     * @param  {object} exp una expresión
+	     * @return {bool|number|string}     el resultado de la evaluación de la expresión
+	     */
+
+	  }, {
+	    key: 'evaluateExp',
+	    value: function evaluateExp(exp) {
+	      switch (exp.expression_type) {
+	        case 'invocation':
+	          {
+	            var invocation = exp;
+	            return this.getValue(invocation);
+	          }
+	        case 'literal':
+	          return exp.value;
+	        case 'operation':
+	          return this.evaluateOperation(exp);
+	        case 'unary-operation':
+	          return this.evaluateUnaryOperation(exp);
+	        case 'expression':
+	          return this.evaluateExp(exp.expression);
+	      }
+	    }
+
+	    /**
+	     * Obtiene y devuelve el valor de una variable
+	     * @param  {invocation}  info una expresión de invocación con los datos necesarios para acceder a la variable
+	     * @return {number|string|boolean}          valor de la variable
+	     */
+
+	  }, {
+	    key: 'getValue',
+	    value: function getValue(info) {
+	      var _this4 = this;
+
+	      var variable = this.getVariable(info.name);
+
+	      // NOTE: No se chequea que indexes exista porque si no existiera (si el usuario
+	      // no lo hubiera escrito) no se hubiera llegado a este punto ya que el
+	      // TypeChecker se hubiera dado cuenta.
+
+	      if (variable.isArray) {
+	        var index_values = info.indexes.map(function (expression) {
+	          return _this4.evaluateExp(expression) - 1;
+	        });
+
+	        if (info.bounds_checked === false) {
+	          var bound_check = this.indexWithinBounds(index_values, variable.dimension);
+
+	          if (bound_check.error === true) {
+	            this.running = false;
+	            this.emit('evaluation-error', bound_check.result);
+	          }
 	        }
-	        break
 
-	        case 'repeat': {
-	          let branch_name = !this.evaluateExp(statement.condition) ? 'loop_body':'program_body'
-	          this.current_node.setCurrentBranchTo(branch_name)
+	        var index = this.calculateIndex(index_values, variable.dimension);
+	        if (variable.values[index] === undefined) {
+	          this.running = false;
+	          this.emit('evaluation-error');
+	        } else {
+	          return variable.values[index];
 	        }
-	        break
-
-	        case 'while': {
-	          let branch_name = this.evaluateExp(statement.condition) ? 'loop_body':'program_body'
-	          this.current_node.setCurrentBranchTo(branch_name)
-	        }
-	        break
-	      }
-
-	      this.current_node = this.current_node.getNext()
-	    }
-
-	    // TODO: hacer que esta funcion reporte error:true cuando ocurran errores de evaluacion
-	    return {error:this.error}
-	  }
-
-	  writeCall(call) {
-	    let value_list = call.args.map((expression) => {
-	      return this.evaluateExp(expression, expression.expression_type)
-	    })
-
-	    this.emit('write', value_list)
-	  }
-
-	  sendReadEvent(call) {
-	    let varname_list = call.args
-
-	    this.emit('read', varname_list)
-
-	    // pausar la ejecucion (hasta q se reciban los datos de la lectura)
-	    this.running = false
-	  }
-
-	  /**
-	   * Asigna el resultado de una expresión a una variable o a un elemento de un
-	   * arreglo.
-	   * @param  {[type]} target_info [description]
-	   * @param  {[type]} expression  [description]
-	   * @return {[type]}             [description]
-	   */
-	  assignToVar(target_info, expression) {
-	    let target_variable = this.getVariable(target_info.name)
-
-	    if (target_info.isArray === true) {
-	      let index_list = target_info.indexes.map(expression => this.evaluateExp(expression) - 1)
-
-	      if (target_info.bounds_checked === false)  {
-	        let bound_check = this.indexWithinBounds(index_list, target_variable.dimension)
-	        if (bound_check.error === true) {
-	          this.running = false
-	          this.emit('evaluation-error', bound_check.result)
-	          return
-	        }
-	      }
-	      // NOTE: Por ahora, no se revisa si hay un error al evaluar un indice
-
-	      let index = this.calculateIndex(target_info.indexes.map(a => this.evaluateExp(a) - 1), target_variable.dimension)
-	      target_variable.values[index] = this.evaluateExp(expression)
-	    }
-	    else {
-	      target_variable.value = this.evaluateExp(expression)
-	    }
-
-	    // Por ahora...
-	    return {error:false}
-	  }
-
-	  /**
-	   * Crea expresiones con los resultados de una lectura, las evalua, y las asigna
-	   * a la variable/elemento de arreglo correspondiente.
-	   * @param  {[type]} varname_list [description]
-	   * @param  {[type]} data_list    [description]
-	   * @return {[type]}              [description]
-	   */
-	  assignReadData(varname_list, data_list) {
-	    let error = 0
-	    let i = 0
-	    while (i < varname_list.length && !error) {
-	      // TODO: mover el parseo de la expreson al compilador
-	      let exp = expressionFromString(data_list[i])
-
-	      if (exp.error) {
-	        // TODO
-	      }
-	      else {
-	        // NOTE: assignToVar debe chequear los tipos
-	        let assignment_report = this.assignToVar(varname_list[i], exp.result)
-	      }
-
-	      i++
-	    }
-
-	    // Si no hubo un error durante la lectura poner running en verdadero
-	    // para que el evaluador pueda ser reanudado
-	    if (!error) {
-	      this.running = true
-	    }
-	  }
-
-	  /**
-	   * Delega la evaluación de una expresión a la función apropiada según el tipo
-	   * de dicha expresión
-	   * @param  {object} exp una expresión
-	   * @return {bool|number|string}     el resultado de la evaluación de la expresión
-	   */
-	  evaluateExp(exp) {
-	    switch (exp.expression_type) {
-	      case 'invocation':{
-	        let invocation = exp
-	        return this.getValue(invocation)
-	      }
-	      case  'literal':
-	        return exp.value
-	      case  'operation':
-	        return this.evaluateOperation(exp)
-	      case  'unary-operation':
-	        return this.evaluateUnaryOperation(exp)
-	      case  'expression':
-	        return this.evaluateExp(exp.expression)
-	    }
-	  }
-
-	  /**
-	   * Obtiene y devuelve el valor de una variable
-	   * @param  {invocation}  info una expresión de invocación con los datos necesarios para acceder a la variable
-	   * @return {number|string|boolean}          valor de la variable
-	   */
-	  getValue(info) {
-	    let variable = this.getVariable(info.name)
-
-	    // NOTE: No se chequea que indexes exista porque si no existiera (si el usuario
-	    // no lo hubiera escrito) no se hubiera llegado a este punto ya que el
-	    // TypeChecker se hubiera dado cuenta.
-
-	    if (variable.isArray) {
-	      let index_values = info.indexes.map(expression => this.evaluateExp(expression) - 1)
-
-	      if (info.bounds_checked === false) {
-	        let bound_check = this.indexWithinBounds(index_values, variable.dimension)
-
-	        if (bound_check.error === true) {
-	          this.running = false
-	          this.emit('evaluation-error', bound_check.result)
+	      } else {
+	        if (variable.value === null) {
+	          this.running = false;
+	          this.emit('evaluation-error');
+	        } else {
+	          return variable.value;
 	        }
 	      }
-
-	      let index = this.calculateIndex(index_values, variable.dimension)
-	      if (variable.values[index] === undefined) {
-	        this.running = false
-	        this.emit('evaluation-error')
-	      }
-	      else {
-	        return variable.values[index]
-	      }
 	    }
-	    else {
-	      if (variable.value === null) {
-	        this.running = false
-	        this.emit('evaluation-error')
-	      }
-	      else {
-	        return variable.value
-	      }
-	    }
-	  }
 
-	  /**
-	   * Evalua operaciones binarias
-	   * @param  {object} exp una expresión de tipo 'operation'
-	   * @return {number|bool|string}     el resultado de la evaluación de la expresión
-	   */
-	  evaluateOperation(exp) {
-	    let operand_a = this.evaluateExp(exp.operands[0])
-	    let operand_b = this.evaluateExp(exp.operands[1])
-	    switch (exp.op) {
-	      case  'plus':
-	      return operand_a + operand_b
+	    /**
+	     * Evalua operaciones binarias
+	     * @param  {object} exp una expresión de tipo 'operation'
+	     * @return {number|bool|string}     el resultado de la evaluación de la expresión
+	     */
 
-	      case  'minus':
-	      return operand_a - operand_b
+	  }, {
+	    key: 'evaluateOperation',
+	    value: function evaluateOperation(exp) {
+	      var operand_a = this.evaluateExp(exp.operands[0]);
+	      var operand_b = this.evaluateExp(exp.operands[1]);
+	      switch (exp.op) {
+	        case 'plus':
+	          return operand_a + operand_b;
 
-	      case  'times':
-	      return operand_a * operand_b
+	        case 'minus':
+	          return operand_a - operand_b;
 
-	      case  'divide':
-	      return operand_a / operand_b
+	        case 'times':
+	          return operand_a * operand_b;
 
-	      case  'div':
-	      return (operand_a - (operand_a % operand_b)) / operand_b
+	        case 'divide':
+	          return operand_a / operand_b;
 
-	      case  'mod':
-	      return operand_a % operand_b
+	        case 'div':
+	          return (operand_a - operand_a % operand_b) / operand_b;
 
-	      case  'power':
-	      return Math.pow(operand_a, operand_b)
+	        case 'mod':
+	          return operand_a % operand_b;
 
-	      case 'equal':
-	        return operand_a === operand_b
+	        case 'power':
+	          return Math.pow(operand_a, operand_b);
 
-	      case 'diff-than':
-	        return operand_a != operand_b
+	        case 'equal':
+	          return operand_a === operand_b;
 
-	      case 'minor-than':
-	        return operand_a < operand_b
+	        case 'diff-than':
+	          return operand_a != operand_b;
 
-	      case 'major-than':
-	        return operand_a > operand_b
+	        case 'minor-than':
+	          return operand_a < operand_b;
 
-	      case 'minor-equal':
-	        return operand_a <= operand_b
+	        case 'major-than':
+	          return operand_a > operand_b;
 
-	      case 'major-equal':
-	        return operand_a >= operand_b
+	        case 'minor-equal':
+	          return operand_a <= operand_b;
 
-	      case 'and':
-	        return operand_a && operand_b
+	        case 'major-equal':
+	          return operand_a >= operand_b;
 
-	      case 'or':
-	        return operand_a || operand_b
-	    }
-	  }
+	        case 'and':
+	          return operand_a && operand_b;
 
-	  /**
-	   * Evalúa una expresión unaria
-	   * @param  {object} exp una expresión de tipo 'unary-operation'
-	   * @return {number|bool}     El resultado de la evaluación de la expresión
-	   */
-	  evaluateUnaryOperation(exp) {
-	    let operand = this.evaluateExp(exp.operand)
-
-	    switch (exp.op) {
-	      case 'unary-minus':
-	      return (-1)*operand
-
-	      case 'not':
-	      return !operand
-	    }
-	  }
-
-	  /**
-	   * Dice si un juego de indices dados se encuentra dentro de los límites de un arreglo
-	   * @param  {[int]} index_values       indices para acceder al arreglo
-	   * @param  {[int]} dimensions_lengths longitud de cada dimensión del arreglo
-	   * @return {bool}                    true si ningún índice está fuera de límite, si no falso
-	   */
-	  indexWithinBounds(index_values, dimensions_lengths) {
-	    let i = 0
-
-	    // NOTE: en las condiciones de abajo sumo 1 porque en index_values se le
-	    // restó 1 a cada elemento para que sea un indice válido en JS
-
-	    while (i < index_values.length) {
-	      if ((index_values[i] + 1) < 1) {
-	        this.running = false
-	        let reason = 'index-less-than-one'
-	        let bad_index = i
-	        return {error:true, result:{reason, bad_index}}
-	      }
-	      else if ((index_values[i] + 1) > dimensions_lengths[i]) {
-	        out_of_bounds_index = true
-	        let reason = 'index-out-of-bounds'
-	        let bad_index = i
-	        let expected = variable.dimension[i]
-	        return {error:true, result:{reason, bad_index, expected}}
-	      }
-	      else {
-	        i++
+	        case 'or':
+	          return operand_a || operand_b;
 	      }
 	    }
 
-	    return {error:false}
-	  }
+	    /**
+	     * Evalúa una expresión unaria
+	     * @param  {object} exp una expresión de tipo 'unary-operation'
+	     * @return {number|bool}     El resultado de la evaluación de la expresión
+	     */
 
-	  /**
-	   * Busca y devuelve el objeto que representa a una variable especifica
-	   * @param  {string} varname el nombre de la variable deseada
-	   * @return {object}         el objeto que representa a la variable
-	   */
-	  getVariable(varname) {
-	    let variable
+	  }, {
+	    key: 'evaluateUnaryOperation',
+	    value: function evaluateUnaryOperation(exp) {
+	      var operand = this.evaluateExp(exp.operand);
 
-	    if (varname in this.locals) return this.locals[varname];
-	    else return this.globals[varname];
-	  }
+	      switch (exp.op) {
+	        case 'unary-minus':
+	          return -1 * operand;
 
-	  /**
-	   * Calcula el indice en un vector que representa a un arreglo multi-dimensional
-	   * @param  {int[]} index_array indice del elemento en el arreglo
-	   * @param  {int[]} dimensions  tamaño de las dimensiones del arreglo
-	   * @return {int}             indice del elemento del arreglo en el vector
-	   */
-	  calculateIndex(index_array, dimensions) {
-	    let result = 0
-	    let index_amount = index_array.length
-	    let i = 0
-
-	    while (i < index_amount) {
-	      let term = 1
-	      let j = i + 1
-	      while (j < index_amount) {
-	        term *= dimensions[j]
-	        j++
+	        case 'not':
+	          return !operand;
 	      }
-	      term *= index_array[i]
-	      result += term
-	      i++
 	    }
 
-	    return result
-	  }
-	}
+	    /**
+	     * Dice si un juego de indices dados se encuentra dentro de los límites de un arreglo
+	     * @param  {[int]} index_values       indices para acceder al arreglo
+	     * @param  {[int]} dimensions_lengths longitud de cada dimensión del arreglo
+	     * @return {bool}                    true si ningún índice está fuera de límite, si no falso
+	     */
 
-	module.exports = Evaluator
+	  }, {
+	    key: 'indexWithinBounds',
+	    value: function indexWithinBounds(index_values, dimensions_lengths) {
+	      var i = 0;
 
+	      // NOTE: en las condiciones de abajo sumo 1 porque en index_values se le
+	      // restó 1 a cada elemento para que sea un indice válido en JS
+
+	      while (i < index_values.length) {
+	        if (index_values[i] + 1 < 1) {
+	          this.running = false;
+	          var reason = 'index-less-than-one';
+	          var bad_index = i;
+	          return { error: true, result: { reason: reason, bad_index: bad_index } };
+	        } else if (index_values[i] + 1 > dimensions_lengths[i]) {
+	          out_of_bounds_index = true;
+	          var _reason = 'index-out-of-bounds';
+	          var _bad_index = i;
+	          var expected = variable.dimension[i];
+	          return { error: true, result: { reason: _reason, bad_index: _bad_index, expected: expected } };
+	        } else {
+	          i++;
+	        }
+	      }
+
+	      return { error: false };
+	    }
+
+	    /**
+	     * Busca y devuelve el objeto que representa a una variable especifica
+	     * @param  {string} varname el nombre de la variable deseada
+	     * @return {object}         el objeto que representa a la variable
+	     */
+
+	  }, {
+	    key: 'getVariable',
+	    value: function getVariable(varname) {
+	      var variable = void 0;
+
+	      if (varname in this.locals) return this.locals[varname];else return this.globals[varname];
+	    }
+
+	    /**
+	     * Calcula el indice en un vector que representa a un arreglo multi-dimensional
+	     * @param  {int[]} index_array indice del elemento en el arreglo
+	     * @param  {int[]} dimensions  tamaño de las dimensiones del arreglo
+	     * @return {int}             indice del elemento del arreglo en el vector
+	     */
+
+	  }, {
+	    key: 'calculateIndex',
+	    value: function calculateIndex(index_array, dimensions) {
+	      var result = 0;
+	      var index_amount = index_array.length;
+	      var i = 0;
+
+	      while (i < index_amount) {
+	        var term = 1;
+	        var j = i + 1;
+	        while (j < index_amount) {
+	          term *= dimensions[j];
+	          j++;
+	        }
+	        term *= index_array[i];
+	        result += term;
+	        i++;
+	      }
+
+	      return result;
+	    }
+	  }]);
+
+	  return Evaluator;
+	}(_Emitter3.default);
+
+	exports.default = Evaluator;
 
 /***/ },
 /* 7 */
 /***/ function(module, exports) {
 
-	'use strict'
+	'use strict';
 
-	class Emitter {
-	  constructor(public_event_list) {
-	    this.public_events = new Set(public_event_list)
-	    this.callbacks = {}
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Emitter = function () {
+	  function Emitter(public_event_list) {
+	    _classCallCheck(this, Emitter);
+
+	    this.public_events = new Set(public_event_list);
+	    this.callbacks = {};
 	  }
 
-	  on(event_name, callback) {
-	    if (event_name in this.callbacks) {
-	      this.callbacks[event_name].push(callback)
-	    }
-	    else {
-	      this.callbacks[event_name] = [callback]
-	    }
-	  }
-
-	  emit(event_name) {
-	    // Se encarga de llamar a los callbacks de los eventos.
-	    // Si se registro un callback para 'any' entonces se lo llama para cada evento que sea emitido. Es el callback por defecto.
-	    // Si un evento tiene registrado un callback entonces este se ejecuta despues del callback por defecto.
-	    if (this.callbacks.hasOwnProperty('any')) {
-	      for (let callback of this.callbacks.any) {
-	        callback(...arguments)
+	  _createClass(Emitter, [{
+	    key: 'on',
+	    value: function on(event_name, callback) {
+	      if (event_name in this.callbacks) {
+	        this.callbacks[event_name].push(callback);
+	      } else {
+	        this.callbacks[event_name] = [callback];
 	      }
 	    }
+	  }, {
+	    key: 'emit',
+	    value: function emit(event_name) {
+	      // Se encarga de llamar a los callbacks de los eventos.
+	      // Si se registro un callback para 'any' entonces se lo llama para cada evento que sea emitido. Es el callback por defecto.
+	      // Si un evento tiene registrado un callback entonces este se ejecuta despues del callback por defecto.
+	      if (this.callbacks.hasOwnProperty('any')) {
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
 
-	    if (this.callbacks.hasOwnProperty(event_name)) {
-	      for (let callback of this.callbacks[event_name]) {
-	        callback(...arguments)
+	        try {
+	          for (var _iterator = this.callbacks.any[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var callback = _step.value;
+
+	            callback.apply(undefined, arguments);
+	          }
+	        } catch (err) {
+	          _didIteratorError = true;
+	          _iteratorError = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion && _iterator.return) {
+	              _iterator.return();
+	            }
+	          } finally {
+	            if (_didIteratorError) {
+	              throw _iteratorError;
+	            }
+	          }
+	        }
+	      }
+
+	      if (this.callbacks.hasOwnProperty(event_name)) {
+	        var _iteratorNormalCompletion2 = true;
+	        var _didIteratorError2 = false;
+	        var _iteratorError2 = undefined;
+
+	        try {
+	          for (var _iterator2 = this.callbacks[event_name][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	            var _callback = _step2.value;
+
+	            _callback.apply(undefined, arguments);
+	          }
+	        } catch (err) {
+	          _didIteratorError2 = true;
+	          _iteratorError2 = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	              _iterator2.return();
+	            }
+	          } finally {
+	            if (_didIteratorError2) {
+	              throw _iteratorError2;
+	            }
+	          }
+	        }
 	      }
 	    }
-	  }
-
-	  repeat(event_name, emitter, make_public) {
-	    if (make_public === true) {
-	      this.public_events.add(event_name)
+	  }, {
+	    key: 'repeat',
+	    value: function repeat(event_name, emitter, make_public) {
+	      if (make_public === true) {
+	        this.public_events.add(event_name);
+	      }
+	      var self = this;
+	      emitter.on(event_name, function () {
+	        self.emit.apply(self, arguments);
+	      });
 	    }
-	    let self = this
-	    emitter.on(event_name, function () {
-	      self.emit(...arguments)
-	    })
-	  }
+	  }, {
+	    key: 'repeatAllPublicEvents',
+	    value: function repeatAllPublicEvents(emitter) {
+	      // Esta funcion sive para emitir los eventos de otro emisor como si fueran propios.
+	      var _iteratorNormalCompletion3 = true;
+	      var _didIteratorError3 = false;
+	      var _iteratorError3 = undefined;
 
-	  repeatAllPublicEvents(emitter) {
-	    // Esta funcion sive para emitir los eventos de otro emisor como si fueran propios.
-	    for (let event_name of emitter.public_events) {
-	      this.repeat(event_name, emitter, true)
+	      try {
+	        for (var _iterator3 = emitter.public_events[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	          var event_name = _step3.value;
+
+	          this.repeat(event_name, emitter, true);
+	        }
+	      } catch (err) {
+	        _didIteratorError3 = true;
+	        _iteratorError3 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	            _iterator3.return();
+	          }
+	        } finally {
+	          if (_didIteratorError3) {
+	            throw _iteratorError3;
+	          }
+	        }
+	      }
 	    }
-	  }
-	}
+	  }]);
 
-	module.exports = Emitter
+	  return Emitter;
+	}();
 
+	exports.default = Emitter;
 
 /***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	const Source = __webpack_require__(9)
-	const Lexer = __webpack_require__(10)
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = expressionFromString;
 
-	const TokenQueue = __webpack_require__(18)
-	const Patterns = __webpack_require__(19)
-	const match = Patterns.match
+	var _SourceWrapper = __webpack_require__(9);
+
+	var _SourceWrapper2 = _interopRequireDefault(_SourceWrapper);
+
+	var _Lexer = __webpack_require__(10);
+
+	var _Lexer2 = _interopRequireDefault(_Lexer);
+
+	var _TokenQueue = __webpack_require__(13);
+
+	var _TokenQueue2 = _interopRequireDefault(_TokenQueue);
+
+	var _Patterns = __webpack_require__(14);
+
+	var Patterns = _interopRequireWildcard(_Patterns);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var match = Patterns.match;
 
 	function expressionFromString(string) {
-	  let source = new Source(string)
-	  let tokenizer = new Lexer(source)
+	  var source = new _SourceWrapper2.default(string);
+	  var tokenizer = new _Lexer2.default(source);
 
-	  let tokenArray = []
-	  let t = tokenizer.nextToken()
+	  var tokenArray = [];
+	  var t = tokenizer.nextToken();
 
-	  while ( t.kind !== 'eof') {
-	    tokenArray.push(t)
-	    t = tokenizer.nextToken()
+	  while (t.kind !== 'eof') {
+	    tokenArray.push(t);
+	    t = tokenizer.nextToken();
 	  }
-	  tokenArray.push(t)
+	  tokenArray.push(t);
 
-	  let tokenq = new TokenQueue(tokenArray)
+	  var tokenq = new _TokenQueue2.default(tokenArray);
 
-	  return match(Patterns.Expression).from(tokenq)
+	  return match(Patterns.Expression).from(tokenq);
 	}
-
-	module.exports = expressionFromString
-
 
 /***/ },
 /* 9 */
 /***/ function(module, exports) {
 
-	"use strict"
+	"use strict";
 
-	let EOF_REACHED = -2
-	let EOL_REACHED = -1
-	let READING = 0
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	class Source {
-	  constructor(string) {
-	    this.EOL = '\n'
-	    this.EOF = String.fromCharCode(0)
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	    this._source = string.replace(/\r/g, '')
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	    this._index = 0
+	var EOF_REACHED = -2;
+	var EOL_REACHED = -1;
+	var READING = 0;
 
-	    this._current_column = 0
-	    this._current_line = 0
+	var SourceWrapper = function () {
+	  function SourceWrapper(string) {
+	    _classCallCheck(this, SourceWrapper);
 
-	    this.updateState()
+	    this.EOL = '\n';
+	    this.EOF = String.fromCharCode(0);
+
+	    this._source = string.replace(/\r/g, '');
+
+	    this._index = 0;
+
+	    this._current_column = 0;
+	    this._current_line = 0;
+
+	    this.updateState();
 	  }
 
-	  currentChar() {
-	    if (this.state === EOF_REACHED) {
-	      return this.EOF
+	  _createClass(SourceWrapper, [{
+	    key: 'currentChar',
+	    value: function currentChar() {
+	      if (this.state === EOF_REACHED) {
+	        return this.EOF;
+	      } else {
+	        return this._source[this._index];
+	      }
 	    }
-	    else {
-	      return this._source[this._index]
+	  }, {
+	    key: 'nextChar',
+	    value: function nextChar() {
+	      this._index++;
+	      this.updateState();
+	      this.updatePosition();
+	      return this.currentChar();
 	    }
-	  }
+	  }, {
+	    key: 'peekChar',
+	    value: function peekChar() {
+	      if (this._index + 1 === this._source.length) {
+	        return this.EOF;
+	      } else {
+	        return this._source[this._index + 1];
+	      }
+	    }
+	  }, {
+	    key: 'updateState',
+	    value: function updateState() {
+	      if (this._index === this._source.length) {
+	        this.state = EOF_REACHED;
+	      } else {
+	        this.state = READING;
+	      }
+	    }
+	  }, {
+	    key: 'updatePosition',
+	    value: function updatePosition() {
+	      if (this._source[this._index - 1] === this.EOL) {
+	        this._current_line++;
+	        this._current_column = 0;
+	      } else {
+	        this._current_column++;
+	      }
+	    }
+	  }]);
 
-	  nextChar() {
-	    this._index++
-	    this.updateState()
-	    this.updatePosition()
-	    return this.currentChar()
-	  }
+	  return SourceWrapper;
+	}();
 
-	  peekChar() {
-	    if (this._index + 1 === this._source.length) {
-	      return this.EOF
-	    }
-	    else {
-	      return this._source[this._index + 1]
-	    }
-	  }
-
-	  updateState() {
-	    if (this._index === this._source.length) {
-	      this.state = EOF_REACHED
-	    }
-	    else {
-	      this.state = READING
-	    }
-	  }
-
-	  updatePosition() {
-	    if (this._source[this._index - 1] === this.EOL) {
-	      this._current_line++
-	      this._current_column = 0
-	    }
-	    else {
-	      this._current_column++
-	    }
-	  }
-	}
-
-	module.exports = Source
-
+	exports.default = SourceWrapper;
 
 /***/ },
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
-	const SpecialSymbolToken = __webpack_require__(11)
-	const StringMethods = __webpack_require__(12)
-	const UnknownToken = __webpack_require__(13)
-	const NumberToken = __webpack_require__(14)
-	const StringToken = __webpack_require__(15)
-	const WordToken = __webpack_require__(16)
-	const EoFToken = __webpack_require__(17)
-	const Source = __webpack_require__(9)
+	'use strict';
 
-	const isSpecialSymbolChar = SpecialSymbolToken.isSpecialSymbolChar
-	const isWhiteSpace        = StringMethods.isWhiteSpace
-	const isLetter            = StringMethods.isLetter
-	const isDigit             = StringMethods.isDigit
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _TokenTypes = __webpack_require__(11);
+
+	var _StringMethods = __webpack_require__(12);
+
+	var _SourceWrapper = __webpack_require__(9);
+
+	var _SourceWrapper2 = _interopRequireDefault(_SourceWrapper);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var isSpecialSymbolChar = _TokenTypes.SpecialSymbolToken.isSpecialSymbolChar;
 
 	/**
 	 * Clase para convertir una cadena en fichas.
 	 */
-	class Lexer {
+
+	var Lexer = function () {
 	  /**
 	   * Crea un Lexer.
 	   * @param  {source} source Fuente a utilizar para construir las fichas
 	   */
-	  constructor(source) {
+
+	  function Lexer(source) {
+	    _classCallCheck(this, Lexer);
+
 	    if (source) this._source = source;
 	  }
 
-	  parse(source) {
-	    this.source = source;
+	  _createClass(Lexer, [{
+	    key: 'parse',
+	    value: function parse(source) {
+	      this.source = source;
 
-	    let tokens = [];
-	    let bad_tokens = [];
+	      var tokens = [];
+	      var bad_tokens = [];
 
-	    let t = this.nextToken()
+	      var t = this.nextToken();
 
-	    while (t.kind !== 'eof') {
-	      if (t.kind == 'LEXICAL_ERROR') {
-	        bad_tokens.push(t);
-	      } else {
-	        tokens.push(t)
+	      while (t.kind !== 'eof') {
+	        if (t.kind == 'LEXICAL_ERROR') {
+	          bad_tokens.push(t);
+	        } else {
+	          tokens.push(t);
+	        }
+	        t = this.nextToken();
 	      }
-	      t = this.nextToken()
-	    }
-	    tokens.push(t)
+	      tokens.push(t);
 
-	    if (bad_tokens.length > 0) {
-	      let result = bad_tokens;
-	      let error = true;
-	      return {error, result};
-	    } else {
-	      let result = tokens;
-	      let error = false;
-	      return {error, result};
-	    }
-	  }
-
-	  // Envolturas para algunos metodos de Source
-	  currentChar() {
-	    return this._source.currentChar()
-	  }
-
-	  nextChar() {
-	    return this._source.nextChar()
-	  }
-
-	  peekChar() {
-	    return this._source.peekChar()
-	  }
-
-	  isCommentLine() {
-	    return this.currentChar() === '/' && this.peekChar() === '/'
-	  }
-
-	  set source(source_wrapper) {
-	    this._source = source_wrapper
-	  }
-
-	  get source() {
-	    return this._source
-	  }
-
-	  skipWhiteSpace() {
-	    while (isWhiteSpace(this.currentChar())) {
-	      this.nextChar()
-	    }
-	  }
-
-	  skipCommment() {
-	    while (this.currentChar() !== this._source.EOL && this.currentChar() !== this._source.EOF) {
-	      this.nextChar()
-	    }
-	  }
-
-	  nextToken() {
-
-	    if (this.isCommentLine()) {
-	      this.skipCommment()
+	      if (bad_tokens.length > 0) {
+	        var result = bad_tokens;
+	        var error = true;
+	        return { error: error, result: result };
+	      } else {
+	        var _result = tokens;
+	        var _error = false;
+	        return { error: _error, result: _result };
+	      }
 	    }
 
-	    if (isWhiteSpace(this.currentChar()))
-	      this.skipWhiteSpace()
+	    // Envolturas para algunos metodos de SourceWrapper
 
-	    let c = this.currentChar()
+	  }, {
+	    key: 'currentChar',
+	    value: function currentChar() {
+	      return this._source.currentChar();
+	    }
+	  }, {
+	    key: 'nextChar',
+	    value: function nextChar() {
+	      return this._source.nextChar();
+	    }
+	  }, {
+	    key: 'peekChar',
+	    value: function peekChar() {
+	      return this._source.peekChar();
+	    }
+	  }, {
+	    key: 'isCommentLine',
+	    value: function isCommentLine() {
+	      return this.currentChar() === '/' && this.peekChar() === '/';
+	    }
+	  }, {
+	    key: 'skipWhiteSpace',
+	    value: function skipWhiteSpace() {
+	      while ((0, _StringMethods.isWhiteSpace)(this.currentChar())) {
+	        this.nextChar();
+	      }
+	    }
+	  }, {
+	    key: 'skipCommment',
+	    value: function skipCommment() {
+	      while (this.currentChar() !== this._source.EOL && this.currentChar() !== this._source.EOF) {
+	        this.nextChar();
+	      }
+	    }
+	  }, {
+	    key: 'nextToken',
+	    value: function nextToken() {
 
-	    let result
+	      if (this.isCommentLine()) {
+	        this.skipCommment();
+	      }
 
-	    if (isDigit(c))
-	      result = new NumberToken(this._source)
-	    else if (isLetter(c))
-	      result = new WordToken(this._source)
-	    else if (isSpecialSymbolChar(c))
-	      result = new SpecialSymbolToken(this._source)
-	    else if (c === '"')
-	      result = new StringToken(this._source)
-	    else if (c === this._source.EOF)
-	      result = new EoFToken(this._source)
-	    else
-	      result = new UnknownToken(this._source)
+	      if ((0, _StringMethods.isWhiteSpace)(this.currentChar())) this.skipWhiteSpace();
 
-	    return result
-	  }
-	}
+	      var c = this.currentChar();
 
-	module.exports = Lexer
+	      var result = void 0;
 
+	      if ((0, _StringMethods.isDigit)(c)) result = new _TokenTypes.NumberToken(this._source);else if ((0, _StringMethods.isLetter)(c)) result = new _TokenTypes.WordToken(this._source);else if (isSpecialSymbolChar(c)) result = new _TokenTypes.SpecialSymbolToken(this._source);else if (c === '"') result = new _TokenTypes.StringToken(this._source);else if (c === this._source.EOF) result = new _TokenTypes.EoFToken(this._source);else result = new _TokenTypes.UnknownToken(this._source);
+
+	      return result;
+	    }
+	  }, {
+	    key: 'source',
+	    set: function set(source_wrapper) {
+	      this._source = source_wrapper;
+	    },
+	    get: function get() {
+	      return this._source;
+	    }
+	  }]);
+
+	  return Lexer;
+	}();
+
+	exports.default = Lexer;
 
 /***/ },
 /* 11 */
-/***/ function(module, exports) {
-
-	'use strict'
-
-	let list = [
-	  '+'   ,
-	  '-'   ,
-	  '/'   ,
-	  '*'   ,
-	  '^'   ,
-	  '='   ,
-	  '<'   ,
-	  '>'   ,
-	  '('   ,
-	  ')'   ,
-	  '['   ,
-	  ']'   ,
-	  ','   ,
-	  '\n'
-	]
-
-	let symbols = new Set(list)
-
-	class SpecialSymbolToken {
-	  constructor(source) {
-	    this.lineNumber = source._current_line
-	    this.columnNumber = source._current_column
-	    this.extract(source)
-	  }
-
-	  static isSpecialSymbolChar(c) {
-	    return symbols.has(c)
-	  }
-
-	  extract(source) {
-	    this.text = source.currentChar()
-
-	    switch (this.text) {
-	      case '+':
-	        this.kind = 'plus'
-	        break
-	      case '-':
-	        this.kind = 'minus'
-	        break
-	      case '/':
-	        this.kind = 'divide'
-	        break
-	      case '*':
-	        this.kind = 'times'
-	        break
-	      case '^':
-	        this.kind = 'power'
-	        break
-	      case '<':
-	        {
-	          let peek = source.peekChar()
-	          switch (peek) {
-	            case '-':
-	              this.kind = 'assignment'
-	              this.text += source.nextChar()
-	              break
-	            case '=':
-	              this.kind = 'minor-equal'
-	              this.text += source.nextChar()
-	              break
-	            case '>':
-	              this.kind = 'diff-than'
-	              this.text += source.nextChar()
-	              break
-	            default:
-	              this.kind = 'minor-than'
-	              break
-	          }
-	        }
-	        break
-	      case '>':
-	        {
-	          let peek = source.peekChar()
-	          if (peek === '=') {
-	            this.kind = 'major-equal'
-	            this.text += source.nextChar()
-	          }
-	          else
-	            this.kind = 'major-than'
-	        }
-	        break
-	      case '=':
-	        this.kind = 'equal'
-	        break
-	      case '(':
-	        this.kind = 'left-par'
-	        break
-	      case ')':
-	        this.kind = 'right-par'
-	        break
-	      case '[':
-	        this.kind = 'left-bracket'
-	        break
-	      case ']':
-	        this.kind = 'right-bracket'
-	        break
-	      case ',':
-	        this.kind = 'comma'
-	        break
-	      case '\n':
-	        this.kind = 'eol'
-	        break
-	    }
-	    // consumir el caracer actual
-	    source.nextChar()
-	  }
-	}
-
-	module.exports = SpecialSymbolToken
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports) {
-
-	'use strict'
-
-	let StringMethods = {
-	    isDigit       : (c) => {return /\d/.test(c)}
-	  , isLetter      : (c) => {return /[a-zA-Z]/.test(c)}
-	  , isWhiteSpace  : (c) => {return /\s/.test(c) && (c != '\n')}
-	}
-
-	module.exports = StringMethods
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports) {
-
-	'use strict'
-
-	class UnknownToken {
-	  constructor(source) {
-	    this.kind = 'LEXICAL_ERROR'
-	    this.unexpectedChar = source.currentChar()
-	    this.atLine = source._current_line
-	    this.atColumn = source._current_column
-	    this.reason = 'unknownToken'
-	    source.nextChar()
-	  }
-	}
-
-	module.exports = UnknownToken
-
-
-/***/ },
-/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
-	const StringMethods = __webpack_require__(12)
-	const isDigit = StringMethods.isDigit
+	'use strict';
 
-	class NumberToken {
-	  constructor(source) {
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.UnknownToken = exports.WordToken = exports.StringToken = exports.SpecialSymbolToken = exports.NumberToken = exports.EoFToken = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _StringMethods = __webpack_require__(12);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var EoFToken = exports.EoFToken = function EoFToken(source) {
+	  _classCallCheck(this, EoFToken);
+
+	  this.kind = 'eof';
+	  if (source) {
+	    this.columnNumber = source._current_column;
+	    this.lineNumber = source._current_line;
+	  }
+	};
+
+	var NumberToken = exports.NumberToken = function () {
+	  function NumberToken(source) {
+	    _classCallCheck(this, NumberToken);
+
 	    // todos los numeros son enteros hasta que se 'demuestre' lo contrario
-	    this.kind = 'entero'
-	    this.text = ''
-	    this.lineNumber = source._current_line
-	    this.columnNumber = source._current_column
-	    this.extract(source)
+	    this.kind = 'entero';
+	    this.text = '';
+	    this.lineNumber = source._current_line;
+	    this.columnNumber = source._current_column;
+	    this.extract(source);
 	  }
 
-	  extract(source) {
-	    this.text += source.currentChar()
-	    source.nextChar()
+	  _createClass(NumberToken, [{
+	    key: 'extract',
+	    value: function extract(source) {
+	      this.text += source.currentChar();
+	      source.nextChar();
 
-	    let c
-	    while ( isDigit(c = source.currentChar()) ) {
-	      this.text += c
-	      source.nextChar()
-	    }
+	      var c = void 0;
+	      while ((0, _StringMethods.isDigit)(c = source.currentChar())) {
+	        this.text += c;
+	        source.nextChar();
+	      }
 
-	    if (c === '.') {
-	      this.text += '.'
-	      source.nextChar()
-	      if ( isDigit(source.currentChar()) ) {
-	        while ( isDigit(c = source.currentChar()) ) {
-	          this.text += c
-	          source.nextChar()
+	      if (c === '.') {
+	        this.text += '.';
+	        source.nextChar();
+	        if ((0, _StringMethods.isDigit)(source.currentChar())) {
+	          while ((0, _StringMethods.isDigit)(c = source.currentChar())) {
+	            this.text += c;
+	            source.nextChar();
+	          }
+	          this.kind = 'real';
+	        } else {
+	          this.kind = 'LEXICAL_ERROR';
+	          this.unexpectedChar = source.currentChar();
+	          this.expectedChar = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+	          this.atLine = source._current_line;
+	          this.atColumn = source._current_column;
+	          this.reason = 'unexpectedCharAtFloat';
 	        }
-	        this.kind = 'real'
 	      }
-	      else {
-	        this.kind = 'LEXICAL_ERROR'
-	        this.unexpectedChar = source.currentChar()
-	        this.expectedChar   = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-	        this.atLine         = source._current_line
-	        this.atColumn       = source._current_column
-	        this.reason         = 'unexpectedCharAtFloat'
+
+	      if (this.kind === 'entero') this.value = parseInt(this.text);else if (this.kind === 'real') this.value = parseFloat(this.text);
+	    }
+	  }]);
+
+	  return NumberToken;
+	}();
+
+	var SpecialSymbolToken = exports.SpecialSymbolToken = function () {
+	  function SpecialSymbolToken(source) {
+	    _classCallCheck(this, SpecialSymbolToken);
+
+	    this.lineNumber = source._current_line;
+	    this.columnNumber = source._current_column;
+	    this.extract(source);
+	  }
+
+	  _createClass(SpecialSymbolToken, [{
+	    key: 'extract',
+	    value: function extract(source) {
+	      this.text = source.currentChar();
+
+	      switch (this.text) {
+	        case '+':
+	          this.kind = 'plus';
+	          break;
+	        case '-':
+	          this.kind = 'minus';
+	          break;
+	        case '/':
+	          this.kind = 'divide';
+	          break;
+	        case '*':
+	          this.kind = 'times';
+	          break;
+	        case '^':
+	          this.kind = 'power';
+	          break;
+	        case '<':
+	          {
+	            var peek = source.peekChar();
+	            switch (peek) {
+	              case '-':
+	                this.kind = 'assignment';
+	                this.text += source.nextChar();
+	                break;
+	              case '=':
+	                this.kind = 'minor-equal';
+	                this.text += source.nextChar();
+	                break;
+	              case '>':
+	                this.kind = 'diff-than';
+	                this.text += source.nextChar();
+	                break;
+	              default:
+	                this.kind = 'minor-than';
+	                break;
+	            }
+	          }
+	          break;
+	        case '>':
+	          {
+	            var _peek = source.peekChar();
+	            if (_peek === '=') {
+	              this.kind = 'major-equal';
+	              this.text += source.nextChar();
+	            } else this.kind = 'major-than';
+	          }
+	          break;
+	        case '=':
+	          this.kind = 'equal';
+	          break;
+	        case '(':
+	          this.kind = 'left-par';
+	          break;
+	        case ')':
+	          this.kind = 'right-par';
+	          break;
+	        case '[':
+	          this.kind = 'left-bracket';
+	          break;
+	        case ']':
+	          this.kind = 'right-bracket';
+	          break;
+	        case ',':
+	          this.kind = 'comma';
+	          break;
+	        case '\n':
+	          this.kind = 'eol';
+	          break;
+	      }
+	      // consumir el caracer actual
+	      source.nextChar();
+	    }
+	  }], [{
+	    key: 'isSpecialSymbolChar',
+	    value: function isSpecialSymbolChar(c) {
+	      switch (c) {
+	        case '+':
+	        case '-':
+	        case '/':
+	        case '*':
+	        case '^':
+	        case '=':
+	        case '<':
+	        case '>':
+	        case '(':
+	        case ')':
+	        case '[':
+	        case ']':
+	        case ',':
+	        case '\n':
+	          return true;
+	        default:
+	          return false;
 	      }
 	    }
+	  }]);
 
-	    if (this.kind === 'entero')
-	      this.value = parseInt(this.text)
-	    else if (this.kind === 'real')
-	      this.value = parseFloat(this.text)
-	  }
-	}
+	  return SpecialSymbolToken;
+	}();
 
-	module.exports = NumberToken
+	var StringToken = exports.StringToken = function () {
+	  function StringToken(source) {
+	    _classCallCheck(this, StringToken);
 
-
-/***/ },
-/* 15 */
-/***/ function(module, exports) {
-
-	'use strict'
-
-	class StringToken {
-	  constructor(source) {
-	    this.kind = 'string'
-	    this.value = ''
-	    this.lineNumber = source._current_line
-	    this.columnNumer = source._current_column
-	    this.extract(source)
+	    this.kind = 'string';
+	    this.value = '';
+	    this.lineNumber = source._current_line;
+	    this.columnNumer = source._current_column;
+	    this.extract(source);
 	  }
 
-	  extract(source) {
-	    // uso nextChar() en lugar de current xq no quiero que la " forme parte
-	    // de esta cadena
-	    this.value += source.nextChar()
-	    source.nextChar()
+	  _createClass(StringToken, [{
+	    key: 'extract',
+	    value: function extract(source) {
+	      // uso nextChar() en lugar de current xq no quiero que la " forme parte
+	      // de esta cadena
+	      this.value += source.nextChar();
+	      source.nextChar();
 
-	    let c
-	    while ( (c = source.currentChar()) !== '"' && c !== '\n' ) {
-	      this.value += c
-	      source.nextChar()
+	      var c = void 0;
+	      while ((c = source.currentChar()) !== '"' && c !== '\n') {
+	        this.value += c;
+	        source.nextChar();
+	      }
+
+	      if (c === '"') this.text = '"' + this.value + '"';else {
+	        this.kind = 'LEXICAL_ERROR';
+	        this.unexpectedChar = '\n';
+	        this.expectedChar = ['caracteres', '"'];
+	        this.atColumn = source._current_column;
+	        this.atLine = source._current_line;
+	        this.reason = 'unexpectedCharAtString';
+	      }
+
+	      // Consumo un caracter para dejar a currentChar() uno delante de la
+	      // " o del \n
+	      source.nextChar();
 	    }
+	  }]);
 
-	    if (c === '"')
-	      this.text = '"' + this.value + '"'
-	    else {
-	      this.kind = 'LEXICAL_ERROR'
-	      this.unexpectedChar = '\n'
-	      this.expectedChar = ['caracteres', '"']
-	      this.atColumn = source._current_column
-	      this.atLine = source._current_line
-	      this.reason = 'unexpectedCharAtString'
-	    }
-
-	    // Consumo un caracter para dejar a currentChar() uno delante de la
-	    // " o del \n
-	    source.nextChar()
-	  }
-	}
-
-	module.exports = StringToken
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-	const StringMethods = __webpack_require__(12)
-
-	let list = [
-	  'variables'         ,
-	  'inicio'            ,
-	  'fin'               ,
-	  'si'                ,
-	  'entonces'          ,
-	  'sino'              ,
-	  'finsi'             ,
-	  'para'              ,
-	  'hasta'             ,
-	  'finpara'           ,
-	  'mientras'          ,
-	  'finmientras'       ,
-	  'repetir'           ,
-	  'hasta'             ,
-	  'que'               ,
-	  'funcion'           ,
-	  'finfuncion'        ,
-	  'procedimiento'     ,
-	  'finprocedimiento'  ,
-	  'entero'            ,
-	  'real'              ,
-	  'logico'            ,
-	  'caracter'          ,
-	  'div'               ,
-	  'and'               ,
-	  'or'                ,
-	  'not'               ,
-	  'mod'               ,
-	  'verdadero'         ,
-	  'falso'
-	]
-
-	let isDigit = StringMethods.isDigit
-
-	let isLetter = StringMethods.isLetter
+	  return StringToken;
+	}();
 
 	function isReservedWord(word) {
 	  switch (word.length) {
@@ -20054,9 +20279,9 @@
 	      switch (word) {
 	        case 'si':
 	        case 'or':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    case 3:
 	      switch (word) {
@@ -20066,18 +20291,18 @@
 	        case 'and':
 	        case 'not':
 	        case 'mod':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    case 4:
 	      switch (word) {
 	        case 'sino':
 	        case 'para':
 	        case 'real':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    case 5:
 	      switch (word) {
@@ -20085,178 +20310,230 @@
 	        case 'hasta':
 	        case 'hasta':
 	        case 'falso':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    case 6:
 	      switch (word) {
 	        case 'inicio':
 	        case 'entero':
 	        case 'logico':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    case 7:
 	      switch (word) {
 	        case 'finpara':
 	        case 'repetir':
 	        case 'funcion':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    case 8:
 	      switch (word) {
 	        case 'entonces':
 	        case 'mientras':
 	        case 'caracter':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    case 9:
 	      switch (word) {
 	        case 'variables':
 	        case 'verdadero':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    case 10:
 	      switch (word) {
 	        case 'finfuncion':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    case 11:
 	      switch (word) {
 	        case 'finmientras':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    case 13:
 	      switch (word) {
 	        case 'procedimiento':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    case 16:
 	      switch (word) {
 	        case 'finprocedimiento':
-	          return true
+	          return true;
 	        default:
-	          return false
+	          return false;
 	      }
 	    default:
-	      return false
+	      return false;
 	  }
 	}
 
-	class WordToken {
-	  constructor(source) {
-	    this.kind = 'word'
-	    this.text = ''
-	    this.lineNumber = source._current_line
-	    this.columnNumber = source._current_column
-	    this.extract(source)
+	var WordToken = exports.WordToken = function () {
+	  function WordToken(source) {
+	    _classCallCheck(this, WordToken);
+
+	    this.kind = 'word';
+	    this.text = '';
+	    this.lineNumber = source._current_line;
+	    this.columnNumber = source._current_column;
+	    this.extract(source);
 	  }
 
-	  extract(source) {
-	    //agrega el primer caracter del token
-	    this.text += source.currentChar()
-	    source.nextChar()
+	  _createClass(WordToken, [{
+	    key: 'extract',
+	    value: function extract(source) {
+	      //agrega el primer caracter del token
+	      this.text += source.currentChar();
+	      source.nextChar();
 
-	    let isDigitOrLetter = (s) => {return isDigit(s) || isLetter(s) || s === '_'}
+	      var isDigitOrLetter = function isDigitOrLetter(s) {
+	        return (0, _StringMethods.isDigit)(s) || (0, _StringMethods.isLetter)(s) || s === '_';
+	      };
 
-	    let c
-	    while ( isDigitOrLetter(c = source.currentChar()) ) {
-	      this.text += c
-	      source.nextChar()
+	      var c = void 0;
+	      while (isDigitOrLetter(c = source.currentChar())) {
+	        this.text += c;
+	        source.nextChar();
+	      }
+
+	      if (isReservedWord(this.text.toLowerCase())) this.kind = this.text.toLowerCase();
 	    }
+	  }]);
 
-	    if (isReservedWord(this.text.toLowerCase()))
-	      this.kind = this.text.toLowerCase()
-	  }
-	}
+	  return WordToken;
+	}();
 
-	module.exports = WordToken
+	var UnknownToken = exports.UnknownToken = function UnknownToken(source) {
+	  _classCallCheck(this, UnknownToken);
 
+	  this.kind = 'LEXICAL_ERROR';
+	  this.unexpectedChar = source.currentChar();
+	  this.atLine = source._current_line;
+	  this.atColumn = source._current_column;
+	  this.reason = 'unknownToken';
+	  source.nextChar();
+	};
 
 /***/ },
-/* 17 */
+/* 12 */
 /***/ function(module, exports) {
 
-	'use strict'
+	'use strict';
 
-	class EoFToken {
-	  constructor(source) {
-	    this.kind = 'eof'
-	    if (source) {
-	      this.columnNumber = source._current_column
-	      this.lineNumber   = source._current_line
-	    }
-	  }
-	}
-
-	module.exports = EoFToken
-
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-	const EoFToken = __webpack_require__(17)
-
-	class TokenQueue {
-	  constructor(array) {
-	    this.tokens = array
-	    this.totalElements = array.length
-	    this.currentIndex = 0
-	    this.eof_reached = false
-	  }
-
-	  current() {
-	    if (this.eof_reached) {
-	      return new EoFToken()
-	    }
-	    else {
-	      return this.tokens[this.currentIndex]
-	    }
-	  }
-
-	  next() {
-	    if (this.currentIndex + 1 < this.totalElements)
-	      ++this.currentIndex
-	    else
-	      this.eof_reached = true
-
-	    return this.current()
-	  }
-
-	  peek() {
-	    if (this.currentIndex + 1 < this.totalElements)
-	      return this.tokens[this.currentIndex + 1]
-	    else
-	      return new EoFToken()
-	  }
-	}
-
-	module.exports = TokenQueue
-
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var isDigit = exports.isDigit = function isDigit(char) {
+	  return (/\d/.test(char)
+	  );
+	};
+	var isLetter = exports.isLetter = function isLetter(char) {
+	  return (/[a-zA-Z]/.test(char)
+	  );
+	};
+	var isWhiteSpace = exports.isWhiteSpace = function isWhiteSpace(char) {
+	  return (/\s/.test(char) && char !== '\n'
+	  );
+	};
 
 /***/ },
-/* 19 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	const Report = __webpack_require__(20)
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _TokenTypes = __webpack_require__(11);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var TokenQueue = function () {
+	  function TokenQueue(array) {
+	    _classCallCheck(this, TokenQueue);
+
+	    this.tokens = array;
+	    this.totalElements = array.length;
+	    this.currentIndex = 0;
+	    this.eof_reached = false;
+	  }
+
+	  _createClass(TokenQueue, [{
+	    key: 'current',
+	    value: function current() {
+	      if (this.eof_reached) {
+	        return new _TokenTypes.EoFToken();
+	      } else {
+	        return this.tokens[this.currentIndex];
+	      }
+	    }
+	  }, {
+	    key: 'next',
+	    value: function next() {
+	      if (this.currentIndex + 1 < this.totalElements) ++this.currentIndex;else this.eof_reached = true;
+
+	      return this.current();
+	    }
+	  }, {
+	    key: 'peek',
+	    value: function peek() {
+	      if (this.currentIndex + 1 < this.totalElements) return this.tokens[this.currentIndex + 1];else return new _TokenTypes.EoFToken();
+	    }
+	  }]);
+
+	  return TokenQueue;
+	}();
+
+	exports.default = TokenQueue;
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Number = Number;
+	exports.Integer = Integer;
+	exports.ArrayDimension = ArrayDimension;
+	exports.Word = Word;
+	exports.VariableDeclaration = VariableDeclaration;
+	exports.VariableList = VariableList;
+	exports.TypeName = TypeName;
+	exports.Declaration = Declaration;
+	exports.IndexExpression = IndexExpression;
+	exports.Variable = Variable;
+	exports.Expression = Expression;
+	exports.Assignment = Assignment;
+	exports.ArgumentList = ArgumentList;
+	exports.ModuleCall = ModuleCall;
+	exports.match = match;
+
+	var _Report = __webpack_require__(15);
+
+	var _Report2 = _interopRequireDefault(_Report);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	/**
 	 * Funcion que intenta capturar un token numerico
@@ -20264,20 +20541,19 @@
 	 * @return {Report} reporte con el resultado
 	 */
 	function Number(source) {
-	  let current = source.current()
+	  var current = source.current();
 
 	  if (current.kind == 'real' || current.kind == 'entero') {
-	    source.next()
-	    let result = {value:current.value, type:current.kind}
-	    return new Report(false, result)
-	  }
-	  else {
-	    let unexpected  = current.kind
-	    let expected    = ['entero', 'real']
-	    let atColumn    = current.columnNumber
-	    let atLine      = current.lineNumber
+	    source.next();
+	    var result = { value: current.value, type: current.kind };
+	    return new _Report2.default(false, result);
+	  } else {
+	    var unexpected = current.kind;
+	    var expected = ['entero', 'real'];
+	    var atColumn = current.columnNumber;
+	    var atLine = current.lineNumber;
 
-	    return new Report(true, {unexpected, expected, atColumn, atLine})
+	    return new _Report2.default(true, { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine });
 	  }
 	}
 
@@ -20287,634 +20563,611 @@
 	 * @return {Report}
 	 */
 	function Integer(source) {
-	  let current = source.current()
+	  var current = source.current();
 
 	  if (current.kind === 'entero') {
 	    // consumir el token actual y...
-	    source.next()
+	    source.next();
 	    // ...devolver los datos importantes o...
-	    return new Report(false, current.value)
-	  }
-	  else {
+	    return new _Report2.default(false, current.value);
+	  } else {
 	    // ...devolver informacion sobre el error
-	    let unexpected = current.kind
-	    let expected = 'entero'
-	    let atColumn = current.columnNumber
-	    let atLine = current.lineNumber
+	    var unexpected = current.kind;
+	    var expected = 'entero';
+	    var atColumn = current.columnNumber;
+	    var atLine = current.lineNumber;
 
-	    return new Report(true, {unexpected, expected, atColumn, atLine})
+	    return new _Report2.default(true, { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine });
 	  }
 	}
 
 	function ArrayDimension(source) {
-	  let indexes = []
+	  var indexes = [];
 
-	  let index_report = Integer(source)
+	  var index_report = Integer(source);
 
 	  if (index_report.error) {
-	    return index_report
-	  }
-	  else {
-	    indexes.push(index_report.result)
+	    return index_report;
+	  } else {
+	    indexes.push(index_report.result);
 	  }
 
 	  if (source.current().kind === 'comma') {
-	    source.next()
+	    source.next();
 
-	    let following_indexes = ArrayDimension(source)
+	    var following_indexes = ArrayDimension(source);
 
 	    if (following_indexes.error) {
-	      return following_indexes
+	      return following_indexes;
+	    } else {
+	      indexes = indexes.concat(following_indexes.result);
+	      return new _Report2.default(false, indexes);
 	    }
-	    else {
-	      indexes = indexes.concat(following_indexes.result)
-	      return new Report(false, indexes)
-	    }
-	  }
-	  else {
-	    return new Report(false, indexes)
+	  } else {
+	    return new _Report2.default(false, indexes);
 	  }
 	}
 
 	function Word(source) {
-	  let current = source.current()
+	  var current = source.current();
 
 	  if (current.kind === 'word') {
-	    source.next()
-	    return new Report(false, current.text)
-	  }
-	  else {
-	    let unexpected = current.kind
-	    let expected = 'word'
-	    let atColumn = current.columnNumber
-	    let atLine = current.lineNumber
+	    source.next();
+	    return new _Report2.default(false, current.text);
+	  } else {
+	    var unexpected = current.kind;
+	    var expected = 'word';
+	    var atColumn = current.columnNumber;
+	    var atLine = current.lineNumber;
 
-	    return new Report(true, {unexpected, expected, atColumn, atLine})
+	    return new _Report2.default(true, { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine });
 	  }
 	}
 
 	function VariableDeclaration(source) {
-	  let variable = {
-	      data    : {isArray : false, type:'unknown'}
-	    , name    : ''
-	  }
+	  var variable = {
+	    data: { isArray: false, type: 'unknown' },
+	    name: ''
+	  };
 
-	  let text = Word(source)
+	  var text = Word(source);
 
 	  if (text.error) {
-	    return text
-	  }
-	  else {
-	    variable.name = text.result
+	    return text;
+	  } else {
+	    variable.name = text.result;
 	    if (source.current().kind === 'left-bracket') {
-	      source.next()
-	      let dimension = ArrayDimension(source)
+	      source.next();
+	      var dimension = ArrayDimension(source);
 	      if (dimension.error) {
-	        return dimension
-	      }
-	      else {
-	        variable.data.isArray = true
-	        variable.data.dimension = dimension.result
+	        return dimension;
+	      } else {
+	        variable.data.isArray = true;
+	        variable.data.dimension = dimension.result;
 	        if (source.current().kind === 'right-bracket') {
-	          source.next()
-	          return new Report(false, variable)
-	        }
-	        else {
-	          let current = source.current()
+	          source.next();
+	          return new _Report2.default(false, variable);
+	        } else {
+	          var current = source.current();
 
-	          let unexpected = current.kind
-	          let expected   = 'right-bracket'
-	          let atColumn        = current.columnNumber
-	          let atLine          = current.lineNumber
+	          var unexpected = current.kind;
+	          var expected = 'right-bracket';
+	          var atColumn = current.columnNumber;
+	          var atLine = current.lineNumber;
 
-	          return new Report(true, {unexpected, expected, atColumn, atLine})
+	          return new _Report2.default(true, { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine });
 	        }
 	      }
-	    }
-	    else {
-	      return new Report(false, variable)
+	    } else {
+	      return new _Report2.default(false, variable);
 	    }
 	  }
 	}
 
 	function VariableList(source) {
-	  let variables = []
-	  let partial_match = false
+	  var variables = [];
+	  var partial_match = false;
 
-	  let name_report = VariableDeclaration(source)
+	  var name_report = VariableDeclaration(source);
 
 	  if (name_report.error) {
-	    return name_report
-	  }
-	  else {
-	    variables.push(name_report.result)
+	    return name_report;
+	  } else {
+	    variables.push(name_report.result);
 
 	    if (source.current().kind === 'comma') {
-	      source.next()
-	      let var_list_match = VariableList(source)
+	      source.next();
+	      var var_list_match = VariableList(source);
 
 	      if (var_list_match.error) {
-	        return new Report(false, variables)
+	        return new _Report2.default(false, variables);
+	      } else {
+	        return new _Report2.default(false, variables.concat(var_list_match.result));
 	      }
-	      else {
-	        return new Report(false, variables.concat(var_list_match.result))
-	      }
-	    }
-	    else {
-	      return new Report(false, variables)
+	    } else {
+	      return new _Report2.default(false, variables);
 	    }
 	  }
 	}
 
-	let isType = string => {return /entero|real|logico|caracter/.test(string)}
+	var isType = function isType(string) {
+	  return (/entero|real|logico|caracter/.test(string)
+	  );
+	};
 
 	function TypeName(source) {
-	  let current = source.current()
+	  var current = source.current();
 
-	  if ( isType(current.kind) ) {
-	    source.next()
-	    return new Report(false, current.kind)
-	  }
-	  else {
-	    let unexpected = current.kind
-	    let expected  = ['entero', 'real', 'logico', 'caracter']
-	    let atColumn        = current.columnNumber
-	    let atLine          = current.lineNumber
-	    let reason          = 'nonexistent-type'
+	  if (isType(current.kind)) {
+	    source.next();
+	    return new _Report2.default(false, current.kind);
+	  } else {
+	    var unexpected = current.kind;
+	    var expected = ['entero', 'real', 'logico', 'caracter'];
+	    var atColumn = current.columnNumber;
+	    var atLine = current.lineNumber;
+	    var reason = 'nonexistent-type';
 
-	    return new Report(true, {unexpected, expected, atColumn, atLine, reason})
+	    return new _Report2.default(true, { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine, reason: reason });
 	  }
 	}
 
 	function Declaration(source) {
-	  let declarations = {}
+	  var declarations = {};
 
-	  let typename = TypeName(source)
+	  var typename = TypeName(source);
 
-	  if (typename.error)
-	    return typename
-	  else {
-	    let var_list_match = VariableList(source)
+	  if (typename.error) return typename;else {
+	    var var_list_match = VariableList(source);
 
 	    if (var_list_match.error) {
-	      return var_list_match
+	      return var_list_match;
 	    }
 
-	    for (let variable of var_list_match.result) {
-	      let name = variable.name
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
 
-	      if (declarations.hasOwnProperty(name)) {
-	        return new Report(true, {reason:'repeatead-var-name', name})
+	    try {
+	      for (var _iterator = var_list_match.result[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var variable = _step.value;
+
+	        var _name = variable.name;
+
+	        if (declarations.hasOwnProperty(_name)) {
+	          return new _Report2.default(true, { reason: 'repeatead-var-name', name: _name });
+	        }
+
+	        var var_object = variable.data;
+	        var_object.type = typename.result;
+
+	        if (var_object.isArray === true) {
+	          var size = var_object.dimension.reduce(function (acumulador, elemento) {
+	            return acumulador * elemento;
+	          });
+	          var_object.values = new Array(size);
+	        } else {
+	          var_object.value = null;
+	        }
+
+	        declarations[_name] = var_object;
 	      }
-
-	      let var_object = variable.data
-	      var_object.type = typename.result
-
-	      if (var_object.isArray === true) {
-	        let size = var_object.dimension.reduce((acumulador, elemento) => {
-	          return acumulador * elemento
-	        })
-	        var_object.values = new Array(size)
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
+	        }
 	      }
-	      else {
-	        var_object.value = null
-	      }
-
-	      declarations[name] = var_object
-
 	    }
-	    let comma_found = false
-	    let eol_found = false
+
+	    var comma_found = false;
+	    var eol_found = false;
 
 	    if (source.current().kind === 'comma') {
-	      source.next()
-	      comma_found = true
-	    }
-	    else if (source.current().kind == 'eol') {
-	      source.next()
-	      eol_found = true
+	      source.next();
+	      comma_found = true;
+	    } else if (source.current().kind == 'eol') {
+	      source.next();
+	      eol_found = true;
 	    }
 
-	    let nextDeclaration = Declaration(source)
+	    var nextDeclaration = Declaration(source);
 
 	    if ((comma_found || eol_found) && nextDeclaration.error && source.current().kind != 'inicio') {
-	      return nextDeclaration
-	    }
-	    else if (nextDeclaration.error === false) {
-	      for (let name in nextDeclaration.result) {
+	      return nextDeclaration;
+	    } else if (nextDeclaration.error === false) {
+	      for (var name in nextDeclaration.result) {
 	        if (declarations.hasOwnProperty(name)) {
-	          return new Report(true, {reason:'repeatead-var-name', name})
-	        }
-	        else {
-	          declarations[name] = nextDeclaration.result[name]
+	          return new _Report2.default(true, { reason: 'repeatead-var-name', name: name });
+	        } else {
+	          declarations[name] = nextDeclaration.result[name];
 	        }
 	      }
 	    }
-	    return new Report(false, declarations)
+	    return new _Report2.default(false, declarations);
 	  }
 	}
 
 	function IndexExpression(source) {
-	  let indexes = []
+	  var indexes = [];
 
-	  let index_report = Expression(source)
+	  var index_report = Expression(source);
 
 	  if (index_report.error === true) {
-	    return index_report
-	  }
-	  else {
-	    indexes.push(index_report.result)
+	    return index_report;
+	  } else {
+	    indexes.push(index_report.result);
 
 	    if (source.current().kind === 'comma') {
-	      source.next()
+	      source.next();
 
-	      let another_index_report = Expression(source)
+	      var another_index_report = Expression(source);
 
 	      if (another_index_report.error === true) {
-	        return another_index_report
-	      }
-	      else {
-	        indexes = indexes.concat(another_index_report.result)
+	        return another_index_report;
+	      } else {
+	        indexes = indexes.concat(another_index_report.result);
 
-	        return new Report(false, indexes)
+	        return new _Report2.default(false, indexes);
 	      }
-	    }
-	    else {
-	      return new Report(false, indexes)
+	    } else {
+	      return new _Report2.default(false, indexes);
 	    }
 	  }
 	}
 
 	function Variable(source) {
-	  let name = '', isArray = false, indexes = null
+	  var name = '',
+	      isArray = false,
+	      indexes = null;
 
-	  let word_match = Word(source)
+	  var word_match = Word(source);
 
 	  if (word_match.error === true) {
-	    return word_match
-	  }
-	  else {
-	    name = word_match.result
+	    return word_match;
+	  } else {
+	    name = word_match.result;
 
 	    if (source.current().kind === 'left-bracket') {
-	      source.next()
+	      source.next();
 
-	      let index_expressions_match = IndexExpression(source)
+	      var index_expressions_match = IndexExpression(source);
 
 	      if (index_expressions_match.error === true) {
-	        return index_expressions_match
+	        return index_expressions_match;
 	      }
 
-	      isArray = true
-	      indexes = index_expressions_match.result
+	      isArray = true;
+	      indexes = index_expressions_match.result;
 
 	      if (source.current().kind === 'right-bracket') {
-	        source.next()
+	        source.next();
 
-	        return new Report(false, {name, isArray, indexes})
+	        return new _Report2.default(false, { name: name, isArray: isArray, indexes: indexes });
+	      } else {
+	        var current = source.current();
+
+	        var unexpected = current.kind;
+	        var expected = 'right-bracket';
+	        var atColumn = current.columnNumber;
+	        var atLine = current.lineNumber;
+
+	        return new _Report2.default(true, { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine });
 	      }
-	      else {
-	        let current = source.current()
-
-	        let unexpected  = current.kind
-	        let expected    = 'right-bracket'
-	        let atColumn    = current.columnNumber
-	        let atLine      = current.lineNumber
-
-	        return new Report(true, {unexpected, expected, atColumn, atLine})
-	      }
-	    }
-	    else {
-	      return new Report(false, {name, isArray, indexes})
+	    } else {
+	      return new _Report2.default(false, { name: name, isArray: isArray, indexes: indexes });
 	    }
 	  }
 	}
 
-	let precedence_by_op = {
-	  'power'       : 6 ,
-	  'div'         : 5 ,
-	  'mod'         : 5 ,
-	  'times'       : 5 ,
-	  'divide'      : 5 ,
-	  'minus'       : 4 ,
-	  'plus'        : 4 ,
-	  'minor-than'  : 3 ,
-	  'minor-equal' : 3 ,
-	  'major-than'  : 3 ,
-	  'major-equal' : 3 ,
-	  'equal'       : 2 ,
-	  'diff-than'   : 2 ,
-	  'and'         : 1 ,
-	  'or'          : 0
-	}
+	var precedence_by_op = {
+	  'power': 6,
+	  'div': 5,
+	  'mod': 5,
+	  'times': 5,
+	  'divide': 5,
+	  'minus': 4,
+	  'plus': 4,
+	  'minor-than': 3,
+	  'minor-equal': 3,
+	  'major-than': 3,
+	  'major-equal': 3,
+	  'equal': 2,
+	  'diff-than': 2,
+	  'and': 1,
+	  'or': 0
+	};
 
-	let operator_names = new Set(Object.getOwnPropertyNames(precedence_by_op))
+	var operator_names = new Set(Object.getOwnPropertyNames(precedence_by_op));
 
 	function UnaryExpression(source) {
-	  let op_found = false
-	  let op
-	  let current = source.current()
+	  var op_found = false;
+	  var op = void 0;
+	  var current = source.current();
 	  if (current.kind == 'minus' || current.kind == 'not' || current.kind == 'plus') {
-	    op_found = true
+	    op_found = true;
 	    if (current.kind == 'plus') {
-	      op_found = false
+	      op_found = false;
+	    } else {
+	      op = current.kind == 'minus' ? 'unary-minus' : 'not';
 	    }
-	    else {
-	      op = current.kind == 'minus' ? 'unary-minus' : 'not'
-	    }
-	    source.next()
+	    source.next();
 	  }
 
-	  let exp = PrimaryExpression(source)
+	  var exp = PrimaryExpression(source);
 
 	  if (exp.error) {
-	    return exp
-	  }
-	  else {
+	    return exp;
+	  } else {
 	    if (op_found) {
-	      let expression_type = 'unary-operation'
-	      let operand = exp.result
-	      let result = {expression_type, op, operand}
-	      let error = false
-	      return new Report(error, result)
-	    }
-	    else {
-	      let error = false
-	      let result = exp.result
-	      return new Report(error, result)
+	      var expression_type = 'unary-operation';
+	      var operand = exp.result;
+	      var result = { expression_type: expression_type, op: op, operand: operand };
+	      var error = false;
+	      return new _Report2.default(error, result);
+	    } else {
+	      var _error = false;
+	      var _result = exp.result;
+	      return new _Report2.default(_error, _result);
 	    }
 	  }
 	}
 
 	function PrimaryExpression(source) {
-	  let current = source.current()
+	  var current = source.current();
 	  if (current.kind == 'word') {
 	    if (source.peek().kind != 'left-par') {
 
-	      let variable_match = Variable(source)
+	      var variable_match = Variable(source);
 
 	      if (variable_match.error === true) {
-	        return variable_match
+	        return variable_match;
 	      }
 
-	      let name    = variable_match.result.name
-	      let isArray = variable_match.result.isArray
-	      let indexes = variable_match.result.indexes
+	      var name = variable_match.result.name;
+	      var isArray = variable_match.result.isArray;
+	      var indexes = variable_match.result.indexes;
 
-	      let error = false
-	      let expression_type = 'invocation'
-	      let result = {expression_type, name, isArray, indexes}
+	      var error = false;
+	      var expression_type = 'invocation';
+	      var result = { expression_type: expression_type, name: name, isArray: isArray, indexes: indexes };
 
-	      return new Report(error, result)
-	    }
-	    else {
+	      return new _Report2.default(error, result);
+	    } else {}
+	  } else if (current.kind == 'verdadero' || current.kind == 'falso') {
+	    var _error2 = false;
+	    var _expression_type = 'literal';
+	    var value = current.kind == 'verdadero';
+	    var type = 'logico';
+	    var _result2 = { expression_type: _expression_type, value: value, type: type };
+	    source.next();
+	    return new _Report2.default(_error2, _result2);
+	  } else if (current.kind == 'entero' || current.kind == 'real' || current.kind == 'string') {
+	    var _error3 = false;
+	    var _expression_type2 = 'literal';
+	    var _value = current.value;
+	    var _type = current.kind;
+	    var _result3 = { expression_type: _expression_type2, value: _value, type: _type };
 
-	    }
-	  }
-	  else if (current.kind == 'verdadero' || current.kind == 'falso') {
-	    let error = false
-	    let expression_type = 'literal'
-	    let value = current.kind == 'verdadero'
-	    let type = 'logico'
-	    let result = {expression_type, value, type}
-	    source.next()
-	    return new Report(error, result)
-	  }
-	  else if (current.kind == 'entero' || current.kind == 'real' || current.kind == 'string') {
-	    let error = false
-	    let expression_type = 'literal'
-	    let value = current.value
-	    let type = current.kind
-	    let result = {expression_type, value, type}
-
-	    if (type == 'string') {
-	      result.length = value.length
+	    if (_type == 'string') {
+	      _result3.length = _value.length;
 	    }
 
-	    source.next()
+	    source.next();
 
-	    return new Report(error, result)
-	  }
-	  else if (current.kind == 'left-par') {
-	    source.next()
-	    let exp = Expression(source)
+	    return new _Report2.default(_error3, _result3);
+	  } else if (current.kind == 'left-par') {
+	    source.next();
+	    var exp = Expression(source);
 	    if (exp.error) {
-	      return exp
-	    }
-	    else {
+	      return exp;
+	    } else {
 	      if (source.current().kind == 'right-par') {
-	        source.next()
-	        let error = false
-	        let expression_type = 'expression'
-	        let expression = exp.result
-	        let result = {expression_type, expression}
-	        return new Report(error, result)
-	      }
-	      else {
-	        let unexpected = source.current().kind
-	        let expected   = 'right-par'
-	        let atColumn        = source.current().columnNumber
-	        let atLine          = source.current().lineNumber
+	        source.next();
+	        var _error4 = false;
+	        var _expression_type3 = 'expression';
+	        var expression = exp.result;
+	        var _result4 = { expression_type: _expression_type3, expression: expression };
+	        return new _Report2.default(_error4, _result4);
+	      } else {
+	        var unexpected = source.current().kind;
+	        var expected = 'right-par';
+	        var atColumn = source.current().columnNumber;
+	        var atLine = source.current().lineNumber;
 
-	        let error = false
-	        let result = {unexpected, expected, atColumn, atLine}
+	        var _error5 = false;
+	        var _result5 = { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine };
 
-	        return new Report(error, result)
+	        return new _Report2.default(_error5, _result5);
 	      }
 	    }
-	  }
-	  else {
-	    let unexpected = current.kind
-	    let expected   = ['entero', 'real', 'cadena', 'verdadero', 'falso', '(expresion)']
-	    let atColumn        = current.columnNumber
-	    let atLine          = current.lineNumber
+	  } else {
+	    var _unexpected = current.kind;
+	    var _expected = ['entero', 'real', 'cadena', 'verdadero', 'falso', '(expresion)'];
+	    var _atColumn = current.columnNumber;
+	    var _atLine = current.lineNumber;
 
-	    let error           = true
-	    let result          = {unexpected, expected, atColumn, atLine}
+	    var _error6 = true;
+	    var _result6 = { unexpected: _unexpected, expected: _expected, atColumn: _atColumn, atLine: _atLine };
 
-	    return new Report(error, result)
+	    return new _Report2.default(_error6, _result6);
 	  }
 	}
 
 	function queueToRPN(source) {
-	  let operator_stack = []
-	  let output_stack = []
+	  var operator_stack = [];
+	  var output_stack = [];
 
-	  while ( source.current().kind != 'eol' && source.current().kind != 'eof' && source.current().kind != 'comma' && source.current().kind != 'right-par' && source.current().kind != 'right-bracket') {
-	    let operand_exp  = UnaryExpression(source)
+	  while (source.current().kind != 'eol' && source.current().kind != 'eof' && source.current().kind != 'comma' && source.current().kind != 'right-par' && source.current().kind != 'right-bracket') {
+	    var operand_exp = UnaryExpression(source);
 	    if (operand_exp.error) {
-	      return operand_exp
-	    }
-	    else {
-	      output_stack.push(operand_exp.result)
+	      return operand_exp;
+	    } else {
+	      output_stack.push(operand_exp.result);
 	    }
 
 	    if (operator_names.has(source.current().kind)) {
-	      while (operator_stack.length > 0 && precedence_by_op[source.current().kind] <= precedence_by_op[operator_stack[operator_stack.length-1]]) {
-	        output_stack.push(operator_stack.pop())
+	      while (operator_stack.length > 0 && precedence_by_op[source.current().kind] <= precedence_by_op[operator_stack[operator_stack.length - 1]]) {
+	        output_stack.push(operator_stack.pop());
 	      }
-	      operator_stack.push(source.current().kind)
-	      source.next()
+	      operator_stack.push(source.current().kind);
+	      source.next();
 	    }
 	  }
 
 	  while (operator_stack.length > 0) {
-	    output_stack.push(operator_stack.pop())
+	    output_stack.push(operator_stack.pop());
 	  }
 
-	  return new Report(false, output_stack)
+	  return new _Report2.default(false, output_stack);
 	}
 
 	function RPNtoTree(rpn_stack) {
-	  let last_token = rpn_stack.pop()
+	  var last_token = rpn_stack.pop();
 
 	  if (operator_names.has(last_token)) {
-	    let op = last_token
-	    let operands = [RPNtoTree(rpn_stack)]
-	    operands.unshift(RPNtoTree(rpn_stack))
-	    let expression_type = 'operation'
-	    return {expression_type, op, operands}
-	  }
-	  else {
-	    return last_token
+	    var op = last_token;
+	    var operands = [RPNtoTree(rpn_stack)];
+	    operands.unshift(RPNtoTree(rpn_stack));
+	    var expression_type = 'operation';
+	    return { expression_type: expression_type, op: op, operands: operands };
+	  } else {
+	    return last_token;
 	  }
 	}
 
 	function Expression(source) {
-	  let rpn = queueToRPN(source)
+	  var rpn = queueToRPN(source);
 
 	  if (rpn.error) {
-	    return rpn
-	  }
-	  else {
-	    let tree = RPNtoTree(rpn.result)
-	    return new Report(false, tree)
+	    return rpn;
+	  } else {
+	    var tree = RPNtoTree(rpn.result);
+	    return new _Report2.default(false, tree);
 	  }
 	}
 
 	function Assignment(source) {
 
-	  let variable_match = Variable(source)
+	  var variable_match = Variable(source);
 
 	  if (variable_match.error === true) {
-	    return variable_match
+	    return variable_match;
 	  }
 
-	  let name = variable_match.result.name
-	  let isArray = variable_match.result.isArray
-	  let indexes = variable_match.result.indexes
-	  let bounds_checked = false
-	  let target = {name, isArray, indexes, bounds_checked}
+	  var name = variable_match.result.name;
+	  var isArray = variable_match.result.isArray;
+	  var indexes = variable_match.result.indexes;
+	  var bounds_checked = false;
+	  var target = { name: name, isArray: isArray, indexes: indexes, bounds_checked: bounds_checked };
 
-	  let current = source.current()
+	  var current = source.current();
 
 	  if (current.kind === 'assignment') {
-	    source.next()
+	    source.next();
 
-	    let payload_variable_match = Expression(source)
+	    var payload_variable_match = Expression(source);
 
 	    if (payload_variable_match.error === true) {
-	      return payload
+	      return payload;
+	    } else {
+	      var _payload = payload_variable_match.result;
+	      var data = { action: 'assignment', target: target, payload: _payload };
+	      return new _Report2.default(false, data);
 	    }
-	    else {
-	      let payload = payload_variable_match.result
-	      let data = {action:'assignment', target, payload}
-	      return new Report(false, data)
-	    }
-	  }
-	  else {
-	    let unexpected      = source.current().kind
-	    let expected        = 'assignment'
-	    let atColumn        = source.current().columnNumber
-	    let atLine          = source.current().lineNumber
+	  } else {
+	    var unexpected = source.current().kind;
+	    var expected = 'assignment';
+	    var atColumn = source.current().columnNumber;
+	    var atLine = source.current().lineNumber;
 
-	    let result = {unexpected, expected, atColumn, atLine}
+	    var result = { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine };
 
-	    return new Report(true, result)
+	    return new _Report2.default(true, result);
 	  }
 	}
 
 	function ArgumentList(source) {
-	  let args = []
-	  let exp = Expression(source)
+	  var args = [];
+	  var exp = Expression(source);
 
 	  if (exp.error) {
-	    return exp
-	  }
-	  else {
-	    args.push(exp.result)
+	    return exp;
+	  } else {
+	    args.push(exp.result);
 
 	    if (source.current().kind == 'comma') {
-	      source.next()
-	      let next_args = ArgumentList(source)
+	      source.next();
+	      var next_args = ArgumentList(source);
 	      if (next_args.error) {
-	        return next_args
+	        return next_args;
+	      } else {
+	        args = args.concat(next_args.result);
+	        return new _Report2.default(false, args);
 	      }
-	      else {
-	        args = args.concat(next_args.result)
-	        return new Report(false, args)
-	      }
-	    }
-	    else {
-	      return new Report(false, args)
+	    } else {
+	      return new _Report2.default(false, args);
 	    }
 	  }
 	}
 
 	function ModuleCall(source) {
-	  let name = Word(source)
+	  var name = Word(source);
 
 	  if (source.current().kind != 'left-par') {
-	    let current = source.current()
-	    let unexpected  = current.kind
-	    let expected    = 'right-par'
-	    let atColumn    = current.columnNumber
-	    let atLine      = current.lineNumber
+	    var current = source.current();
+	    var unexpected = current.kind;
+	    var expected = 'right-par';
+	    var atColumn = current.columnNumber;
+	    var atLine = current.lineNumber;
 
-	    return new Report(true, {unexpected, expected, atColumn, atLine})
-	  }
-	  else {
-	    source.next()
+	    return new _Report2.default(true, { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine });
+	  } else {
+	    source.next();
 	  }
 
 	  if (source.current().kind != 'right-par') {
 
-	    let args = ArgumentList(source)
+	    var args = ArgumentList(source);
 
 	    if (args.error) {
-	      return arguments
-	    }
-	    else {
+	      return arguments;
+	    } else {
 	      if (source.current().kind == 'right-par') {
-	        source.next()
-	        let data = {
-	          args:args.result,
-	          name:name.result,
-	          action:'module_call',
-	          expression_type:'module_call'
-	        }
-	        return new Report(false, data)
-	      }
-	      else {
-	        let current = source.current()
-	        let unexpected  = current.kind
-	        let expected    = 'right-par'
-	        let atColumn    = current.columnNumber
-	        let atLine      = current.lineNumber
+	        source.next();
+	        var data = {
+	          args: args.result,
+	          name: name.result,
+	          action: 'module_call',
+	          expression_type: 'module_call'
+	        };
+	        return new _Report2.default(false, data);
+	      } else {
+	        var _current = source.current();
+	        var _unexpected2 = _current.kind;
+	        var _expected2 = 'right-par';
+	        var _atColumn2 = _current.columnNumber;
+	        var _atLine2 = _current.lineNumber;
 
-	        return new Report(true, {unexpected, expected, atColumn, atLine})
+	        return new _Report2.default(true, { unexpected: _unexpected2, expected: _expected2, atColumn: _atColumn2, atLine: _atLine2 });
 	      }
 	    }
-	  }
-	  else {
-	    source.next()
-	    let data = {
-	      args:[],
-	      name:name.result,
-	      action:'module_call',
-	      expression_type:'module_call'
-	    }
-	    return new Report(false, data)
+	  } else {
+	    source.next();
+	    var _data = {
+	      args: [],
+	      name: name.result,
+	      action: 'module_call',
+	      expression_type: 'module_call'
+	    };
+	    return new _Report2.default(false, _data);
 	  }
 	}
 
@@ -20924,77 +21177,99 @@
 	 */
 	function match(pattern_matcher) {
 	  return {
-	    from: (source) => {
-	      return pattern_matcher(source)
+	    from: function from(source) {
+	      return pattern_matcher(source);
 	    }
-	  }
+	  };
 	}
-
-	module.exports = {
-	  match                   : match,
-	  Integer                 : Integer,
-	  ArrayDimension          : ArrayDimension,
-	  Word                    : Word,
-	  VariableDeclaration     : VariableDeclaration,
-	  VariableList            : VariableList,
-	  TypeName                : TypeName,
-	  Declaration             : Declaration,
-	  IndexExpression         : IndexExpression,
-	  Variable                : Variable,
-	  Expression              : Expression,
-	  Assignment              : Assignment,
-	  ArgumentList            : ArgumentList,
-	  ModuleCall              : ModuleCall
-	}
-
 
 /***/ },
-/* 20 */
+/* 15 */
 /***/ function(module, exports) {
 
-	'use strict'
+	'use strict';
 
-	class Report {
-	  /**
-	   * Construye un reporte. Se usa para operaciones que pueden fallar.
-	   * @param  {bool} error_ocurred indica si ocurrió un error durante la operacion
-	   * @param  {any} result      resultado de la operación o causa del error
-	   * @return {Report}             reporte
-	   */
-	  constructor(error_ocurred, result) {
-	    this.error = error_ocurred
-	    if (result) {
-	      this.result = result
-	    }
-	    else {
-	      this.result = null
-	    }
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Report =
+	/**
+	 * Construye un reporte. Se usa para operaciones que pueden fallar.
+	 * @param  {bool} error_ocurred indica si ocurrió un error durante la operacion
+	 * @param  {any} result      resultado de la operación o causa del error
+	 * @return {Report}             reporte
+	 */
+	function Report(error_ocurred, result) {
+	  _classCallCheck(this, Report);
+
+	  this.error = error_ocurred;
+	  if (result) {
+	    this.result = result;
+	  } else {
+	    this.result = null;
 	  }
-	}
+	};
 
-	module.exports = Report
-
+	exports.default = Report;
 
 /***/ },
-/* 21 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	const Emitter = __webpack_require__(7)
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	const Scanner = __webpack_require__(22)
-	const TokenQueue = __webpack_require__(18)
-	const Patterns = __webpack_require__(19), match = Patterns.match
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	const Source = __webpack_require__(9)
-	const Lexer = __webpack_require__(10)
+	var _Emitter2 = __webpack_require__(7);
 
-	const TypeChecker = __webpack_require__(30)
+	var _Emitter3 = _interopRequireDefault(_Emitter2);
 
-	const defaults = {
-	  event_logging : false
-	}
+	var _Scanner = __webpack_require__(17);
+
+	var _Scanner2 = _interopRequireDefault(_Scanner);
+
+	var _TokenQueue = __webpack_require__(13);
+
+	var _TokenQueue2 = _interopRequireDefault(_TokenQueue);
+
+	var _SourceWrapper = __webpack_require__(9);
+
+	var _SourceWrapper2 = _interopRequireDefault(_SourceWrapper);
+
+	var _Lexer = __webpack_require__(10);
+
+	var _Lexer2 = _interopRequireDefault(_Lexer);
+
+	var _TypeChecker = __webpack_require__(22);
+
+	var _TypeChecker2 = _interopRequireDefault(_TypeChecker);
+
+	var _Patterns = __webpack_require__(14);
+
+	var Patterns = _interopRequireWildcard(_Patterns);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var match = Patterns.match;
+
+	var defaults = {
+	  event_logging: false
+	};
 
 	/**
 	 * Dados un objeto plantilla y otro con opciones personalizadas devuelve un
@@ -21006,23 +21281,27 @@
 	 * personalizadas
 	 */
 	function applyConfig(template, custom_options) {
-	  for (let option_name in template) {
-	    if ( !(option_name in custom_options) ) {
-	      custom_options[option_name] = template[option_name]
+	  for (var option_name in template) {
+	    if (!(option_name in custom_options)) {
+	      custom_options[option_name] = template[option_name];
 	    }
 	  }
-	  return custom_options
+	  return custom_options;
 	}
 
 	function genericHandler(event_info) {
-	  console.log('Evento:', event_info.name)
-	  console.log('Origen:', event_info.origin)
+	  console.log('Evento:', event_info.name);
+	  console.log('Origen:', event_info.origin);
 	  if (arguments.length > 1) {
-	    console.log('Callback args:', ...arguments, '\n')
+	    var _console;
+
+	    (_console = console).log.apply(_console, ['Callback args:'].concat(Array.prototype.slice.call(arguments), ['\n']));
 	  }
 	}
 
-	class Compiler extends Emitter {
+	var Compiler = function (_Emitter) {
+	  _inherits(Compiler, _Emitter);
+
 	  /**
 	   * Esta clase convierte el programa del usuario (cadena de texto) a una
 	   * estructura de datos con los datos necesarios para evaluarlo. En el proceso
@@ -21040,628 +21319,703 @@
 	   * 	- type-check-finished (via TypeChecker)
 	   */
 
-	  constructor(config) {
-	    super([
-	        'compilation-started'
-	      , 'lexical-error'
-	      , 'syntax-error'
-	      , 'compilation-finished'
-	      , 'type-check-started'
-	      , 'type-error'
-	      , 'type-check-finished'
-	    ])
+	  function Compiler(config) {
+	    _classCallCheck(this, Compiler);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Compiler).call(this, ['compilation-started', 'lexical-error', 'syntax-error', 'compilation-finished', 'type-check-started', 'type-error', 'type-check-finished']));
 
 	    if (config) {
-	      this.config = applyConfig(defaults, config)
-	    }
-	    else {
-	      this.config = defaults
-	    }
-
-	    if (this.config.event_logging) {
-	      this.on('any', genericHandler)
+	      _this.config = applyConfig(defaults, config);
+	    } else {
+	      _this.config = defaults;
 	    }
 
-	    this.parser = new Lexer()
+	    if (_this.config.event_logging) {
+	      _this.on('any', genericHandler);
+	    }
+
+	    _this.parser = new _Lexer2.default();
+	    return _this;
 	  }
 
-	  compile(source_code_string, run_type_checker) {
+	  _createClass(Compiler, [{
+	    key: 'compile',
+	    value: function compile(source_code_string, run_type_checker) {
 
-	    this.emit('compilation-started')
+	      this.emit('compilation-started');
 
-	    let source_wrapper = new Source(source_code_string)
+	      var source_wrapper = new _SourceWrapper2.default(source_code_string);
 
-	    let parse_report = this.parser.parse(source_wrapper)
+	      var parse_report = this.parser.parse(source_wrapper);
 
-	    if (parse_report.error) {
-	      for (let bad_token of parse_report.result) {
-	        this.emit('lexical-error', bad_token)
+	      if (parse_report.error) {
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+
+	        try {
+	          for (var _iterator = parse_report.result[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var bad_token = _step.value;
+
+	            this.emit('lexical-error', bad_token);
+	          }
+	        } catch (err) {
+	          _didIteratorError = true;
+	          _iteratorError = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion && _iterator.return) {
+	              _iterator.return();
+	            }
+	          } finally {
+	            if (_didIteratorError) {
+	              throw _iteratorError;
+	            }
+	          }
+	        }
+
+	        this.emit('compilation-finished', { error: true, result: 'parse_errors' });
+	        return { error: true, result: 'parse_errors' };
 	      }
-	      this.emit('compilation-finished', {error:true, result:'parse_errors'})
-	      return {error:true, result:'parse_errors'}
-	    }
 
-	    let scanner = new Scanner(new TokenQueue(parse_report.result))
+	      var scanner = new _Scanner2.default(new _TokenQueue2.default(parse_report.result));
 
-	    let scan_report = scanner.getModules()
+	      var scan_report = scanner.getModules();
 
-	    if (scan_report.error) {
-	      this.emit('syntax-error', scan_report.result)
+	      if (scan_report.error) {
+	        this.emit('syntax-error', scan_report.result);
 
-	      this.emit('compilation-finished', {error:true, result:'syntax_error'})
+	        this.emit('compilation-finished', { error: true, result: 'syntax_error' });
 
-	      return {error:true, result:'syntax_error'}
-	    }
-
-	    if (run_type_checker) {
-	      let type_error = false
-
-	      let modules = scan_report.result
-
-	      let main = modules.main
-
-	      let type_checker = new TypeChecker(main.statements, {}, main.variables, main.variables)
-
-	      // TODO: agregar a Emitter la posibilidad de tener handlers que se
-	      // ejecuten solo una vez
-
-	      let error_info = null
-
-	      type_checker.on('type-error', (ev_info, error_report) => {
-	        type_error = true
-	        error_info = error_report
-	      })
-
-	      this.repeatAllPublicEvents(type_checker)
-
-	      type_checker.lookForErrors()
-
-	      if (type_error) {
-	        this.emit('compilation-finished', {error:true, result:error_info})
-	        return {error:true, result:'type_error'}
+	        return { error: true, result: 'syntax_error' };
 	      }
+
+	      if (run_type_checker) {
+	        var type_error = false;
+
+	        var modules = scan_report.result;
+
+	        var main = modules.main;
+
+	        var type_checker = new _TypeChecker2.default(main.statements, {}, main.variables, main.variables);
+
+	        // TODO: agregar a Emitter la posibilidad de tener handlers que se
+	        // ejecuten solo una vez
+
+	        var error_info = null;
+
+	        type_checker.on('type-error', function (ev_info, error_report) {
+	          type_error = true;
+	          error_info = error_report;
+	        });
+
+	        this.repeatAllPublicEvents(type_checker);
+
+	        type_checker.lookForErrors();
+
+	        if (type_error) {
+	          this.emit('compilation-finished', { error: true, result: error_info });
+	          return { error: true, result: 'type_error' };
+	        }
+	      }
+
+	      this.emit('compilation-finished', { error: false });
+
+	      return { error: false, result: scan_report.result };
 	    }
+	  }]);
 
-	    this.emit('compilation-finished', {error:false})
+	  return Compiler;
+	}(_Emitter3.default);
 
-	    return {error:false, result:scan_report.result}
-	  }
-	}
-
-	module.exports = Compiler
-
+	exports.default = Compiler;
 
 /***/ },
-/* 22 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	const MainModuleScanner = __webpack_require__(23)
-	const TokenQueue = __webpack_require__(18)
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	class Scanner {
-	  constructor(queue) {
-	    this.queue = queue
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _MainModuleScanner = __webpack_require__(18);
+
+	var _MainModuleScanner2 = _interopRequireDefault(_MainModuleScanner);
+
+	var _TokenQueue = __webpack_require__(13);
+
+	var _TokenQueue2 = _interopRequireDefault(_TokenQueue);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Scanner = function () {
+	  function Scanner(queue) {
+	    _classCallCheck(this, Scanner);
+
+	    this.queue = queue;
 	  }
 
-	  getModules() {
-	    let modules = {}
+	  _createClass(Scanner, [{
+	    key: 'getModules',
+	    value: function getModules() {
+	      var modules = {};
 
-	    let main_data = MainModuleScanner.capture(this.queue)
+	      var main_data = _MainModuleScanner2.default.capture(this.queue);
 
-	    if (main_data.error) {
-	      return main_data
-	    }
-	    else {
-	      modules.main = main_data.result
-	    }
+	      if (main_data.error) {
+	        return main_data;
+	      } else {
+	        modules.main = main_data.result;
+	      }
 
-	    if (this.queue.current().kind == 'eof') {
-	      return {
-	          result : modules
-	        , error  : false
+	      if (this.queue.current().kind == 'eof') {
+	        return {
+	          result: modules,
+	          error: false
+	        };
+	      } else {
+	        return { error: true };
 	      }
 	    }
-	    else {
-	      return {error:true}
-	    }
-	  }
-	}
+	  }]);
 
-	module.exports = Scanner
+	  return Scanner;
+	}();
 
+	exports.default = Scanner;
 
 /***/ },
-/* 23 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	const Report = __webpack_require__(20)
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	const StatementCollector = __webpack_require__(24)
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	const Patterns = __webpack_require__(19)
-	const match = Patterns.match
+	var _Report = __webpack_require__(15);
+
+	var _Report2 = _interopRequireDefault(_Report);
+
+	var _StatementCollector = __webpack_require__(19);
+
+	var _StatementCollector2 = _interopRequireDefault(_StatementCollector);
+
+	var _Patterns = __webpack_require__(14);
+
+	var Patterns = _interopRequireWildcard(_Patterns);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var match = Patterns.match;
 
 	function skipWhiteSpace(source) {
-	  let current = source.current()
+	  var current = source.current();
 	  while (current.kind === 'eol') {
-	    current = source.next()
+	    current = source.next();
 	  }
 	}
 
-	class MainModuleScanner {
-
-	  static capture(source) {
-	    let module_data = {
-	        statements      : []
-	      , variables       : {}
-	      , atColumn        : 0
-	      , atLine          : 0
-	      , name            : 'main'
-	    }
-
-	    let current = source.current()
-
-	    if (current.kind === 'eol') {
-	      skipWhiteSpace(source)
-	    }
-
-	    current = source.current()
-
-	    if (current.kind !== 'variables') {
-	      let unexpected  = current.kind
-	      let expected    = 'variables'
-	      let atColumn    = current.columnNumber
-	      let atLine      = current.lineNumber
-	      let reason      = 'missing-var-declaration'
-	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
-	    }
-	    else {
-	      current = source.next()
-	    }
-
-	    if (current.kind === 'eol') {
-	      skipWhiteSpace(source)
-	    }
-
-	    let declaration_match = match(Patterns.Declaration).from(source)
-
-	    if (declaration_match.error && !(declaration_match.result.reason === 'nonexistent-type' && declaration_match.result.unexpected === 'inicio')) {
-	      return declaration_match
-	    }
-	    else {
-	      module_data.variables = declaration_match.result
-	    }
-	    current = source.current()
-
-	    if (current.kind === 'eol') {
-	      skipWhiteSpace(source)
-	    }
-
-	    current = source.current()
-	    if (current.kind !== 'inicio') {
-	      let unexpected  = current.kind
-	      let expected    = 'inicio'
-	      let atColumn    = current.columnNumber
-	      let atLine      = current.lineNumber
-	      let reason      = 'missing-inicio'
-
-	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
-	    }
-	    else {
-	      current = source.next()
-	    }
-
-	    if (current.kind === 'eol') {
-	      skipWhiteSpace(source)
-	    }
-
-	    let statements = StatementCollector.capture(source)
-
-	    if (statements.error) {
-	      return statements
-	    }
-	    else {
-	      module_data.statements = statements.result
-	    }
-
-	    if (source.current().kind === 'eol') {
-	      skipWhiteSpace(source)
-	    }
-
-	    current = source.current()
-
-	    if (current.kind !== 'fin') {
-	      let unexpected  = current.kind
-	      let expected    = 'fin'
-	      let atColumn    = current.columnNumber
-	      let atLine      = current.lineNumber
-	      let reason      = 'missing-fin'
-
-	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
-	    }
-	    else {
-	      source.next()
-	    }
-
-	    if (source.current().kind === 'eol') {
-	      skipWhiteSpace(source)
-	    }
-
-	    return new Report(false, module_data)
+	var MainModuleScanner = function () {
+	  function MainModuleScanner() {
+	    _classCallCheck(this, MainModuleScanner);
 	  }
-	}
 
-	module.exports = MainModuleScanner
-
-
-/***/ },
-/* 24 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	const Patterns = __webpack_require__(19)
-	const match = Patterns.match
-
-	const TokenQueue = __webpack_require__(18)
-
-	const Report = __webpack_require__(20)
-
-	const Node = __webpack_require__(25)
-	const IfNode = __webpack_require__(26)
-	const WhileNode = __webpack_require__(28)
-	const UntilNode = __webpack_require__(29)
-	const LinkedList = __webpack_require__(27).LinkedList
-	const getChainLength = __webpack_require__(27).getChainLength
-	const getLastNode = __webpack_require__(27).getLastNode
-
-	function skipWhiteSpace(source) {
-	  let current = source.current()
-	  while (current.kind === 'eol') {
-	    current = source.next()
-	  }
-	}
-
-	class WhileScanner {
-	  static capture(source) {
-	    let condition
-	    let body = null
-	    let node = new WhileNode()
-
-	    source.next() // consume 'mientras'
-
-	    if (source.current().kind === 'eol')
-	      skipWhiteSpace(source)
-
-	    if (source.current().kind === 'left-par') {
-	      source.next()
-	    }
-	    else {
-	      let current = source.current()
-	      let unexpected = current.kind
-	      let expected = 'left-par'
-	      let atColumn = current.columnNumber
-	      let atLine = current.lineNumber
-	      return new Report(true, {unexpected, expected, atColumn, atLine})
-	    }
-
-	    // Esto arma un TokenQueue con los tokens de la condicion del bucle
-
-	    let token_array = []
-	    let current_token = source.current()
-
-	    while (current_token.kind != 'right-par' && current_token.kind != 'eof') {
-	      token_array.push(current_token)
-	      current_token = source.next()
-	    }
-
-	    if (source.current().kind === 'right-par') {
-	      source.next()
-	    }
-	    else {
-	      let current = source.current()
-	      let unexpected = current.kind
-	      let expected = 'right-par'
-	      let atColumn = current.columnNumber
-	      let atLine = current.lineNumber
-	      return new Report(true, {unexpected, expected, atColumn, atLine})
-	    }
-
-	    let expression_q = new TokenQueue(token_array)
-
-	    let condition_exp = match(Patterns.Expression).from(expression_q)
-
-	    if (condition_exp.error) {
-	      return condition_exp
-	    }
-	    else {
-	      condition = condition_exp.result
-	    }
-
-	    if (source.current().kind === 'eol')
-	      skipWhiteSpace(source)
-
-	    let statements = StatementCollector.capture(source)
-
-	    if (statements.error) {
-	      return statements
-	    }
-	    else {
-	      body = statements.result
-	    }
-
-	    if (source.current().kind === 'eol')
-	      skipWhiteSpace(source)
-
-	    if (source.current().kind === 'finmientras') {
-	      source.next()
-	    }
-	    else {
-	      let current = source.current()
-	      let unexpected = current.kind
-	      let expected = 'finmientras'
-	      let atColumn = current.columnNumber
-	      let atLine = current.lineNumber
-	      return new Report(true, {unexpected, expected, atColumn, atLine})
-	    }
-
-	    if (source.current().kind === 'eol')
-	      skipWhiteSpace(source)
-
-	    let action = 'while'
-
-	    node.data = {action, condition}
-	    node.loop_body_root = body
-
-	    return new Report(false, node)
-	  }
-	}
-
-	class RepeatScanner {
-	  static capture(source) {
-	    let condition
-	    let body_root_node = null
-
-	    source.next()
-
-	    if (source.current().kind === 'eol')
-	      skipWhiteSpace(source)
-
-
-	    let statements = StatementCollector.capture(source)
-
-	    if (statements.error) {
-	      return statements
-	    }
-	    else {
-	      body_root_node = statements.result
-	    }
-
-	    if (source.current().kind === 'eol')
-	      skipWhiteSpace(source)
-
-	    if (source.current().kind === 'hasta') {
-	      source.next()
-	    }
-	    else {
-	      let current = source.current()
-	      let unexpected  = current.kind
-	      let expected    = 'hasta'
-	      let atColumn    = current.columnNumber
-	      let atLine      = current.lineNumber
-
-	      return new Report(true, {unexpected, expected, atColumn, atLine})
-	    }
-
-	    if (source.current().kind === 'que') {
-	      source.next()
-	    }
-	    else {
-	      let current = source.current()
-	      let unexpected  = current.kind
-	      let expected    = 'que'
-	      let atColumn    = current.columnNumber
-	      let atLine      = current.lineNumber
-
-	      return new Report(true, {unexpected, expected, atColumn, atLine})
-	    }
-
-	    if (source.current().kind === 'left-par') {
-	      source.next()
-	    }
-	    else {
-	      let current = source.current()
-	      let unexpected  = current.kind
-	      let expected    = 'letf-par'
-	      let atColumn    = current.columnNumber
-	      let atLine      = current.lineNumber
-
-	      return new Report(true, {unexpected, expected, atColumn, atLine})
-	    }
-
-	    let token_array = []
-	    let current_token = source.current()
-
-	    while (current_token.kind != 'right-par' && current_token.kind != 'eof') {
-	      token_array.push(current_token)
-	      current_token = source.next()
-	    }
-
-	    if (current_token.kind === 'right-par') {
-	      source.next()
-	    }
-	    else {
-	      let current = source.current()
-	      let unexpected  = current.kind
-	      let expected    = 'right-par'
-	      let atColumn    = current.columnNumber
-	      let atLine      = current.lineNumber
-
-	      return new Report(true, {unexpected, expected, atColumn, atLine})
-	    }
-
-	    let expression_q = new TokenQueue(token_array)
-
-	    let condition_exp = match(Patterns.Expression).from(expression_q)
-
-	    if (condition_exp.error) {
-	      return condition_exp
-	    }
-	    else {
-	      condition = condition_exp.result
-	    }
-
-	    if (source.current().kind === 'eol')
-	      skipWhiteSpace(source)
-
-	    let action = 'repeat'
-	    let data = {action, condition}
-
-	    let until_node = new UntilNode(data)
-	    until_node.loop_body_root = body_root_node
-
-	    let last_body_node = getLastNode(body_root_node)
-	    last_body_node.setNext(until_node)
-
-	    return new Report(false, body_root_node)
-	  }
-	}
-
-	class IfScanner {
-	  static capture(source) {
-	    let condition
-	    let true_branch = null
-	    let false_branch = null
-	    let node = new IfNode()
-
-	    source.next() // consumir el 'si'
-
-	    if (source.current().kind === 'left-par') {
-	      source.next()
-	    } else {
-	      let current = source.current()
-	      let unexpected  = source.current().kind
-	      let expected    = 'left-par'
-	      let atColumn    = source.current().columnNumber
-	      let atLine      = source.current().lineNumber
-	      let reason      = 'missing-par-at-if'
-
-	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
-	    }
-
-	    let token_array = []
-	    let current_token = source.current()
-
-	    while (current_token.kind !== 'right-par' && current_token.kind !== 'eof') {
-	      token_array.push(current_token)
-	      current_token = source.next()
-	    }
-
-	    if (current_token.kind ==='right-par') {
-	      source.next()
-	    } else {
-	      let current = source.current()
-	      let unexpected  = source.current().kind
-	      let expected    = 'right-par'
-	      let atColumn    = source.current().columnNumber
-	      let atLine      = source.current().lineNumber
-	      let reason      = 'missing-par-at-if'
-
-	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
-	    }
-
-	    let expression_q = new TokenQueue(token_array)
-
-	    let condition_exp = match(Patterns.Expression).from(expression_q)
-
-	    if (condition_exp.error) {
-	      return condition_exp
-	    }
-	    else {
-	      condition = condition_exp.result
-	    }
-
-	    if (source.current().kind === 'entonces') {
-	      source.next() // consumir el token
-	    } else {
-	      let current = source.current()
-	      let unexpected  = source.current().kind
-	      let expected    = 'entonces'
-	      let atColumn    = source.current().columnNumber
-	      let atLine      = source.current().lineNumber
-	      let reason      = 'missing-entonces-at-if'
-
-	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
-	    }
-
-	    if (source.current().kind === 'eol')
-	      skipWhiteSpace(source)
-
-	    let statements = StatementCollector.capture(source)
-
-	    if (statements.error) {
-	      return statements
-	    }
-	    else {
-	      true_branch = statements.result
-	    }
-
-	    if (source.current().kind === 'eol')
-	      skipWhiteSpace(source)
-
-	    if (source.current().kind === 'sino') {
-	      source.next() // consumir sino
-
-	      if (source.current().kind === 'eol')
-	        skipWhiteSpace(source)
-
-	      let statements = StatementCollector.capture(source)
+	  _createClass(MainModuleScanner, null, [{
+	    key: 'capture',
+	    value: function capture(source) {
+	      var module_data = {
+	        statements: [],
+	        variables: {},
+	        atColumn: 0,
+	        atLine: 0,
+	        name: 'main'
+	      };
+
+	      var current = source.current();
+
+	      if (current.kind === 'eol') {
+	        skipWhiteSpace(source);
+	      }
+
+	      current = source.current();
+
+	      if (current.kind !== 'variables') {
+	        var unexpected = current.kind;
+	        var expected = 'variables';
+	        var atColumn = current.columnNumber;
+	        var atLine = current.lineNumber;
+	        var reason = 'missing-var-declaration';
+	        return new _Report2.default(true, { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine, reason: reason });
+	      } else {
+	        current = source.next();
+	      }
+
+	      if (current.kind === 'eol') {
+	        skipWhiteSpace(source);
+	      }
+
+	      var declaration_match = match(Patterns.Declaration).from(source);
+
+	      if (declaration_match.error && !(declaration_match.result.reason === 'nonexistent-type' && declaration_match.result.unexpected === 'inicio')) {
+	        return declaration_match;
+	      } else {
+	        module_data.variables = declaration_match.result;
+	      }
+	      current = source.current();
+
+	      if (current.kind === 'eol') {
+	        skipWhiteSpace(source);
+	      }
+
+	      current = source.current();
+	      if (current.kind !== 'inicio') {
+	        var _unexpected = current.kind;
+	        var _expected = 'inicio';
+	        var _atColumn = current.columnNumber;
+	        var _atLine = current.lineNumber;
+	        var _reason = 'missing-inicio';
+
+	        return new _Report2.default(true, { unexpected: _unexpected, expected: _expected, atColumn: _atColumn, atLine: _atLine, reason: _reason });
+	      } else {
+	        current = source.next();
+	      }
+
+	      if (current.kind === 'eol') {
+	        skipWhiteSpace(source);
+	      }
+
+	      var statements = _StatementCollector2.default.capture(source);
 
 	      if (statements.error) {
-	        return statements
+	        return statements;
+	      } else {
+	        module_data.statements = statements.result;
 	      }
-	      else {
-	        false_branch = statements.result
+
+	      if (source.current().kind === 'eol') {
+	        skipWhiteSpace(source);
 	      }
+
+	      current = source.current();
+
+	      if (current.kind !== 'fin') {
+	        var _unexpected2 = current.kind;
+	        var _expected2 = 'fin';
+	        var _atColumn2 = current.columnNumber;
+	        var _atLine2 = current.lineNumber;
+	        var _reason2 = 'missing-fin';
+
+	        return new _Report2.default(true, { unexpected: _unexpected2, expected: _expected2, atColumn: _atColumn2, atLine: _atLine2, reason: _reason2 });
+	      } else {
+	        source.next();
+	      }
+
+	      if (source.current().kind === 'eol') {
+	        skipWhiteSpace(source);
+	      }
+
+	      return new _Report2.default(false, module_data);
 	    }
+	  }]);
 
-	    if (source.current().kind === 'eol')
-	      skipWhiteSpace(source)
+	  return MainModuleScanner;
+	}();
 
-	    if (source.current().kind === 'finsi') {
-	      source.next() // consumir finsi
+	exports.default = MainModuleScanner;
 
-	      if (source.current().kind === 'eol')
-	        skipWhiteSpace(source)
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
 
-	      if (false_branch !== null) {
-	        node.leftBranchNode = false_branch
-	      }
+	'use strict';
 
-	      if (true_branch !== null) {
-	        node.rightBranchNode = true_branch
-	      }
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	      let data = {condition, action:'if'}
-	      node.data = data
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	      return new Report(false, node)
-	    } else {
-	      let current = source.current()
-	      let unexpected  = source.current().kind
-	      let expected    = ['finsi', 'sino']
-	      let atColumn    = source.current().columnNumber
-	      let atLine      = source.current().lineNumber
-	      let reason      = 'missing-sino-finsi-at-if'
+	var _Report = __webpack_require__(15);
 
-	      return new Report(true, {unexpected, expected, atColumn, atLine, reason})
-	    }
+	var _Report2 = _interopRequireDefault(_Report);
+
+	var _Nodes = __webpack_require__(20);
+
+	var _List = __webpack_require__(21);
+
+	var _TokenQueue = __webpack_require__(13);
+
+	var _TokenQueue2 = _interopRequireDefault(_TokenQueue);
+
+	var _Patterns = __webpack_require__(14);
+
+	var Patterns = _interopRequireWildcard(_Patterns);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var match = Patterns.match;
+
+	function skipWhiteSpace(source) {
+	  var current = source.current();
+	  while (current.kind === 'eol') {
+	    current = source.next();
 	  }
 	}
+
+	var WhileScanner = function () {
+	  function WhileScanner() {
+	    _classCallCheck(this, WhileScanner);
+	  }
+
+	  _createClass(WhileScanner, null, [{
+	    key: 'capture',
+	    value: function capture(source) {
+	      var condition = void 0;
+	      var body = null;
+	      var node = new _Nodes.WhileNode();
+
+	      source.next(); // consume 'mientras'
+
+	      if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	      if (source.current().kind === 'left-par') {
+	        source.next();
+	      } else {
+	        var current = source.current();
+	        var unexpected = current.kind;
+	        var expected = 'left-par';
+	        var atColumn = current.columnNumber;
+	        var atLine = current.lineNumber;
+	        return new _Report2.default(true, { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine });
+	      }
+
+	      // Esto arma un TokenQueue con los tokens de la condicion del bucle
+
+	      var token_array = [];
+	      var current_token = source.current();
+
+	      while (current_token.kind != 'right-par' && current_token.kind != 'eof') {
+	        token_array.push(current_token);
+	        current_token = source.next();
+	      }
+
+	      if (source.current().kind === 'right-par') {
+	        source.next();
+	      } else {
+	        var _current = source.current();
+	        var _unexpected = _current.kind;
+	        var _expected = 'right-par';
+	        var _atColumn = _current.columnNumber;
+	        var _atLine = _current.lineNumber;
+	        return new _Report2.default(true, { unexpected: _unexpected, expected: _expected, atColumn: _atColumn, atLine: _atLine });
+	      }
+
+	      var expression_q = new _TokenQueue2.default(token_array);
+
+	      var condition_exp = match(Patterns.Expression).from(expression_q);
+
+	      if (condition_exp.error) {
+	        return condition_exp;
+	      } else {
+	        condition = condition_exp.result;
+	      }
+
+	      if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	      var statements = StatementCollector.capture(source);
+
+	      if (statements.error) {
+	        return statements;
+	      } else {
+	        body = statements.result;
+	      }
+
+	      if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	      if (source.current().kind === 'finmientras') {
+	        source.next();
+	      } else {
+	        var _current2 = source.current();
+	        var _unexpected2 = _current2.kind;
+	        var _expected2 = 'finmientras';
+	        var _atColumn2 = _current2.columnNumber;
+	        var _atLine2 = _current2.lineNumber;
+	        return new _Report2.default(true, { unexpected: _unexpected2, expected: _expected2, atColumn: _atColumn2, atLine: _atLine2 });
+	      }
+
+	      if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	      var action = 'while';
+
+	      node.data = { action: action, condition: condition };
+	      node.loop_body_root = body;
+
+	      return new _Report2.default(false, node);
+	    }
+	  }]);
+
+	  return WhileScanner;
+	}();
+
+	var RepeatScanner = function () {
+	  function RepeatScanner() {
+	    _classCallCheck(this, RepeatScanner);
+	  }
+
+	  _createClass(RepeatScanner, null, [{
+	    key: 'capture',
+	    value: function capture(source) {
+	      var condition = void 0;
+	      var body_root_node = null;
+
+	      source.next();
+
+	      if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	      var statements = StatementCollector.capture(source);
+
+	      if (statements.error) {
+	        return statements;
+	      } else {
+	        body_root_node = statements.result;
+	      }
+
+	      if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	      if (source.current().kind === 'hasta') {
+	        source.next();
+	      } else {
+	        var current = source.current();
+	        var unexpected = current.kind;
+	        var expected = 'hasta';
+	        var atColumn = current.columnNumber;
+	        var atLine = current.lineNumber;
+
+	        return new _Report2.default(true, { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine });
+	      }
+
+	      if (source.current().kind === 'que') {
+	        source.next();
+	      } else {
+	        var _current3 = source.current();
+	        var _unexpected3 = _current3.kind;
+	        var _expected3 = 'que';
+	        var _atColumn3 = _current3.columnNumber;
+	        var _atLine3 = _current3.lineNumber;
+
+	        return new _Report2.default(true, { unexpected: _unexpected3, expected: _expected3, atColumn: _atColumn3, atLine: _atLine3 });
+	      }
+
+	      if (source.current().kind === 'left-par') {
+	        source.next();
+	      } else {
+	        var _current4 = source.current();
+	        var _unexpected4 = _current4.kind;
+	        var _expected4 = 'letf-par';
+	        var _atColumn4 = _current4.columnNumber;
+	        var _atLine4 = _current4.lineNumber;
+
+	        return new _Report2.default(true, { unexpected: _unexpected4, expected: _expected4, atColumn: _atColumn4, atLine: _atLine4 });
+	      }
+
+	      var token_array = [];
+	      var current_token = source.current();
+
+	      while (current_token.kind != 'right-par' && current_token.kind != 'eof') {
+	        token_array.push(current_token);
+	        current_token = source.next();
+	      }
+
+	      if (current_token.kind === 'right-par') {
+	        source.next();
+	      } else {
+	        var _current5 = source.current();
+	        var _unexpected5 = _current5.kind;
+	        var _expected5 = 'right-par';
+	        var _atColumn5 = _current5.columnNumber;
+	        var _atLine5 = _current5.lineNumber;
+
+	        return new _Report2.default(true, { unexpected: _unexpected5, expected: _expected5, atColumn: _atColumn5, atLine: _atLine5 });
+	      }
+
+	      var expression_q = new _TokenQueue2.default(token_array);
+
+	      var condition_exp = match(Patterns.Expression).from(expression_q);
+
+	      if (condition_exp.error) {
+	        return condition_exp;
+	      } else {
+	        condition = condition_exp.result;
+	      }
+
+	      if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	      var action = 'repeat';
+	      var data = { action: action, condition: condition };
+
+	      var until_node = new _Nodes.UntilNode(data);
+	      until_node.loop_body_root = body_root_node;
+
+	      var last_body_node = (0, _List.getLastNode)(body_root_node);
+	      last_body_node.setNext(until_node);
+
+	      return new _Report2.default(false, body_root_node);
+	    }
+	  }]);
+
+	  return RepeatScanner;
+	}();
+
+	var IfScanner = function () {
+	  function IfScanner() {
+	    _classCallCheck(this, IfScanner);
+	  }
+
+	  _createClass(IfScanner, null, [{
+	    key: 'capture',
+	    value: function capture(source) {
+	      var condition = void 0;
+	      var true_branch = null;
+	      var false_branch = null;
+	      var node = new _Nodes.IfNode();
+
+	      source.next(); // consumir el 'si'
+
+	      if (source.current().kind === 'left-par') {
+	        source.next();
+	      } else {
+	        var current = source.current();
+	        var unexpected = source.current().kind;
+	        var expected = 'left-par';
+	        var atColumn = source.current().columnNumber;
+	        var atLine = source.current().lineNumber;
+	        var reason = 'missing-par-at-if';
+
+	        return new _Report2.default(true, { unexpected: unexpected, expected: expected, atColumn: atColumn, atLine: atLine, reason: reason });
+	      }
+
+	      var token_array = [];
+	      var current_token = source.current();
+
+	      while (current_token.kind !== 'right-par' && current_token.kind !== 'eof') {
+	        token_array.push(current_token);
+	        current_token = source.next();
+	      }
+
+	      if (current_token.kind === 'right-par') {
+	        source.next();
+	      } else {
+	        var _current6 = source.current();
+	        var _unexpected6 = source.current().kind;
+	        var _expected6 = 'right-par';
+	        var _atColumn6 = source.current().columnNumber;
+	        var _atLine6 = source.current().lineNumber;
+	        var _reason = 'missing-par-at-if';
+
+	        return new _Report2.default(true, { unexpected: _unexpected6, expected: _expected6, atColumn: _atColumn6, atLine: _atLine6, reason: _reason });
+	      }
+
+	      var expression_q = new _TokenQueue2.default(token_array);
+
+	      var condition_exp = match(Patterns.Expression).from(expression_q);
+
+	      if (condition_exp.error) {
+	        return condition_exp;
+	      } else {
+	        condition = condition_exp.result;
+	      }
+
+	      if (source.current().kind === 'entonces') {
+	        source.next(); // consumir el token
+	      } else {
+	          var _current7 = source.current();
+	          var _unexpected7 = source.current().kind;
+	          var _expected7 = 'entonces';
+	          var _atColumn7 = source.current().columnNumber;
+	          var _atLine7 = source.current().lineNumber;
+	          var _reason2 = 'missing-entonces-at-if';
+
+	          return new _Report2.default(true, { unexpected: _unexpected7, expected: _expected7, atColumn: _atColumn7, atLine: _atLine7, reason: _reason2 });
+	        }
+
+	      if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	      var statements = StatementCollector.capture(source);
+
+	      if (statements.error) {
+	        return statements;
+	      } else {
+	        true_branch = statements.result;
+	      }
+
+	      if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	      if (source.current().kind === 'sino') {
+	        source.next(); // consumir sino
+
+	        if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	        var _statements = StatementCollector.capture(source);
+
+	        if (_statements.error) {
+	          return _statements;
+	        } else {
+	          false_branch = _statements.result;
+	        }
+	      }
+
+	      if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	      if (source.current().kind === 'finsi') {
+	        source.next(); // consumir finsi
+
+	        if (source.current().kind === 'eol') skipWhiteSpace(source);
+
+	        if (false_branch !== null) {
+	          node.leftBranchNode = false_branch;
+	        }
+
+	        if (true_branch !== null) {
+	          node.rightBranchNode = true_branch;
+	        }
+
+	        var data = { condition: condition, action: 'if' };
+	        node.data = data;
+
+	        return new _Report2.default(false, node);
+	      } else {
+	        var _current8 = source.current();
+	        var _unexpected8 = source.current().kind;
+	        var _expected8 = ['finsi', 'sino'];
+	        var _atColumn8 = source.current().columnNumber;
+	        var _atLine8 = source.current().lineNumber;
+	        var _reason3 = 'missing-sino-finsi-at-if';
+
+	        return new _Report2.default(true, { unexpected: _unexpected8, expected: _expected8, atColumn: _atColumn8, atLine: _atLine8, reason: _reason3 });
+	      }
+	    }
+	  }]);
+
+	  return IfScanner;
+	}();
 
 	/**
 	 * Lo que StatementCollector debe devolver es el primer Nodo de una lista.
@@ -21673,393 +22027,393 @@
 	 * escribí esto para explicar deben funcionar los nodos.
 	 */
 
-	class StatementCollector {
-	  static capture(source) {
-	    let list  = new LinkedList()
-
-	    let current = source.current()
-
-	    let done = false
-	    let eof_reached = current.kind === 'eof'
-
-	    while ( !eof_reached && !done) {
-	      current = source.current()
-
-	      if (current.kind === 'word' && source.peek().kind === 'left-par') {
-	        let call = match(Patterns.ModuleCall).from(source)
-	        if (call.error) {
-	          return call
-	        }
-	        else {
-	          list.addNode(new Node(call.result))
-	        }
-	      }
-	      else if (current.kind === 'word') {
-	        let assignment = match(Patterns.Assignment).from(source)
-	        if (assignment.error) {
-	          return assignment
-	        }
-	        else {
-	          list.addNode(new Node(assignment.result))
-	        }
-	      }
-	      else if (current.kind === 'si') {
-	        let if_block = IfScanner.capture(source)
-
-	        if (if_block.error) {
-	          return if_block
-	        }
-	        else {
-	          list.addNode(if_block.result)
-	        }
-	      }
-	      else if (current.kind === 'mientras') {
-	        let while_node = WhileScanner.capture(source)
-
-	        if (while_node.error) {
-	          return while_node
-	        }
-	        else {
-	          list.addNode(while_node.result)
-	        }
-	      }
-	      else if (current.kind === 'repetir') {
-	        let loop_body_root = RepeatScanner.capture(source)
-
-	        if (loop_body_root.error) {
-	          return loop_body_root
-	        }
-	        else {
-	          list.addNode(loop_body_root.result)
-	        }
-	      }
-	      else {
-	        done = true
-	      }
-	      current = source.current()
-	      if (current.kind === 'eol') {
-	        skipWhiteSpace(source)
-	      }
-	    }
-
-	    return new  Report(false, list.firstNode)
+	var StatementCollector = function () {
+	  function StatementCollector() {
+	    _classCallCheck(this, StatementCollector);
 	  }
-	}
 
-	module.exports = StatementCollector
+	  _createClass(StatementCollector, null, [{
+	    key: 'capture',
+	    value: function capture(source) {
+	      var list = new _List.LinkedList();
 
+	      var current = source.current();
+
+	      var done = false;
+	      var eof_reached = current.kind === 'eof';
+
+	      while (!eof_reached && !done) {
+	        current = source.current();
+
+	        if (current.kind === 'word' && source.peek().kind === 'left-par') {
+	          var call = match(Patterns.ModuleCall).from(source);
+	          if (call.error) {
+	            return call;
+	          } else {
+	            list.addNode(new _Nodes.GenericNode(call.result));
+	          }
+	        } else if (current.kind === 'word') {
+	          var assignment = match(Patterns.Assignment).from(source);
+	          if (assignment.error) {
+	            return assignment;
+	          } else {
+	            list.addNode(new _Nodes.GenericNode(assignment.result));
+	          }
+	        } else if (current.kind === 'si') {
+	          var if_block = IfScanner.capture(source);
+
+	          if (if_block.error) {
+	            return if_block;
+	          } else {
+	            list.addNode(if_block.result);
+	          }
+	        } else if (current.kind === 'mientras') {
+	          var while_node = WhileScanner.capture(source);
+
+	          if (while_node.error) {
+	            return while_node;
+	          } else {
+	            list.addNode(while_node.result);
+	          }
+	        } else if (current.kind === 'repetir') {
+	          var loop_body_root = RepeatScanner.capture(source);
+
+	          if (loop_body_root.error) {
+	            return loop_body_root;
+	          } else {
+	            list.addNode(loop_body_root.result);
+	          }
+	        } else {
+	          done = true;
+	        }
+	        current = source.current();
+	        if (current.kind === 'eol') {
+	          skipWhiteSpace(source);
+	        }
+	      }
+
+	      return new _Report2.default(false, list.firstNode);
+	    }
+	  }]);
+
+	  return StatementCollector;
+	}();
+
+	exports.default = StatementCollector;
 
 /***/ },
-/* 25 */
-/***/ function(module, exports) {
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	class Node {
-	  constructor(data) {
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.WhileNode = exports.UntilNode = exports.IfNode = exports.GenericNode = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _List = __webpack_require__(21);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var GenericNode = exports.GenericNode = function () {
+	  function GenericNode(data) {
+	    _classCallCheck(this, GenericNode);
+
 	    if (data) {
-	      this.data = data
+	      this.data = data;
 	    } else {
-	      this.data = null
+	      this.data = null;
 	    }
 
 	    this._next = null;
 	  }
 
-	  setNext(nextNode) {
-	    this._next = nextNode
-	  }
+	  _createClass(GenericNode, [{
+	    key: 'setNext',
+	    value: function setNext(nextNode) {
+	      this._next = nextNode;
+	    }
+	  }, {
+	    key: 'getNext',
+	    value: function getNext() {
+	      return this._next;
+	    }
+	  }, {
+	    key: 'getNextStatementNode',
+	    value: function getNextStatementNode() {
+	      return this.getNext();
+	    }
+	  }]);
 
-	  getNext() {
-	    return this._next
-	  }
+	  return GenericNode;
+	}();
 
-	  getNextStatementNode() {
-	    return this.getNext()
-	  }
-	}
+	var IfNode = exports.IfNode = function () {
+	  function IfNode(data) {
+	    _classCallCheck(this, IfNode);
 
-	module.exports = Node
-
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
-
-	const getLastNode = __webpack_require__(27).getLastNode
-
-	/**
-	 * Este nodo va a ser utilizado para representar una if [else]
-	 * Al igual que BranchingNode, este nodo tiene dos ramas y devuelve una de las
-	 * dos en funcion del parametro que se le pase a getNext(). La diferencia esta
-	 * en que cuando se le asigna el nodo siguiente (con setNext), esa asignacion
-	 * se aplica al ultimo nodo de ambas ramas. En otras palabras, tanto la rama
-	 * verdadera como la falsa convergen en el mismo nodo cuando finalizan
-	 *
-	 * 					*
-	 * 				/  \
-	 * 			---  ---
-	 * 			---  ---
-	 * 			 \   /
-	 * 			 -----
-	 * 			 -----
-	 */
-	class IfNode {
-	  constructor(data) {
 	    if (data) {
-	      this.data = data
+	      this.data = data;
 	    } else {
-	      this.data = null
+	      this.data = null;
 	    }
 
-	    this.leftBranchNode = null
-	    this.rightBranchNode = null
+	    this.leftBranchNode = null;
+	    this.rightBranchNode = null;
 
-	    this.next_statement_node = null
+	    this.next_statement_node = null;
 	  }
 
-	  setNext(node) {
-	    if (this.leftBranchNode === null) {
-	      this.leftBranchNode = node
+	  _createClass(IfNode, [{
+	    key: 'setNext',
+	    value: function setNext(node) {
+	      if (this.leftBranchNode === null) {
+	        this.leftBranchNode = node;
+	      } else {
+	        var lastLeft = (0, _List.getLastNode)(this.leftBranchNode);
+	        lastLeft.setNext(node);
+	      }
+
+	      if (this.rightBranchNode === null) {
+	        this.rightBranchNode = node;
+	      } else {
+	        var lastRight = (0, _List.getLastNode)(this.rightBranchNode);
+	        lastRight.setNext(node);
+	      }
+
+	      this.next_statement_node = node;
 	    }
-	    else {
-	      let lastLeft = getLastNode(this.leftBranchNode)
-	      lastLeft.setNext(node)
+	  }, {
+	    key: 'setCurrentBranchTo',
+	    value: function setCurrentBranchTo(branch_name) {
+	      if (branch_name === 'true_branch') {
+	        this.returnedNode = this.rightBranchNode;
+	      } else if (branch_name === 'false_branch') {
+	        this.returnedNode = this.leftBranchNode;
+	      } else if (branch_name === 'next_statement') {
+	        this.returnedNode = this.next_statement_node;
+	      }
+	    }
+	  }, {
+	    key: 'getNext',
+	    value: function getNext() {
+	      return this.returnedNode;
+	    }
+	  }, {
+	    key: 'getNextStatementNode',
+	    value: function getNextStatementNode() {
+	      return this.next_statement_node;
+	    }
+	  }]);
+
+	  return IfNode;
+	}();
+
+	var UntilNode = exports.UntilNode = function () {
+	  function UntilNode(data) {
+	    _classCallCheck(this, UntilNode);
+
+	    if (data) {
+	      this.data = data;
+	    } else {
+	      this.data = null;
 	    }
 
-	    if (this.rightBranchNode === null) {
-	      this.rightBranchNode = node
-	    }
-	    else {
-	      let lastRight = getLastNode(this.rightBranchNode)
-	      lastRight.setNext(node)
-	    }
-
-	    this.next_statement_node = node
+	    this.loop_body_root = null;
+	    this.enter_loop_body = true;
+	    this.next_statement_node = null;
 	  }
 
-	  setCurrentBranchTo(branch_name) {
-	    if (branch_name === 'true_branch') {
-	      this.returnedNode = this.rightBranchNode
+	  /**
+	   * Cambia la rama que va a devolver la llamada a getNext
+	   * @param {String} branch_name El nombre de la rama que se va a devolver.
+	   * Puede ser "loop_body" o "program_body"
+	   */
+
+
+	  _createClass(UntilNode, [{
+	    key: 'setCurrentBranchTo',
+	    value: function setCurrentBranchTo(branch_name) {
+	      if (branch_name === 'loop_body') {
+	        this.enter_loop_body = true;
+	      } else if (branch_name === 'program_body') {
+	        this.enter_loop_body = false;
+	      }
 	    }
-	    else if (branch_name === 'false_branch') {
-	      this.returnedNode = this.leftBranchNode
+	  }, {
+	    key: 'getNext',
+	    value: function getNext() {
+	      if (this.enter_loop_body === true) {
+	        return this.loop_body_root;
+	      } else {
+	        return this.next_statement_node;
+	      }
 	    }
-	    else if (branch_name === 'next_statement') {
-	      this.returnedNode = this.next_statement_node
+	  }, {
+	    key: 'getNextStatementNode',
+	    value: function getNextStatementNode() {
+	      return this.next_statement_node;
 	    }
+	  }, {
+	    key: 'setNext',
+	    value: function setNext(node) {
+	      this.next_statement_node = node;
+	    }
+	  }]);
+
+	  return UntilNode;
+	}();
+
+	var WhileNode = exports.WhileNode = function () {
+	  function WhileNode(data) {
+	    _classCallCheck(this, WhileNode);
+
+	    if (data) {
+	      this.data = data;
+	    } else {
+	      this.data = null;
+	    }
+
+	    this._loop_body_root = null;
+	    this.next_statement_node = null;
+	    this.enter_loop_body = true;
+	    this.next_statement_node = null;
 	  }
 
-	  getNext() {
-	    return this.returnedNode
-	  }
+	  /**
+	   * Cambia la rama que va a devolver la llamada a getNext
+	   * @param {String} branch_name El nombre de la rama que se va a devolver.
+	   * Puede ser "loop_body" o "program_body"
+	   */
 
-	  getNextStatementNode() {
-	    return this.next_statement_node
-	  }
-	}
 
-	module.exports = IfNode
+	  _createClass(WhileNode, [{
+	    key: 'setCurrentBranchTo',
+	    value: function setCurrentBranchTo(branch_name) {
+	      if (branch_name === 'loop_body') {
+	        this.enter_loop_body = true;
+	      } else if (branch_name === 'program_body') {
+	        this.enter_loop_body = false;
+	      }
+	    }
+	  }, {
+	    key: 'getNext',
+	    value: function getNext() {
+	      if (this.enter_loop_body === true) {
+	        return this._loop_body_root;
+	      } else {
+	        return this.next_statement_node;
+	      }
+	    }
+	  }, {
+	    key: 'getNextStatementNode',
+	    value: function getNextStatementNode() {
+	      return this.next_statement_node;
+	    }
+	  }, {
+	    key: 'setNext',
+	    value: function setNext(node) {
+	      this.next_statement_node = node;
 
+	      // Cuando se escribe un mientras con el cuerpo vacio lastNode va a ser null
+	      // y va a tirar una excepcion...
+	      // El resultado correcto de un mientras con el cuerpo vacio es un bucle
+	      // infinito
+	    }
+	  }, {
+	    key: 'loop_body_root',
+	    set: function set(root_node) {
+	      this._loop_body_root = root_node;
+
+	      //  necesario para hacer que el ultimo nodo del bucle apunte al nodo de cond
+	      var lastNode = (0, _List.getLastNode)(this._loop_body_root);
+
+	      // o sea, este
+	      lastNode.setNext(this);
+	    },
+	    get: function get() {
+	      return this._loop_body_root;
+	    }
+	  }]);
+
+	  return WhileNode;
+	}();
 
 /***/ },
-/* 27 */
+/* 21 */
 /***/ function(module, exports) {
 
-	'use strict'
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	exports.getLastNode = getLastNode;
+	exports.getChainLenght = getChainLenght;
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function getLastNode(node) {
 	  if (node.getNextStatementNode() === null) {
-	    return node
-	  }
-	  else {
-	    let current = node
+	    return node;
+	  } else {
+	    var current = node;
 	    while (current !== null) {
 	      if (current.getNextStatementNode() === null) {
-	        return current
-	      }
-	      else {
-	        current = current.getNextStatementNode()
+	        return current;
+	      } else {
+	        current = current.getNextStatementNode();
 	      }
 	    }
 	  }
 	}
 
 	function getChainLenght(node) {
-	  let lenght = 0
-	  let current = node
+	  var lenght = 0;
+	  var current = node;
 	  while (current !== null) {
-	    lenght++
-	    current = current.getNext()
+	    lenght++;
+	    current = current.getNext();
 	  }
-	  return lenght
+	  return lenght;
 	}
 
-	class LinkedList {
-	  constructor() {
-	    this.length = 0
-	    this.firstNode = null
-	    this.lastNode = null
+	var LinkedList = exports.LinkedList = function () {
+	  function LinkedList() {
+	    _classCallCheck(this, LinkedList);
+
+	    this.length = 0;
+	    this.firstNode = null;
+	    this.lastNode = null;
 	  }
 
-	  addNode(node) {
-	    if (this.firstNode === null) {
-	      this.firstNode = node
-	      this.lastNode = node
+	  _createClass(LinkedList, [{
+	    key: 'addNode',
+	    value: function addNode(node) {
+	      if (this.firstNode === null) {
+	        this.firstNode = node;
+	        this.lastNode = node;
+	      } else {
+	        this.lastNode.setNext(node);
+	        this.lastNode = getLastNode(node);
+	      }
 	    }
-	    else {
-	      this.lastNode.setNext(node)
-	      this.lastNode = getLastNode(node)
-	    }
-	  }
-	}
+	  }]);
 
-	module.exports = {
-	  LinkedList:LinkedList,
-	  getChainLenght:getChainLenght,
-	  getLastNode:getLastNode
-	}
-
+	  return LinkedList;
+	}();
 
 /***/ },
-/* 28 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
-
-	const getLastNode = __webpack_require__(27).getLastNode
-
-	class WhileNode {
-	  constructor(data) {
-	    if (data) {
-	      this.data = data
-	    }
-	    else {
-	      this.data = null
-	    }
-
-	    this._loop_body_root = null
-	    this.next_statement_node = null
-	    this.enter_loop_body = true
-	    this.next_statement_node = null
-	  }
-
-	  /**
-	   * Cambia la rama que va a devolver la llamada a getNext
-	   * @param {String} branch_name El nombre de la rama que se va a devolver.
-	   * Puede ser "loop_body" o "program_body"
-	   */
-	  setCurrentBranchTo(branch_name) {
-	    if (branch_name === 'loop_body') {
-	      this.enter_loop_body = true
-	    }
-	    else if (branch_name === 'program_body') {
-	      this.enter_loop_body = false
-	    }
-	  }
-
-	  getNext() {
-	    if (this.enter_loop_body === true) {
-	      return this._loop_body_root
-	    }
-	    else {
-	      return this.next_statement_node
-	    }
-	  }
-
-	  getNextStatementNode() {
-	    return this.next_statement_node
-	  }
-
-	  setNext(node) {
-	    this.next_statement_node = node
-
-	    // Cuando se escribe un mientras con el cuerpo vacio lastNode va a ser null
-	    // y va a tirar una excepcion...
-	    // El resultado correcto de un mientras con el cuerpo vacio es un bucle
-	    // infinito
-	  }
-
-	  set loop_body_root(root_node) {
-	    this._loop_body_root = root_node
-
-	    //  necesario para hacer que el ultimo nodo del bucle apunte al nodo de cond
-	    let lastNode = getLastNode(this._loop_body_root)
-
-	    // o sea, este
-	    lastNode.setNext(this)
-	  }
-
-	  get loop_body_root() {
-	    return this._loop_body_root
-	  }
-	}
-
-	module.exports = WhileNode
-
-
-/***/ },
-/* 29 */
-/***/ function(module, exports) {
-
-	'use strict'
-
-	class UntilNode {
-	  constructor(data) {
-	    if (data) {
-	      this.data = data
-	    }
-	    else {
-	      this.data = null
-	    }
-
-	    this.loop_body_root = null
-	    this.enter_loop_body = true
-	    this.next_statement_node = null
-	  }
-
-	  /**
-	   * Cambia la rama que va a devolver la llamada a getNext
-	   * @param {String} branch_name El nombre de la rama que se va a devolver.
-	   * Puede ser "loop_body" o "program_body"
-	   */
-	  setCurrentBranchTo(branch_name) {
-	    if (branch_name === 'loop_body') {
-	      this.enter_loop_body = true
-	    }
-	    else if (branch_name === 'program_body') {
-	      this.enter_loop_body = false
-	    }
-	  }
-
-	  getNext() {
-	    if (this.enter_loop_body === true) {
-	      return this.loop_body_root
-	    }
-	    else {
-	      return this.next_statement_node
-	    }
-	  }
-
-	  getNextStatementNode() {
-	    return this.next_statement_node
-	  }
-
-	  setNext(node) {
-	    this.next_statement_node = node
-	  }
-	}
-
-	module.exports = UntilNode
-
-
-/***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict'
+	'use strict';
 
 	// TODO: agregar el nombre de la variable (y el tipo que deberia tener?))
 	// al error (renglon 170)
@@ -22071,642 +22425,778 @@
 
 	// TODO: cual hay q devolver si los dos tienen errores? (renglon 232)
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	const WhileNode = __webpack_require__(28)
-	const UntilNode = __webpack_require__(29)
-	const IfNode    = __webpack_require__(26)
-	const Emitter   = __webpack_require__(7)
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	let math_operators = new Set([
-	    'plus'
-	  , 'minus'
-	  , 'times'
-	  , 'power'
-	])
+	var _Nodes = __webpack_require__(20);
 
-	let integer_operators = new Set([
-	    'mod'
-	  , 'div'
-	])
+	var _Emitter2 = __webpack_require__(7);
 
-	let comparison_operators = new Set([
-	    'equal'
-	  , 'diff-than'
-	  , 'major-than'
-	  , 'minor-than'
-	  , 'major-equal'
-	  , 'minor-equal'
-	])
+	var _Emitter3 = _interopRequireDefault(_Emitter2);
 
-	let logico_operators = new Set([
-	    'and'
-	  , 'or'
-	  , 'not'
-	])
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	let type_data_by_category = {
-	  math_operators:{
-	    supported_types:new Set(['entero', 'real']),
-	    calculate_return_type: (a, b) => {
-	      let result = a === 'entero' && b === 'entero' ? 'entero' : 'real'
-	      return {error:false, result}
-	    }
-	  },
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	  integer_operators:{
-	    supported_types: new Set(['entero']),
-	    calculate_return_type: () => ({error:false, result:'entero'})
-	  },
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	  comparison_operators:{
-	    supported_types:new Set(['entero', 'real', 'character', 'logico']),
-	    calculate_return_type: (a, b) => {
-	      let comparable_types = a === 'entero' && b === 'real' || a === 'real' && b === 'entero'
-	      let equal_types = a === b
-	      let result = comparable_types || equal_types ? 'logico':null
-	      let error = result === null ? true:false
-	      return {error, result}
-	    }
-	  },
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	  logico_operators:{
-	    supported_types: new Set(['logico']),
-	    calculate_return_type: () => {
-	      return {error:false, result:'logico'}
-	    }
-	  },
+	var math_operators = ['plus', 'minus', 'times', 'power'];
 
-	  unary_minus:{
-	    supported_types:new Set(['entero', 'real']),
-	    calculate_return_type:a => ({error:false, result:a})
-	  },
-
-	  divide:{
-	    supported_types:new Set(['real']),
-	    calculate_return_type: () => ({error:false, result:'real'})
+	function isMathOperator(token_name) {
+	  switch (token_name) {
+	    case 'plus':
+	    case 'minus':
+	    case 'times':
+	    case 'power':
+	      return true;
+	    default:
+	      return false;
 	  }
 	}
+
+	var integer_operators = ['mod', 'div'];
+
+	function isIntegerOperator(token_name) {
+	  return token_name === 'mod' || token_name === 'div' ? true : false;
+	}
+
+	var comparison_operators = ['equal', 'diff-than', 'major-than', 'minor-than', 'major-equal', 'minor-equal'];
+
+	function isComparisonOperator(token_name) {
+	  switch (token_name) {
+	    case 'equal':
+	    case 'diff-than':
+	    case 'major-than':
+	    case 'minor-than':
+	    case 'major-equal':
+	    case 'minor-equal':
+	      return true;
+	    default:
+	      return false;
+	  }
+	}
+
+	var logico_operators = ['and', 'or', 'not'];
+
+	function isLogicOperator(token_name) {
+	  return token_name === 'and' || token_name === 'or' || token_name === 'or' ? true : false;
+	}
+
+	var type_data_by_category = {
+	  math_operators: {
+	    supported_types: ['entero', 'real'],
+	    calculate_return_type: function calculate_return_type(a, b) {
+	      var result = a === 'entero' && b === 'entero' ? 'entero' : 'real';
+	      return { error: false, result: result };
+	    }
+	  },
+
+	  integer_operators: {
+	    supported_types: ['entero'],
+	    calculate_return_type: function calculate_return_type() {
+	      return { error: false, result: 'entero' };
+	    }
+	  },
+
+	  comparison_operators: {
+	    supported_types: ['entero', 'real', 'character', 'logico'],
+	    calculate_return_type: function calculate_return_type(a, b) {
+	      var comparable_types = a === 'entero' && b === 'real' || a === 'real' && b === 'entero';
+	      var equal_types = a === b;
+	      var result = comparable_types || equal_types ? 'logico' : null;
+	      var error = result === null ? true : false;
+	      return { error: error, result: result };
+	    }
+	  },
+
+	  logico_operators: {
+	    supported_types: ['logico'],
+	    calculate_return_type: function calculate_return_type() {
+	      return { error: false, result: 'logico' };
+	    }
+	  },
+
+	  unary_minus: {
+	    supported_types: ['entero', 'real'],
+	    calculate_return_type: function calculate_return_type(a) {
+	      return { error: false, result: a };
+	    }
+	  },
+
+	  divide: {
+	    supported_types: ['real'],
+	    calculate_return_type: function calculate_return_type() {
+	      return { error: false, result: 'real' };
+	    }
+	  }
+	};
 
 	function getOperatorInfo(operator) {
-	  if (math_operators.has(operator))
-	    return type_data_by_category.math_operators;
-
-	  else if (integer_operators.has(operator))
-	    return type_data_by_category.integer_operators;
-
-	  else if (comparison_operators.has(operator))
-	    return type_data_by_category.comparison_operators;
-
-	  else if (logico_operators.has(operator))
-	    return type_data_by_category.logico_operators;
-
-	  else if (operator === 'divide')
-	    return type_data_by_category.divide;
-
-	  else
-	    return type_data_by_category.unary_minus;
+	  if (isMathOperator(operator)) return type_data_by_category.math_operators;else if (isIntegerOperator(operator)) return type_data_by_category.integer_operators;else if (isComparisonOperator(operator)) return type_data_by_category.comparison_operators;else if (isLogicOperator(operator)) return type_data_by_category.logico_operators;else if (operator === 'divide') return type_data_by_category.divide;else return type_data_by_category.unary_minus;
 	}
 
-	class TypeChecker extends Emitter {
-	  constructor(module_root, module_info, globals, locals) {
-	    super(['type-check-started', 'type-error', 'type-check-finished'])
-	    this.module_info = module_info
-	    this.globals = globals
-	    this.locals = locals
-	    this.module_root = module_root
-	  }
+	function includes(array, target_value) {
+	  var _iteratorNormalCompletion = true;
+	  var _didIteratorError = false;
+	  var _iteratorError = undefined;
 
-	  variableExists(varname) {
-	    let local_variable = varname in this.locals
-	    let global_variable = varname in this.globals
+	  try {
 
-	    if (local_variable === false && global_variable === false) return false;
+	    for (var _iterator = array[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	      var value = _step.value;
 
-	    return true
-	  }
-
-	  /**
-	   * Busca y devuelve el objeto que representa a una variable especifica
-	   * @param  {string} varname el nombre de la variable deseada
-	   * @return {object}         el objeto que representa a la variable
-	   */
-	  getVariable(varname) {
-	    let variable
-
-	    if (varname in this.locals) return this.locals[varname];
-	    else return this.globals[varname];
-	  }
-
-	  /**
-	   * Dice si el tipo de una variable es compatible con lo que se le quiere
-	   * asignar
-	   * @param  {string} target_type  el tipo de la variable objetvio
-	   * @param  {string} payload_type el tipo de la expresion que se quiere asignar
-	   * @return {boolean}              true cuando son compatibles, si no, falso
-	   */
-	  typesAreCompatible(target_type, payload_type) {
-	    if (target_type === payload_type) {
-	      return true
-	    } else if (target_type === 'real' && payload_type === 'entero') {
-	      return true
-	    } else return false;
-	  }
-
-	  /**
-	   * Revisa todos los nodos de un programa en busca de errores
-	   * @emits TypeChecker#type-error
-	   * @emits TypeChecker#type-check-started
-	   * @emits TypeChecker#type-check-finished
-	   * @return {Report} Si se encontró algun error la propiedad "error" será true
-	   */
-	  lookForErrors() {
-	    let current_node = this.module_root
-
-	    this.emit('type-check-started')
-
-	    while (current_node !== null) {
-	      this.checkNode(current_node)
-	      current_node = current_node.getNext()
+	      if (value === target_value) return true;
 	    }
-
-	    this.emit('type-check-finished')
-	  }
-
-	  /**
-	   * Revisa un nodo en busca de errores
-	   * @param  {Node|IfNode|WhileNode|UntilNode} node nodo de un programa
-	   * @emits TypeChecker#type-error
-	   * @return {void}
-	   */
-	  checkNode(node) {
-	    if (node instanceof IfNode) {
-	      this.checkIfNode(node)
-	    }
-	    else if (node instanceof WhileNode) {
-	      this.checkWhileNode(node)
-	    }
-	    else if (node instanceof UntilNode) {
-	      this.checkUntilNode(node)
-	    }
-	    else if (node.data.action === 'assignment') {
-	      this.checkAssignment(node.data)
+	  } catch (err) {
+	    _didIteratorError = true;
+	    _iteratorError = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion && _iterator.return) {
+	        _iterator.return();
+	      }
+	    } finally {
+	      if (_didIteratorError) {
+	        throw _iteratorError;
+	      }
 	    }
 	  }
 
-	  /**
-	   * Revisa un IfNode en busca de errores
-	   * @emits TypeChecker#type-error
-	   * @param {IfNode} node El nodo en cuestion
-	   * @return {Report} Si se encontró algun error la propiedad "error" será true
-	   */
-	  checkIfNode (node) {
-	    let condition_report = this.checkCondition(node.data.condition)
+	  return false;
+	}
 
-	    if (condition_report.error === true) {
-	      this.emit('type-error', condition_report.result)
+	var TypeChecker = function (_Emitter) {
+	  _inherits(TypeChecker, _Emitter);
+
+	  function TypeChecker(module_root, module_info, globals, locals) {
+	    _classCallCheck(this, TypeChecker);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TypeChecker).call(this, ['type-check-started', 'type-error', 'type-check-finished']));
+
+	    _this.module_info = module_info;
+	    _this.globals = globals;
+	    _this.locals = locals;
+	    _this.module_root = module_root;
+	    return _this;
+	  }
+
+	  _createClass(TypeChecker, [{
+	    key: 'variableExists',
+	    value: function variableExists(varname) {
+	      var local_variable = varname in this.locals;
+	      var global_variable = varname in this.globals;
+
+	      if (local_variable === false && global_variable === false) return false;
+
+	      return true;
 	    }
 
-	    let current_node = node.rightBranchNode
+	    /**
+	     * Busca y devuelve el objeto que representa a una variable especifica
+	     * @param  {string} varname el nombre de la variable deseada
+	     * @return {object}         el objeto que representa a la variable
+	     */
 
-	    let next_statement = node.getNextStatementNode()
+	  }, {
+	    key: 'getVariable',
+	    value: function getVariable(varname) {
+	      var variable = void 0;
 
-	    while (current_node !== next_statement) {
-	      this.checkNode(current_node)
-	      current_node = current_node.getNext()
+	      if (varname in this.locals) return this.locals[varname];else return this.globals[varname];
 	    }
 
-	    current_node = node.leftBranchNode
-	    if (current_node !== null) {
+	    /**
+	     * Dice si el tipo de una variable es compatible con lo que se le quiere
+	     * asignar
+	     * @param  {string} target_type  el tipo de la variable objetvio
+	     * @param  {string} payload_type el tipo de la expresion que se quiere asignar
+	     * @return {boolean}              true cuando son compatibles, si no, falso
+	     */
+
+	  }, {
+	    key: 'typesAreCompatible',
+	    value: function typesAreCompatible(target_type, payload_type) {
+	      if (target_type === payload_type) {
+	        return true;
+	      } else if (target_type === 'real' && payload_type === 'entero') {
+	        return true;
+	      } else return false;
+	    }
+
+	    /**
+	     * Revisa todos los nodos de un programa en busca de errores
+	     * @emits TypeChecker#type-error
+	     * @emits TypeChecker#type-check-started
+	     * @emits TypeChecker#type-check-finished
+	     * @return {Report} Si se encontró algun error la propiedad "error" será true
+	     */
+
+	  }, {
+	    key: 'lookForErrors',
+	    value: function lookForErrors() {
+	      var current_node = this.module_root;
+
+	      this.emit('type-check-started');
+
+	      while (current_node !== null) {
+	        this.checkNode(current_node);
+	        current_node = current_node.getNext();
+	      }
+
+	      this.emit('type-check-finished');
+	    }
+
+	    /**
+	     * Revisa un nodo en busca de errores
+	     * @param  {Node|IfNode|WhileNode|UntilNode} node nodo de un programa
+	     * @emits TypeChecker#type-error
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'checkNode',
+	    value: function checkNode(node) {
+	      if (node instanceof _Nodes.IfNode) {
+	        this.checkIfNode(node);
+	      } else if (node instanceof _Nodes.WhileNode) {
+	        this.checkWhileNode(node);
+	      } else if (node instanceof _Nodes.UntilNode) {
+	        this.checkUntilNode(node);
+	      } else if (node.data.action === 'assignment') {
+	        this.checkAssignment(node.data);
+	      }
+	    }
+
+	    /**
+	     * Revisa un IfNode en busca de errores
+	     * @emits TypeChecker#type-error
+	     * @param {IfNode} node El nodo en cuestion
+	     * @return {Report} Si se encontró algun error la propiedad "error" será true
+	     */
+
+	  }, {
+	    key: 'checkIfNode',
+	    value: function checkIfNode(node) {
+	      var condition_report = this.checkCondition(node.data.condition);
+
+	      if (condition_report.error === true) {
+	        this.emit('type-error', condition_report.result);
+	      }
+
+	      var current_node = node.rightBranchNode;
+
+	      var next_statement = node.getNextStatementNode();
+
 	      while (current_node !== next_statement) {
-	        this.checkNode(current_node)
-	        current_node = current_node.getNext()
+	        this.checkNode(current_node);
+	        current_node = current_node.getNext();
 	      }
-	    }
 
-	    node.setCurrentBranchTo('next_statement')
-	  }
-
-	  /**
-	   * Revisa un WhileNode en busca de errores
-	   * @emits TypeChecker#type-error
-	   * @param {WhileNode} node El nodo en cuestion
-	   * @return {Report} Si se encontró algun error la propiedad "error" será true
-	   */
-	  checkWhileNode (node) {
-	    let condition_report = this.checkCondition(node.data.condition)
-
-	    if (condition_report.error === true) {
-	      this.emit('type-error', condition_report.result)
-	    }
-
-	    let current_node = node.loop_body_root
-
-	    let next_statement = node.getNextStatementNode()
-
-	    while (current_node !== next_statement && current_node !== node) {
-	      this.checkNode(current_node)
-	      current_node = current_node.getNext()
-	    }
-
-	    node.setCurrentBranchTo('program_body')
-
-	  }
-
-	  /**
-	   * Revisa un UntilNode en busca de errores
-	   * @emits TypeChecker#type-error
-	   * @param {UntilNode} node El nodo en cuestion
-	   * @return {Report} Si se encontró algun error la propiedad "error" será true
-	   */
-	  checkUntilNode (node) {
-	    let condition_report = this.checkCondition(node.data.condition)
-
-	    if (condition_report.error === true) {
-	      this.emit('type-error', condition_report.result)
-	    }
-
-	    node.setCurrentBranchTo('program_body')
-	  }
-
-	  /**
-	   * Revisa que la expresion de la condicion de una estructura de control sea
-	   * correcta
-	   * @param  {expression} condition la condicion de la estructura
-	   * @return {Report}
-	   */
-	  checkCondition(condition) {
-	    let condition_type = this.getExpressionReturnType(condition)
-
-	    if (condition_type.error) {
-	      return {error:true, result:condition_type.result}
-	    }
-	    else {
-	      if (condition_type.result !== 'logico') {
-	        let reason = 'invalid-type-at-condition'
-	        let expected = 'logico'
-	        let unexpected = condition_type.result
-
-	        return {error:true, result:{reason, expected, unexpected}}
-	      }
-	      else {
-	        return {error:false}
-	      }
-	    }
-	  }
-
-	  /**
-	   * Revisa que no haya errores en un enunciado de asignacion dado
-	   * @param  {object} assignment_data propiedad data de un nodo de asignacion
-	   * @return {void}
-	   */
-	  checkAssignment(assignment_data) {
-	    if (this.variableExists(assignment_data.target.name) === true) {
-	      let target = this.getVariable(assignment_data.target.name)
-
-	      if (target.isArray === true || assignment_data.target.isArray === true) {
-	        let report = this.checkArrayInvocation(target, assignment_data.target)
-
-	        if (report.error === true) {
-	          this.emit('type-error', report.result)
+	      current_node = node.leftBranchNode;
+	      if (current_node !== null) {
+	        while (current_node !== next_statement) {
+	          this.checkNode(current_node);
+	          current_node = current_node.getNext();
 	        }
 	      }
 
-	      let expression_type_report = this.getExpressionReturnType(assignment_data.payload)
-
-	      if (expression_type_report.error === true) {
-	        this.emit('type-error', expression_type_report.result)
-	      }
-	      else {
-	        let payload_data_type = expression_type_report.result
-
-	        if (this.typesAreCompatible(target.type, payload_data_type) === false) {
-	          let reason = 'incompatible-types-at-assignment'
-	          let target_type = target.type, payload_type = payload_data_type
-	          let error_info = {reason, target_type, payload_type}
-	          this.emit('type-error', error_info)
-	        }
-	      }
-
-	    }
-	    else {
-	      this.emit('type-error', {
-	        reason:'undeclared-variable',
-	        name:assignment_data.target.name
-	      })
-	    }
-	  }
-
-	  /**
-	   * Revisa que no haya errores en una invocacion a un arreglo
-	   * @param  {object} variable        la variable  que se quiere invocar como arreglo
-	   * @param  {object} invocation_info datos para la invocacion (indices y demas)
-	   * @return {Report}                 si la propiedad error es true entonces result contiene info sobre el error
-	   */
-	  checkArrayInvocation(variable, invocation_info) {
-	    if (variable.isArray === true && invocation_info.isArray === true) {
-	      if (variable.dimension.length === invocation_info.indexes.length) {
-	        let indexes_types = invocation_info.indexes.map(exp => this.getExpressionReturnType(exp)).map(report => report.result)
-
-	        let invalid_type_found = false, i = 0
-
-	        while (!invalid_type_found && i < indexes_types.length) {
-	          if (indexes_types[i] !== 'entero') {
-	            invalid_type_found = true
-	          }
-	          else {
-	            i++
-	          }
-	        }
-
-	        if (invalid_type_found === true) {
-	          let reason = 'non-integer-index', bad_index = i
-	          return {error:true, result:{reason, bad_index}}
-	        }
-	        else {
-	          if (this.canCheckBounds(invocation_info.indexes) === true) {
-	            let index_values = invocation_info.indexes.map(index => index.value)
-	            let i = 0, out_of_bounds_index = false
-
-	            while (i < index_values.length && !out_of_bounds_index) {
-	              if (index_values[i] < 1) {
-	                let reason = 'index-less-than-one'
-	                let bad_index = i
-	                return {error:true, result:{reason, bad_index}}
-	              }
-	              else if (index_values[i] > variable.dimension[i]) {
-	                let reason = 'index-out-of-bounds'
-	                let bad_index = i
-	                let expected = variable.dimension[i]
-	                return {error:true, result:{reason, bad_index, expected}}
-	              }
-	              i++
-	            }
-	            invocation_info.bounds_checked = true
-	          }
-	          else {
-	            invocation_info.bounds_checked = false
-	          }
-
-	          return {error:false}
-	        }
-	      }
-	      else {
-	        let reason = 'dimension-length-diff-than-indexes-length'
-	        let dimensions = variable.dimension.length
-	        let indexes = invocation_info.indexes.length
-
-	        return {error:true, result:{reason, dimensions, indexes}}
-	      }
-	    }
-	    else {
-	      let name = invocation_info.name
-	      if (variable.isArray === true) {
-	        let reason = 'missing-index'
-
-	        return {error:true, result:{reason, name}}
-	      }
-	      else {
-	        let reason = 'var-isnt-array'
-
-	        return {error:true, result:{reason, name}}
-	      }
-	    }
-	  }
-
-	  checkAssigmentNodes(module_root) {
-	    let current_node = module_root
-
-	    let error_found = false
-
-	    this.emit('type-check-started')
-
-	    while (current_node !== null) {
-	      if (current_node.data.action === 'assignment') {
-	        let report = this.validateAssignment(current_node.data)
-	        if (report.error) {
-	          error_found = true
-	          this.emit('type-error', report.result)
-	        }
-	      }
-	      current_node = current_node.getNext()
+	      node.setCurrentBranchTo('next_statement');
 	    }
 
-	    this.emit('type-check-started')
+	    /**
+	     * Revisa un WhileNode en busca de errores
+	     * @emits TypeChecker#type-error
+	     * @param {WhileNode} node El nodo en cuestion
+	     * @return {Report} Si se encontró algun error la propiedad "error" será true
+	     */
 
-	    return {errof:error_found}
+	  }, {
+	    key: 'checkWhileNode',
+	    value: function checkWhileNode(node) {
+	      var condition_report = this.checkCondition(node.data.condition);
 
-	  }
-
-	  validateAssignment(assignment) {
-	    if (this.variableExists(assignment.target.name)) {
-	      let target = this.getVariable(assignment.target.name)
-
-	      let target_type = target.type
-
-	      let payload_type_report = this.getExpressionReturnType(assignment.payload)
-
-	      if (payload_type_report.error) {
-	        return payload_type_report
+	      if (condition_report.error === true) {
+	        this.emit('type-error', condition_report.result);
 	      }
-	      else {
-	        let payload_type = payload_type_report.result
-	        if (!this.typesAreCompatible(target_type, payload_type)) {
-	          let error = true
-	          let reason = 'incompatible-types-at-assignment'
-	          let result = {reason, target_type, payload_type}
-	          return {error, result}
-	        }
-	        else {
-	          return {error:false}
-	        }
+
+	      var current_node = node.loop_body_root;
+
+	      var next_statement = node.getNextStatementNode();
+
+	      while (current_node !== next_statement && current_node !== node) {
+	        this.checkNode(current_node);
+	        current_node = current_node.getNext();
 	      }
-	    }
-	    else {
-	      let error = true
-	      let reason = 'undefined-variable', result = reason
-	      return {error, result}
-	    }
-	  }
 
-	  /**
-	   * Dado un arreglo de indices para un arreglo, revisa si se puede garantizar
-	   * (antes de ejecutar el programa) que dichos indices estén dentro del rango
-	   * dado por las dimensiones del arreglo.
-	   * @param  {[expression]} index_array indices que se usan para acceder al arreglo
-	   * @return {bool}             true si se puede garantizar, falso si no.
-	   */
-	  canCheckBounds(index_array) {
-	    // La condicion para devolver true es que todas las expresiones dentro del
-	    // arreglo sean de tipo 'literal'
+	      node.setCurrentBranchTo('program_body');
+	    }
 
-	    for (let exp of index_array) {
-	      if (exp.expression_type !== 'literal') {
-	        return false
+	    /**
+	     * Revisa un UntilNode en busca de errores
+	     * @emits TypeChecker#type-error
+	     * @param {UntilNode} node El nodo en cuestion
+	     * @return {Report} Si se encontró algun error la propiedad "error" será true
+	     */
+
+	  }, {
+	    key: 'checkUntilNode',
+	    value: function checkUntilNode(node) {
+	      var condition_report = this.checkCondition(node.data.condition);
+
+	      if (condition_report.error === true) {
+	        this.emit('type-error', condition_report.result);
 	      }
+
+	      node.setCurrentBranchTo('program_body');
 	    }
 
-	    return true
-	  }
+	    /**
+	     * Revisa que la expresion de la condicion de una estructura de control sea
+	     * correcta
+	     * @param  {expression} condition la condicion de la estructura
+	     * @return {Report}
+	     */
 
-	  getExpressionReturnType(expression) {
-	    if (expression.expression_type === 'literal') {
-	      let error = false
-	      let result = expression.type
-	      return {error, result}
-	    }
-	    else if (expression.expression_type === 'invocation') {
-	      if (this.variableExists(expression.name)) {
-	        let error = false
-	        let result = this.getVariable(expression.name).type
-	        return {error, result}
+	  }, {
+	    key: 'checkCondition',
+	    value: function checkCondition(condition) {
+	      var condition_type = this.getExpressionReturnType(condition);
+
+	      if (condition_type.error) {
+	        return { error: true, result: condition_type.result };
 	      } else {
-	        let error = true
-	        let reason = 'undefined-variable', result = reason
-	        return {error, result}
-	      }
-	    }
-	    else if (expression.expression_type === 'expression') {
-	      return this.getExpressionReturnType(expression.expression)
-	    }
-	    else if (expression.expression_type === 'operation') {
-	      let operator_info = getOperatorInfo(expression.op)
+	        if (condition_type.result !== 'logico') {
+	          var reason = 'invalid-type-at-condition';
+	          var expected = 'logico';
+	          var unexpected = condition_type.result;
 
-	      if (expression.op === 'unary-minus') {
-	        let type_report = getExpressionReturnType(expression.operand)
-
-	        if (type_report.error) {
-	          return type_report
-	        }
-	        else {
-	          let operand_type = type_report.result
-	          if (operator_info.supported_types.has(operand_type)) {
-	            let error = false
-	            let result = operator_info.calculate_return_type(operand_type)
-	            return {error, result}
-	          }
-	          else {
-	            let error = true
-	            let result = {
-	              reason:'incompatible-operator-types',
-	              expected:operator_info.supported_types,
-	              unexpected:operand_type,
-	              operator:expression.op
-	            }
-	            return {error, result}
-	          }
-	        }
-	      }
-	      else {
-	        let type_a_report = this.getExpressionReturnType(expression.operands[0])
-	        let type_b_report = this.getExpressionReturnType(expression.operands[1])
-
-	        if (type_a_report.error || type_b_report.error) {
-	          return type_a_report.error ? type_a_report:type_b_report
-	        }
-	        else {
-	          let op_a_type = type_a_report.result
-	          let op_b_type = type_b_report.result
-
-	          if (operator_info.supported_types.has(op_a_type)) {
-	            if (operator_info.supported_types.has(op_b_type)) {
-	              let error = false, result = null
-	              let exp_type_report = operator_info.calculate_return_type(op_a_type, op_b_type)
-
-	              if (exp_type_report.error) {
-	                return exp_type_report
-	              }
-	              else {
-	                result = exp_type_report.result
-	              }
-	              return {error, result}
-	            }
-	            else {
-	              let error = true
-	              let result = {
-	                reason:'incompatible-operator-types',
-	                expected:operator_info.supported_types,
-	                unexpected:op_b_type,
-	                operator:expression.op
-	              }
-	              return {error, result}
-	            }
-	          }
-	          else {
-	            let error = true
-	            let result = {
-	              reason:'incompatible-operator-types',
-	              expected:operator_info.supported_types,
-	              unexpected:op_a_type,
-	              operator:expression.op
-	            }
-	            return {error, result}
-	          }
+	          return { error: true, result: { reason: reason, expected: expected, unexpected: unexpected } };
+	        } else {
+	          return { error: false };
 	        }
 	      }
 	    }
-	  }
-	}
 
-	module.exports = TypeChecker
+	    /**
+	     * Revisa que no haya errores en un enunciado de asignacion dado
+	     * @param  {object} assignment_data propiedad data de un nodo de asignacion
+	     * @return {void}
+	     */
 
+	  }, {
+	    key: 'checkAssignment',
+	    value: function checkAssignment(assignment_data) {
+	      if (this.variableExists(assignment_data.target.name) === true) {
+	        var target = this.getVariable(assignment_data.target.name);
 
-/***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
+	        if (target.isArray === true || assignment_data.target.isArray === true) {
+	          var report = this.checkArrayInvocation(target, assignment_data.target);
 
-	'use strict'
-
-	const EventEmitter = __webpack_require__(32)
-
-	const $ = __webpack_require__(2)
-
-	const jquery = $
-
-	class Prompt extends EventEmitter {
-	  constructor(container, total) {
-	    super()
-	    this._data_read = []
-	    this._total = total
-	    this._container = container
-	    this._textarea = $('<textarea id="prompt"></textarea>')
-
-	    this._textarea.keypress((key) => {
-	      if (key.which == 13) {
-	        key.preventDefault()
-	        this._data_read.push(this._textarea[0].value)
-	        if (this._data_read.length == this._total) {
-	          this.emit('submit-data', this._data_read)
+	          if (report.error === true) {
+	            this.emit('type-error', report.result);
+	          }
 	        }
-	        else {
-	          this.moveTextArea()
+
+	        var expression_type_report = this.getExpressionReturnType(assignment_data.payload);
+
+	        if (expression_type_report.error === true) {
+	          this.emit('type-error', expression_type_report.result);
+	        } else {
+	          var payload_data_type = expression_type_report.result;
+
+	          if (this.typesAreCompatible(target.type, payload_data_type) === false) {
+	            var reason = 'incompatible-types-at-assignment';
+	            var target_type = target.type,
+	                payload_type = payload_data_type;
+	            var error_info = { reason: reason, target_type: target_type, payload_type: payload_type };
+	            this.emit('type-error', error_info);
+	          }
+	        }
+	      } else {
+	        this.emit('type-error', {
+	          reason: 'undeclared-variable',
+	          name: assignment_data.target.name
+	        });
+	      }
+	    }
+
+	    /**
+	     * Revisa que no haya errores en una invocacion a un arreglo
+	     * @param  {object} variable        la variable  que se quiere invocar como arreglo
+	     * @param  {object} invocation_info datos para la invocacion (indices y demas)
+	     * @return {Report}                 si la propiedad error es true entonces result contiene info sobre el error
+	     */
+
+	  }, {
+	    key: 'checkArrayInvocation',
+	    value: function checkArrayInvocation(variable, invocation_info) {
+	      var _this2 = this;
+
+	      if (variable.isArray === true && invocation_info.isArray === true) {
+	        if (variable.dimension.length === invocation_info.indexes.length) {
+	          var indexes_types = invocation_info.indexes.map(function (exp) {
+	            return _this2.getExpressionReturnType(exp);
+	          }).map(function (report) {
+	            return report.result;
+	          });
+
+	          var invalid_type_found = false,
+	              i = 0;
+
+	          while (!invalid_type_found && i < indexes_types.length) {
+	            if (indexes_types[i] !== 'entero') {
+	              invalid_type_found = true;
+	            } else {
+	              i++;
+	            }
+	          }
+
+	          if (invalid_type_found === true) {
+	            var reason = 'non-integer-index',
+	                bad_index = i;
+	            return { error: true, result: { reason: reason, bad_index: bad_index } };
+	          } else {
+	            if (this.canCheckBounds(invocation_info.indexes) === true) {
+	              var index_values = invocation_info.indexes.map(function (index) {
+	                return index.value;
+	              });
+	              var _i = 0,
+	                  out_of_bounds_index = false;
+
+	              while (_i < index_values.length && !out_of_bounds_index) {
+	                if (index_values[_i] < 1) {
+	                  var _reason = 'index-less-than-one';
+	                  var _bad_index = _i;
+	                  return { error: true, result: { reason: _reason, bad_index: _bad_index } };
+	                } else if (index_values[_i] > variable.dimension[_i]) {
+	                  var _reason2 = 'index-out-of-bounds';
+	                  var _bad_index2 = _i;
+	                  var expected = variable.dimension[_i];
+	                  return { error: true, result: { reason: _reason2, bad_index: _bad_index2, expected: expected } };
+	                }
+	                _i++;
+	              }
+	              invocation_info.bounds_checked = true;
+	            } else {
+	              invocation_info.bounds_checked = false;
+	            }
+
+	            return { error: false };
+	          }
+	        } else {
+	          var _reason3 = 'dimension-length-diff-than-indexes-length';
+	          var dimensions = variable.dimension.length;
+	          var indexes = invocation_info.indexes.length;
+
+	          return { error: true, result: { reason: _reason3, dimensions: dimensions, indexes: indexes } };
+	        }
+	      } else {
+	        var name = invocation_info.name;
+	        if (variable.isArray === true) {
+	          var _reason4 = 'missing-index';
+
+	          return { error: true, result: { reason: _reason4, name: name } };
+	        } else {
+	          var _reason5 = 'var-isnt-array';
+
+	          return { error: true, result: { reason: _reason5, name: name } };
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'checkAssigmentNodes',
+	    value: function checkAssigmentNodes(module_root) {
+	      var current_node = module_root;
+
+	      var error_found = false;
+
+	      this.emit('type-check-started');
+
+	      while (current_node !== null) {
+	        if (current_node.data.action === 'assignment') {
+	          var report = this.validateAssignment(current_node.data);
+	          if (report.error) {
+	            error_found = true;
+	            this.emit('type-error', report.result);
+	          }
+	        }
+	        current_node = current_node.getNext();
+	      }
+
+	      this.emit('type-check-started');
+
+	      return { errof: error_found };
+	    }
+	  }, {
+	    key: 'validateAssignment',
+	    value: function validateAssignment(assignment) {
+	      if (this.variableExists(assignment.target.name)) {
+	        var target = this.getVariable(assignment.target.name);
+
+	        var target_type = target.type;
+
+	        var payload_type_report = this.getExpressionReturnType(assignment.payload);
+
+	        if (payload_type_report.error) {
+	          return payload_type_report;
+	        } else {
+	          var payload_type = payload_type_report.result;
+	          if (!this.typesAreCompatible(target_type, payload_type)) {
+	            var error = true;
+	            var reason = 'incompatible-types-at-assignment';
+	            var result = { reason: reason, target_type: target_type, payload_type: payload_type };
+	            return { error: error, result: result };
+	          } else {
+	            return { error: false };
+	          }
+	        }
+	      } else {
+	        var _error = true;
+	        var _reason6 = 'undefined-variable',
+	            _result = _reason6;
+	        return { error: _error, result: _result };
+	      }
+	    }
+
+	    /**
+	     * Dado un arreglo de indices para un arreglo, revisa si se puede garantizar
+	     * (antes de ejecutar el programa) que dichos indices estén dentro del rango
+	     * dado por las dimensiones del arreglo.
+	     * @param  {[expression]} index_array indices que se usan para acceder al arreglo
+	     * @return {bool}             true si se puede garantizar, falso si no.
+	     */
+
+	  }, {
+	    key: 'canCheckBounds',
+	    value: function canCheckBounds(index_array) {
+	      // La condicion para devolver true es que todas las expresiones dentro del
+	      // arreglo sean de tipo 'literal'
+
+	      var _iteratorNormalCompletion2 = true;
+	      var _didIteratorError2 = false;
+	      var _iteratorError2 = undefined;
+
+	      try {
+	        for (var _iterator2 = index_array[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	          var exp = _step2.value;
+
+	          if (exp.expression_type !== 'literal') {
+	            return false;
+	          }
+	        }
+	      } catch (err) {
+	        _didIteratorError2 = true;
+	        _iteratorError2 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	            _iterator2.return();
+	          }
+	        } finally {
+	          if (_didIteratorError2) {
+	            throw _iteratorError2;
+	          }
+	        }
+	      }
+
+	      return true;
+	    }
+	  }, {
+	    key: 'getExpressionReturnType',
+	    value: function (_getExpressionReturnType) {
+	      function getExpressionReturnType(_x) {
+	        return _getExpressionReturnType.apply(this, arguments);
+	      }
+
+	      getExpressionReturnType.toString = function () {
+	        return _getExpressionReturnType.toString();
+	      };
+
+	      return getExpressionReturnType;
+	    }(function (expression) {
+	      if (expression.expression_type === 'literal') {
+	        var error = false;
+	        var result = expression.type;
+	        return { error: error, result: result };
+	      } else if (expression.expression_type === 'invocation') {
+	        if (this.variableExists(expression.name)) {
+	          var _error2 = false;
+	          var _result2 = this.getVariable(expression.name).type;
+	          return { error: _error2, result: _result2 };
+	        } else {
+	          var _error3 = true;
+	          var reason = 'undefined-variable',
+	              _result3 = reason;
+	          return { error: _error3, result: _result3 };
+	        }
+	      } else if (expression.expression_type === 'expression') {
+	        return this.getExpressionReturnType(expression.expression);
+	      } else if (expression.expression_type === 'operation') {
+	        var operator_info = getOperatorInfo(expression.op);
+
+	        if (expression.op === 'unary-minus') {
+	          var type_report = getExpressionReturnType(expression.operand);
+
+	          if (type_report.error) {
+	            return type_report;
+	          } else {
+	            var operand_type = type_report.result;
+	            if (includes(operator_info.supported_types, operand_type)) {
+	              var _error4 = false;
+	              var _result4 = operator_info.calculate_return_type(operand_type);
+	              return { error: _error4, result: _result4 };
+	            } else {
+	              var _error5 = true;
+	              var _result5 = {
+	                reason: 'incompatible-operator-types',
+	                expected: operator_info.supported_types,
+	                unexpected: operand_type,
+	                operator: expression.op
+	              };
+	              return { error: _error5, result: _result5 };
+	            }
+	          }
+	        } else {
+	          var type_a_report = this.getExpressionReturnType(expression.operands[0]);
+	          var type_b_report = this.getExpressionReturnType(expression.operands[1]);
+
+	          if (type_a_report.error || type_b_report.error) {
+	            return type_a_report.error ? type_a_report : type_b_report;
+	          } else {
+	            var op_a_type = type_a_report.result;
+	            var op_b_type = type_b_report.result;
+
+	            if (includes(operator_info.supported_types, op_a_type)) {
+	              if (includes(operator_info.supported_types, op_b_type)) {
+	                var _error6 = false,
+	                    _result6 = null;
+	                var exp_type_report = operator_info.calculate_return_type(op_a_type, op_b_type);
+
+	                if (exp_type_report.error) {
+	                  return exp_type_report;
+	                } else {
+	                  _result6 = exp_type_report.result;
+	                }
+	                return { error: _error6, result: _result6 };
+	              } else {
+	                var _error7 = true;
+	                var _result7 = {
+	                  reason: 'incompatible-operator-types',
+	                  expected: operator_info.supported_types,
+	                  unexpected: op_b_type,
+	                  operator: expression.op
+	                };
+	                return { error: _error7, result: _result7 };
+	              }
+	            } else {
+	              var _error8 = true;
+	              var _result8 = {
+	                reason: 'incompatible-operator-types',
+	                expected: operator_info.supported_types,
+	                unexpected: op_a_type,
+	                operator: expression.op
+	              };
+	              return { error: _error8, result: _result8 };
+	            }
+	          }
 	        }
 	      }
 	    })
+	  }]);
 
-	    this._container.append(this._textarea)
-	    this._textarea.focus()
-	  }
+	  return TypeChecker;
+	}(_Emitter3.default);
 
-	  close() {
-	    let value = this._textarea[0].value
-	    let new_line = $(`<div class="line"><span>&gt; ${value}</span></div>`)
-	    this._textarea.replaceWith(new_line)
-	  }
-
-	  moveTextArea() {
-	    let value = this._textarea[0].value
-	    let new_line = $(`<div class="line"><span>&gt; ${value}</span></div>`)
-	    new_line.insertBefore(this._textarea)
-	    this._textarea[0].value = ''
-	    this._textarea.focus()
-	  }
-	}
-
-	module.exports = Prompt
-
+	exports.default = TypeChecker;
 
 /***/ },
-/* 32 */
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _events = __webpack_require__(24);
+
+	var _events2 = _interopRequireDefault(_events);
+
+	var _jquery = __webpack_require__(2);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Prompt = function (_EventEmitter) {
+	  _inherits(Prompt, _EventEmitter);
+
+	  function Prompt(container, total) {
+	    _classCallCheck(this, Prompt);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Prompt).call(this));
+
+	    _this._data_read = [];
+	    _this._total = total;
+	    _this._container = container;
+	    _this._textarea = (0, _jquery2.default)('<textarea id="prompt"></textarea>');
+
+	    _this._textarea.keypress(function (key) {
+	      if (key.which == 13) {
+	        key.preventDefault();
+	        _this._data_read.push(_this._textarea[0].value);
+	        if (_this._data_read.length == _this._total) {
+	          _this.emit('submit-data', _this._data_read);
+	        } else {
+	          _this.moveTextArea();
+	        }
+	      }
+	    });
+
+	    _this._container.append(_this._textarea);
+	    _this._textarea.focus();
+	    return _this;
+	  }
+
+	  _createClass(Prompt, [{
+	    key: 'close',
+	    value: function close() {
+	      var value = this._textarea[0].value;
+	      var new_line = (0, _jquery2.default)('<div class="line"><span>&gt; ' + value + '</span></div>');
+	      this._textarea.replaceWith(new_line);
+	    }
+	  }, {
+	    key: 'moveTextArea',
+	    value: function moveTextArea() {
+	      var value = this._textarea[0].value;
+	      var new_line = (0, _jquery2.default)('<div class="line"><span>&gt; ' + value + '</span></div>');
+	      new_line.insertBefore(this._textarea);
+	      this._textarea[0].value = '';
+	      this._textarea.focus();
+	    }
+	  }]);
+
+	  return Prompt;
+	}(_events2.default);
+
+	exports.default = Prompt;
+
+/***/ },
+/* 24 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -23010,320 +23500,473 @@
 
 
 /***/ },
-/* 33 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict'
+	'use strict';
 
-	const templateToHTML = __webpack_require__(34)
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	const message_templates = __webpack_require__(35)
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	const Emitter = __webpack_require__(36)
-	const $ = __webpack_require__(2)
+	var _templateToHTML = __webpack_require__(26);
 
-	class StatusBar {
-	  constructor(container) {
-	    this.container = container
+	var _templateToHTML2 = _interopRequireDefault(_templateToHTML);
 
-	    this.element = this.container.append($(
-	      `<div id="status_bar" class="bar bar-top-border bar-bottom-border flex-row center-align"><span id="status_msg" class="title small-title"></span></div>`
-	    ))
+	var _strings = __webpack_require__(27);
 
-	    this.status_msg = this.element.find('#status_msg')
+	var _strings2 = _interopRequireDefault(_strings);
 
-	    this.setTitle('Listo')
+	var _emitter = __webpack_require__(28);
+
+	var _emitter2 = _interopRequireDefault(_emitter);
+
+	var _jquery = __webpack_require__(2);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var StatusBar = function () {
+	  function StatusBar(container) {
+	    _classCallCheck(this, StatusBar);
+
+	    this.container = container;
+
+	    this.element = this.container.append((0, _jquery2.default)('<div id="status_bar" class="bar bar-top-border bar-bottom-border flex-row center-align"><span id="status_msg" class="title small-title"></span></div>'));
+
+	    this.status_msg = this.element.find('#status_msg');
+
+	    this.setTitle('Listo');
 	  }
 
-	  setTitle(title) {
-	    this.status_msg.text(title)
-	  }
-
-	  setErrorCount(error_count) {
-	    this.status_msg.empty()
-
-	    if (error_count === 0) {
-	      this.status_msg.text('Listo')
+	  _createClass(StatusBar, [{
+	    key: 'setTitle',
+	    value: function setTitle(title) {
+	      this.status_msg.text(title);
 	    }
-	    else {
-	      if (error_count >= 1) {
-	        let icon = '<span class="octicon octicon-alert"></span>'
+	  }, {
+	    key: 'setErrorCount',
+	    value: function setErrorCount(error_count) {
+	      this.status_msg.empty();
 
-	        if (error_count === 1) {
-	          this.status_msg.html(`${icon} Se ha encontrado un error en tu programa.`)
+	      if (error_count === 0) {
+	        this.status_msg.text('Listo');
+	      } else {
+	        if (error_count >= 1) {
+	          var icon = '<span class="octicon octicon-alert"></span>';
+
+	          if (error_count === 1) {
+	            this.status_msg.html(icon + ' Se ha encontrado un error en tu programa.');
+	          } else {
+	            this.status_msg.html(icon + ' Se han encontrado ' + error_count + ' errores en tu programa.');
+	          }
 	        }
-	        else {
-	          this.status_msg.html(`${icon} Se han encontrado ${error_count} errores en tu programa.`)
-	        }
+	      }
+	    }
+	  }]);
+
+	  return StatusBar;
+	}();
+
+	var MessagePanel = function (_Emitter) {
+	  _inherits(MessagePanel, _Emitter);
+
+	  function MessagePanel(container, editor_instance) {
+	    _classCallCheck(this, MessagePanel);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MessagePanel).call(this, []));
+
+	    _this.container = container;
+
+	    _this.editor_instance = editor_instance;
+
+	    _this.setUp();
+	    return _this;
+	  }
+
+	  _createClass(MessagePanel, [{
+	    key: 'setUp',
+	    value: function setUp() {
+	      this.status_bar = new StatusBar(this.container);
+
+	      this.message_list = (0, _jquery2.default)('<div id="message_list" class="flex-col msg_list-collapsed"></div>');
+
+	      this.container.append(this.message_list);
+	    }
+	  }, {
+	    key: 'setErrorCount',
+	    value: function setErrorCount(error_count) {
+	      this.status_bar.setErrorCount(error_count);
+	    }
+	  }, {
+	    key: 'setTitle',
+	    value: function setTitle(title) {
+	      this.status_bar.setTitle(title);
+	    }
+	  }, {
+	    key: 'addMessage',
+	    value: function addMessage(category, data) {
+	      var _this2 = this;
+
+	      var template = 'reason' in data ? _strings2.default[category][data.reason] : _strings2.default[category].default;
+
+	      var element = (0, _jquery2.default)('<div class="error-msg-container"></div>');
+
+	      element.on('click', function (event) {
+	        event.stopPropagation();
+	      });
+
+	      var title = null,
+	          description = null,
+	          suggestion = null;
+
+	      var extra_info_container = (0, _jquery2.default)('<div id="extra_info" class="collapsable"></div>');
+
+	      extra_info_container.on('click', function (event) {
+	        event.stopPropagation();
+	      });
+
+	      if ('title' in template) {
+	        (function () {
+	          title = (0, _jquery2.default)((0, _templateToHTML2.default)(template.title, data));
+
+	          var expand_button = (0, _jquery2.default)('<span class="octicon octicon-chevron-up"></span>');
+
+	          expand_button.attr('title', 'Expandir o contraer este panel');
+
+	          expand_button.on('click', function (event) {
+	            extra_info_container.toggleClass('expanded');
+	            expand_button.toggleClass('chevron-restored');
+	            event.stopPropagation();
+	          });
+
+	          title.attr('title', 'Mover cursor al error');
+
+	          title.append(expand_button);
+
+	          element.append(title);
+	        })();
+	      }
+
+	      if ('description' in template) {
+	        description = (0, _templateToHTML2.default)(template.description, data);
+	        extra_info_container.append((0, _jquery2.default)(description));
+	      }
+
+	      if ('suggestion' in template) {
+	        suggestion = (0, _templateToHTML2.default)(template.suggestion, data);
+	        extra_info_container.append((0, _jquery2.default)(suggestion));
+	      }
+
+	      element.append(extra_info_container);
+
+	      if ('atLine' in data && 'atColumn' in data) {
+	        element.on('click', function () {
+	          _this2.editor_instance.focus();
+	          _this2.editor_instance.setCursor({ line: data.atLine, ch: data.atColumn });
+	        });
+	      }
+
+	      this.message_list.append(element);
+
+	      this.message_list.addClass('msg_list-expanded');
+	    }
+	  }, {
+	    key: 'reset',
+	    value: function reset() {
+	      this.message_list.removeClass('msg_list-expanded');
+	      this.setTitle('Listo');
+	      this.message_list.empty();
+	    }
+	  }]);
+
+	  return MessagePanel;
+	}(_emitter2.default);
+
+	exports.default = MessagePanel;
+
+/***/ },
+/* 26 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	exports.default = templateToHTML;
+	function parseTagObj(element, data) {
+	  var content = '';
+
+	  var attributes = '';
+
+	  for (var att_label in element) {
+	    if (att_label !== 'tag' && att_label !== 'content') {
+	      var attribute = att_label + '="' + parseTemplate(element[att_label], data) + '"';
+	      attributes += attribute;
+	    }
+	  }
+
+	  var _iteratorNormalCompletion = true;
+	  var _didIteratorError = false;
+	  var _iteratorError = undefined;
+
+	  try {
+	    for (var _iterator = element.content[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	      var template = _step.value;
+
+	      content += parseTemplate(template, data);
+	    }
+	  } catch (err) {
+	    _didIteratorError = true;
+	    _iteratorError = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion && _iterator.return) {
+	        _iterator.return();
+	      }
+	    } finally {
+	      if (_didIteratorError) {
+	        throw _iteratorError;
 	      }
 	    }
 	  }
 
-	}
-
-
-	class MessagePanel extends Emitter {
-	  constructor(container, editor_instance) {
-	    super([])
-
-	    this.container = container
-
-	    this.editor_instance = editor_instance
-
-	    this.setUp()
-	  }
-
-	  setUp() {
-	    this.status_bar = new StatusBar(this.container)
-
-	    this.message_list = $('<div id="message_list" class="flex-col msg_list-collapsed"></div>')
-
-	    this.container.append(this.message_list)
-	  }
-
-	  setErrorCount(error_count) {
-	    this.status_bar.setErrorCount(error_count)
-	  }
-
-	  setTitle(title) {
-	    this.status_bar.setTitle(title)
-	  }
-
-	  addMessage(category, data) {
-	    let template = 'reason' in data ? message_templates[category][data.reason]:message_templates[category].default
-
-	    let element = $('<div class="error-msg-container"></div>')
-
-	    element.on('click', (event) => {
-	      event.stopPropagation()
-	    })
-
-	    let title = null, description = null, suggestion = null
-
-	    let extra_info_container = $('<div id="extra_info" class="collapsable"></div>')
-
-	    extra_info_container.on('click', (event) => {
-	      event.stopPropagation()
-	    })
-
-	    if ('title' in template) {
-	      title = $(templateToHTML(template.title, data))
-
-	      let expand_button = $('<span class="octicon octicon-chevron-up"></span>')
-
-	      expand_button.attr('title', 'Expandir o contraer este panel')
-
-	      expand_button.on('click', (event) => {
-	        extra_info_container.toggleClass('expanded')
-	        expand_button.toggleClass('chevron-restored')
-	        event.stopPropagation()
-	      })
-
-	      title.attr('title', 'Mover cursor al error')
-
-	      title.append(expand_button)
-
-	      element.append(title)
-	    }
-
-	    if ('description' in template) {
-	      description = templateToHTML(template.description, data)
-	      extra_info_container.append($(description))
-	    }
-
-	    if ('suggestion' in template) {
-	      suggestion = templateToHTML(template.suggestion, data)
-	      extra_info_container.append($(suggestion))
-	    }
-
-	    element.append(extra_info_container)
-
-	    if ('atLine' in data && 'atColumn' in data) {
-	      element.on('click', () => {
-	        this.editor_instance.focus()
-	        this.editor_instance.setCursor({line:data.atLine, ch:data.atColumn})
-	      })
-	    }
-
-	    this.message_list.append(element)
-
-	    this.message_list.addClass('msg_list-expanded')
-	  }
-
-	  reset() {
-	    this.message_list.removeClass('msg_list-expanded')
-	    this.setTitle('Listo')
-	    this.message_list.empty()
-	  }
-	}
-
-	module.exports = MessagePanel
-
-
-/***/ },
-/* 34 */
-/***/ function(module, exports) {
-
-	'use strict'
-
-	function parseTagObj(element, data) {
-	  let content = ''
-
-	  let attributes = ''
-
-	  for (let att_label in element) {
-	    if (att_label !== 'tag' && att_label !== 'content') {
-	      let attribute = `${att_label}="${parseTemplate(element[att_label], data)}"`
-	      attributes += attribute
-	    }
-	  }
-
-	  for (let template of element.content) {
-	    content += parseTemplate(template, data)
-	  }
-
-	  return `<${element.tag} ${attributes}>${content}</${element.tag}>`
+	  return '<' + element.tag + ' ' + attributes + '>' + content + '</' + element.tag + '>';
 	}
 
 	function parseTemplate(template, data) {
-	  console.log(template)
-	  let pattern = /\${[^}]+}/
+	  console.log(template);
+	  var pattern = /\${[^}]+}/;
 
-	  if (typeof template === 'object') {
-	    return parseTagObj(template, data)
-	  }
-	  else {
+	  if ((typeof template === 'undefined' ? 'undefined' : _typeof(template)) === 'object') {
+	    return parseTagObj(template, data);
+	  } else {
 	    if (pattern.test(template) === true) {
-	      return (data[template.match(/\w+/g)[1]])
-	    }
-	    else {
-	      return template.toString()
+	      return data[template.match(/\w+/g)[1]];
+	    } else {
+	      return template.toString();
 	    }
 	  }
 	}
 
 	function templateToHTML(template, data) {
-	  let result = ''
+	  var result = '';
 
-	  for (let element of template) {
-	    result += parseTemplate(element, data)
+	  var _iteratorNormalCompletion2 = true;
+	  var _didIteratorError2 = false;
+	  var _iteratorError2 = undefined;
+
+	  try {
+	    for (var _iterator2 = template[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	      var element = _step2.value;
+
+	      result += parseTemplate(element, data);
+	    }
+	  } catch (err) {
+	    _didIteratorError2 = true;
+	    _iteratorError2 = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	        _iterator2.return();
+	      }
+	    } finally {
+	      if (_didIteratorError2) {
+	        throw _iteratorError2;
+	      }
+	    }
 	  }
 
-	  return result
+	  return result;
 	}
 
-	module.exports = templateToHTML
-
-
 /***/ },
-/* 35 */
+/* 27 */
 /***/ function(module, exports) {
 
-	module.exports = {
-		"lexical-error": {
-			"unknownToken": {
-				"title": [
-					{
-						"tag": "div",
-						"class": "bar flex-row space-between center-align error-bar",
-						"content": [
-							{
-								"tag": "pre",
-								"class": "title small-title error-title",
-								"content": [
-									"No se reconoce el operador ",
-									{
-										"tag": "span",
-										"class": "code",
-										"content": [
-											"${var unexpectedChar}"
-										]
-									}
-								]
-							}
-						]
-					}
-				],
-				"description": [
-					{
-						"tag": "p",
-						"content": [
-							"Se encontró un caracter desconocido al leer el código"
-						],
-						"class": ""
-					}
-				],
-				"suggestion": [
-					{
-						"tag": "p",
-						"content": [
-							"Para corregir el error, elimina el caracter desconocido"
-						],
-						"class": ""
-					}
-				]
-			}
-		}
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var strings = {
+	  "lexical-error": {
+	    "unknownToken": {
+	      "title": [{
+	        "tag": "div",
+	        "class": "bar flex-row space-between center-align error-bar",
+	        "content": [{
+	          "tag": "pre",
+	          "class": "title small-title error-title",
+	          "content": ["No se reconoce el operador ", { "tag": "span", "class": "code", "content": ["${var unexpectedChar}"] }]
+	        }]
+	      }],
+	      "description": [{
+	        "tag": "p",
+	        "content": ["Se encontró un caracter desconocido al leer el código"],
+	        "class": ""
+	      }],
+	      "suggestion": [{
+	        "tag": "p",
+	        "content": ["Para corregir el error, elimina el caracter desconocido"],
+	        "class": ""
+	      }]
+	    }
+	  }
 	};
 
+	exports.default = strings;
+
 /***/ },
-/* 36 */
+/* 28 */
 /***/ function(module, exports) {
 
-	'use strict'
+	'use strict';
 
-	class Emitter {
-	  constructor(public_event_list) {
-	    this.public_events = new Set(public_event_list)
-	    this.callbacks = {}
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Emitter = function () {
+	  function Emitter(public_event_list) {
+	    _classCallCheck(this, Emitter);
+
+	    this.public_events = new Set(public_event_list);
+	    this.callbacks = {};
 	  }
 
-	  on(event_name, callback) {
-	    if (event_name in this.callbacks) {
-	      this.callbacks[event_name].push(callback)
-	    }
-	    else {
-	      this.callbacks[event_name] = [callback]
-	    }
-	  }
-
-	  emit(event_name) {
-	    // Se encarga de llamar a los callbacks de los eventos.
-	    // Si se registro un callback para 'any' entonces se lo llama para cada evento que sea emitido. Es el callback por defecto.
-	    // Si un evento tiene registrado un callback entonces este se ejecuta despues del callback por defecto.
-	    if (this.callbacks.hasOwnProperty('any')) {
-	      for (let callback of this.callbacks.any) {
-	        callback(...arguments)
+	  _createClass(Emitter, [{
+	    key: 'on',
+	    value: function on(event_name, callback) {
+	      if (event_name in this.callbacks) {
+	        this.callbacks[event_name].push(callback);
+	      } else {
+	        this.callbacks[event_name] = [callback];
 	      }
 	    }
+	  }, {
+	    key: 'emit',
+	    value: function emit(event_name) {
+	      // Se encarga de llamar a los callbacks de los eventos.
+	      // Si se registro un callback para 'any' entonces se lo llama para cada evento que sea emitido. Es el callback por defecto.
+	      // Si un evento tiene registrado un callback entonces este se ejecuta despues del callback por defecto.
+	      if (this.callbacks.hasOwnProperty('any')) {
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
 
-	    if (this.callbacks.hasOwnProperty(event_name)) {
-	      for (let callback of this.callbacks[event_name]) {
-	        callback(...arguments)
+	        try {
+	          for (var _iterator = this.callbacks.any[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var callback = _step.value;
+
+	            callback.apply(undefined, arguments);
+	          }
+	        } catch (err) {
+	          _didIteratorError = true;
+	          _iteratorError = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion && _iterator.return) {
+	              _iterator.return();
+	            }
+	          } finally {
+	            if (_didIteratorError) {
+	              throw _iteratorError;
+	            }
+	          }
+	        }
+	      }
+
+	      if (this.callbacks.hasOwnProperty(event_name)) {
+	        var _iteratorNormalCompletion2 = true;
+	        var _didIteratorError2 = false;
+	        var _iteratorError2 = undefined;
+
+	        try {
+	          for (var _iterator2 = this.callbacks[event_name][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	            var _callback = _step2.value;
+
+	            _callback.apply(undefined, arguments);
+	          }
+	        } catch (err) {
+	          _didIteratorError2 = true;
+	          _iteratorError2 = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	              _iterator2.return();
+	            }
+	          } finally {
+	            if (_didIteratorError2) {
+	              throw _iteratorError2;
+	            }
+	          }
+	        }
 	      }
 	    }
-	  }
-
-	  repeat(event_name, emitter, make_public) {
-	    if (make_public === true) {
-	      this.public_events.add(event_name)
+	  }, {
+	    key: 'repeat',
+	    value: function repeat(event_name, emitter, make_public) {
+	      if (make_public === true) {
+	        this.public_events.add(event_name);
+	      }
+	      var self = this;
+	      emitter.on(event_name, function () {
+	        self.emit.apply(self, arguments);
+	      });
 	    }
-	    let self = this
-	    emitter.on(event_name, function () {
-	      self.emit(...arguments)
-	    })
-	  }
+	  }, {
+	    key: 'repeatAllPublicEvents',
+	    value: function repeatAllPublicEvents(emitter) {
+	      // Esta funcion sive para emitir los eventos de otro emisor como si fueran propios.
+	      var _iteratorNormalCompletion3 = true;
+	      var _didIteratorError3 = false;
+	      var _iteratorError3 = undefined;
 
-	  repeatAllPublicEvents(emitter) {
-	    // Esta funcion sive para emitir los eventos de otro emisor como si fueran propios.
-	    for (let event_name of emitter.public_events) {
-	      this.repeat(event_name, emitter, true)
+	      try {
+	        for (var _iterator3 = emitter.public_events[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	          var event_name = _step3.value;
+
+	          this.repeat(event_name, emitter, true);
+	        }
+	      } catch (err) {
+	        _didIteratorError3 = true;
+	        _iteratorError3 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	            _iterator3.return();
+	          }
+	        } finally {
+	          if (_didIteratorError3) {
+	            throw _iteratorError3;
+	          }
+	        }
+	      }
 	    }
-	  }
-	}
+	  }]);
 
-	module.exports = Emitter
+	  return Emitter;
+	}();
 
+	exports.default = Emitter;
 
 /***/ }
 /******/ ]);
