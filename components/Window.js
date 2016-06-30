@@ -34,7 +34,7 @@ export default class Window {
   }
 
   run(program) {
-    this.interpreter = new Interpreter(program, {event_logging:true})
+    this.interpreter = new Interpreter(program.modules, {event_logging:true})
 
     this.interpreter.on('write', (event, values) => {
       this.write(values)
