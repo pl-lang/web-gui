@@ -4,35 +4,24 @@ import CodeMirror from 'codemirror'
 import $ from 'jquery'
 import Window from '../components/Window.js'
 import MessagePanel from '../components/MessagePanel.js'
-import { Compiler } from 'interprete-pl'
+import { Parser } from 'interprete-pl'
 
-const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {lineNumbers:true})
+const ejecutar = $('#ejecutar')
 
-let ejecutar = $('#ejecutar')
+const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {lineNumbers:true, firstLineNumber:0})
 
-let compiler = new Compiler({event_logging:true})
-
-let panel_de_mensajes = new MessagePanel($('#message_panel'), editor)
+const panel_de_mensajes = new MessagePanel($('#message_panel'), editor)
 
 let error_count = 0
 
-compiler.on('type-error', (info, error) => {
-  error_count++
-  panel_de_mensajes.setErrorCount(error_count)
-  console.log(error)
+let parser = new Parser();
+
+parser.on('lexical-error', (...args) => {
+  console.log(args)
 })
 
-compiler.on('lexical-error', (ev_name, info) => {
-  error_count++
-  panel_de_mensajes.setErrorCount(error_count)
-  panel_de_mensajes.addMessage('lexical-error', info)
-  console.log(info)
-})
-
-compiler.on('syntax-error', (info, error) => {
-  error_count++
-  panel_de_mensajes.setErrorCount(error_count)
-  console.log(error)
+parser.on('syntax-error', (...args) => {
+  console.log(args)
 })
 
 ejecutar.on('click', () => {
@@ -48,15 +37,9 @@ ejecutar.on('click', () => {
 
   let window = new Window($('#window'))
 
-  let report = compiler.compile(editor.getValue(), true)
+  let report = parser.parse(editor.getValue())
 
-  if (!report.error) {
-    window.run(report.result)
-    panel_de_mensajes.setTitle('Listo')
-  }
-  else {
-    console.log(report.result)
-  }
+  console.log(report.result)
 
   ejecutar.prop('disabled', false)
 })
