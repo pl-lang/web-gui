@@ -121,10 +121,10 @@ export default class MessagePanel extends Emitter {
 
     element.append(extra_info_container)
 
-    if ('atLine' in data && 'atColumn' in data) {
+    if ('line' in data && 'column' in data) {
       element.on('click', () => {
         this.editor_instance.focus()
-        this.editor_instance.setCursor({line:data.atLine, ch:data.atColumn})
+        this.editor_instance.setCursor({line:data.line, ch:data.column})
       })
     }
 
