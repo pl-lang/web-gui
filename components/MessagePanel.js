@@ -75,6 +75,10 @@ export default class MessagePanel extends Emitter {
   addMessage(category, data) {
     let template = 'reason' in data ? message_templates[category][data.reason]:message_templates[category].default
 
+    if (template === undefined) {
+      template = message_templates[category].default
+    }
+
     let element = $('<div class="error-msg-container"></div>')
 
     element.on('click', (event) => {
