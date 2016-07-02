@@ -70,8 +70,10 @@ ejecutar.on('click', () => {
     else {
       console.log('no hubo errores, se ejecutara el programa')
       console.log('transformando el programa para que pueda ejecutarse')
-      let transformed_ast = InterpretableTransform(DeclarationTransform(parser_report.result))
-      console.log(transformed_ast)
+      let ast_with_declarations = DeclarationTransform(parser_report.result)
+      // console.log(ast_with_declarations)
+      let transformed_ast = InterpretableTransform(ast_with_declarations)
+      // console.log(transformed_ast)
       window.run(transformed_ast)
     }
   }
