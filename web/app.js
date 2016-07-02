@@ -19,8 +19,11 @@ let type_error_found = false
 // Crear parser y asignar funciones a sus eventos
 let parser = new Parser();
 
-parser.on('lexical-error', (...args) => {
-  console.log(args)
+parser.on('lexical-error', (ev_name, ev_info) => {
+  console.log(ev_name, ev_info)
+  error_count++
+  panel_de_mensajes.setErrorCount(error_count)
+  panel_de_mensajes.addMessage(ev_name, ev_info)
 })
 
 parser.on('syntax-error', (...args) => {
@@ -37,6 +40,7 @@ checker.on('type-check-finished', () => {console.log('chequeo estatico finalizad
 
 checker.on('type-error', (...args) => {
   type_error_found = true
+  console.log('evento de type checker:', ...args)
 })
 
 ejecutar.on('click', () => {
