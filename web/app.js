@@ -40,7 +40,10 @@ checker.on('type-check-finished', () => {console.log('chequeo estatico finalizad
 
 checker.on('type-error', (...args) => {
   type_error_found = true
-  console.log('evento de type checker:', ...args)
+  console.log('evento del type checker', ...args)
+  error_count++
+  panel_de_mensajes.setErrorCount(error_count)
+  panel_de_mensajes.addMessage(...args)
 })
 
 ejecutar.on('click', () => {
