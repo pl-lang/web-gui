@@ -20,7 +20,6 @@ function parseTagObj(element, data) {
 }
 
 function parseTemplate(template, data) {
-  console.log(template)
   let pattern = /\${[^}]+}/
 
   if (typeof template === 'object') {
