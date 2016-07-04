@@ -95,6 +95,35 @@ const strings = {
         "content":["Deberias cambiar el tipo de la variable o el tipo del valor que quieres asignarle."],
         "class":""
       }]
+    },
+    "repeated-variable":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": ["Al menos dos variables tienen el mismo nombre."]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "Cada variable debe tener un nombre unico, pero hay al menos dos variables llamadas ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          ". La original es de tipo ",
+          {"tag":"span", "class":"code", "content":["${var original_type}"]},
+          " y la repetida es de tipo ",
+          {"tag":"span", "class":"code", "content":["${var repeated_type}"]},
+          "."
+        ],
+        "class":""
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":["Asegurate de que cada variable tenga un nombre unico."],
+        "class":""
+      }]
     }
   }
 }
