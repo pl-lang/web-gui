@@ -63,6 +63,38 @@ const strings = {
         "content":["Para arreglar este error, declara la variable ", {"tag":"span", "class":"code", "content":["${var name}"]}, ". Asegurate de usar el tipo correcto."],
         "class":""
       }]
+    },
+    'incompatible-types-at-assignment': {
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": [
+            "Se intentó asignar un valor ",
+            {"tag":"span", "class":"code", "content":["${var payload_type}"]},
+            " a una variable de tipo ",
+            {"tag":"span", "class":"code", "content":["${var target_type}"]}
+          ]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "No se pueden asignar valores de tipo ",
+          {"tag":"span", "class":"code", "content":["${var payload_type}"]},
+          " a variables de tipo ",
+          {"tag":"span", "class":"code", "content":["${var target_type}"]},
+          " porque los tipos no son compatibles."
+        ],
+        "class":""
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":["Deberias cambiar el tipo de la variable o el tipo del valor que quieres asignarle."],
+        "class":""
+      }]
     }
   }
 }
