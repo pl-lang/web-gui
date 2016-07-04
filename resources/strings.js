@@ -10,7 +10,7 @@ const strings = {
               "tag":"pre",
               "class":"title small-title error-title",
               "content":[
-                "No se reconoce el operador ",
+                "No se reconoce el caracter ",
                 {"tag":"span", "class":"code", "content":["${var unexpectedChar}"]}
               ]
             }
