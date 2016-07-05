@@ -124,6 +124,33 @@ const strings = {
         "content":["Asegurate de que cada variable tenga un nombre unico."],
         "class":""
       }]
+    },
+    "@condition-invalid-expression":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": ["La condicion de una estructura no devuelve un valor logico."]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "Una estructura tiene una condicion que devuelve un valor de tipo ",
+          {"tag":"span", "class":"code", "content":["${var unexpected}"]},
+          ", cuando debería devolver un valor de tipo ",
+          {"tag":"span", "class":"code", "content":["logico"]},
+          "."
+        ],
+        "class":""
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":["Modifica la condicion para que sea una expresion logica."],
+        "class":""
+      }]
     }
   }
 }
