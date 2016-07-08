@@ -4,7 +4,7 @@ import CodeMirror from 'codemirror'
 import $ from 'jquery'
 import Window from '../components/Window.js'
 import MessagePanel from '../components/MessagePanel.js'
-import { Parser, StaticChecker, DeclarationTransform, InterpretableTransform } from 'interprete-pl'
+import { Parser, StaticChecker, DeclarationTransform, InterpretableTransform, TreeToRPNTransform } from 'interprete-pl'
 
 const ejecutar = $('#ejecutar')
 
@@ -73,7 +73,7 @@ ejecutar.on('click', () => {
     else {
       console.log('no hubo errores, se ejecutara el programa')
       console.log('transformando el programa para que pueda ejecutarse')
-      let ast_with_declarations = DeclarationTransform(parser_report.result)
+      let ast_with_declarations = DeclarationTransform(TreeToRPNTransform(parser_report.result))
       // console.log(ast_with_declarations)
       let transformed_ast = InterpretableTransform(ast_with_declarations)
       // console.log(transformed_ast)
