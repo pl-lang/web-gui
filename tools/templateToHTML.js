@@ -6,14 +6,21 @@ function parseTagObj(element, data) {
   let attributes = ''
 
   for (let att_label in element) {
-    if (att_label !== 'tag' && att_label !== 'content') {
+    if (att_label !== 'tag' && att_label !== 'content' && att_label !== 'prop' && att_label !== 'template') {
       let attribute = `${att_label}="${parseTemplate(element[att_label], data)}"`
       attributes += attribute
     }
   }
 
-  for (let template of element.content) {
-    content += parseTemplate(template, data)
+  if (element.tag === 'ul') {
+    for (let item of data[element.prop]) {
+      content += parseTagObj(element.template, {item})
+    }
+  }
+  else {
+    for (let template of element.content) {
+      content += parseTemplate(template, data)
+    }
   }
 
   return `<${element.tag} ${attributes}>${content}</${element.tag}>`
