@@ -151,6 +151,31 @@ const strings = {
         "content":["Modifica la condicion para que sea una expresion logica."],
         "class":""
       }]
+    },
+    "@expression-undefined-variable":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": ["Se usó una variable inexistente."]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "La variable  ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          " forma parte de una expresión pero nunca fue declarada. "
+        ],
+        "class":""
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":["Todas las variables deben ser declaradas antes de ser utilizadas."],
+        "class":""
+      }]
     }
   }
 }
