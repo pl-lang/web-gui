@@ -176,6 +176,37 @@ const strings = {
         "content":["Todas las variables deben ser declaradas antes de ser utilizadas."],
         "class":""
       }]
+    },
+    "@expression-incompatible-operator-types":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": ["Se está intentando operar con datos de tipos incompatibles."]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "El operador  ",
+          {"tag":"span", "class":"code", "content":["${var operator}"]},
+          " solo soporta datos de tipo:",
+          {"tag":"ul", "prop":"expected", "template":{"tag":"li", "content":[{"tag":"span", "class":"code", "content":["${var item}"]}]}},
+          {"tag":"p", "content":[
+            "Pero recibió un dato de tipo ",
+            {"tag":"span", "class":"code", "content":["${var unexpected}"]},
+            "."
+          ]}
+        ],
+        "class":""
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":["Todas las variables deben ser declaradas antes de ser utilizadas."],
+        "class":""
+      }]
     }
   }
 }
