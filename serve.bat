@@ -1,1 +1,1 @@
-start moduleserve --transform babel web/ --port 8080
+moduleserve --transform babel web/ --port 8080
