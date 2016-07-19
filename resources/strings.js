@@ -207,6 +207,34 @@ const strings = {
         "content":["Todas las variables deben ser declaradas antes de ser utilizadas."],
         "class":""
       }]
+    },
+    "index-out-of-bounds":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": ["Se intentó acceder al valor de un arreglo con un indice fuera de limite."]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "Al acceder a un valor del arreglo ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          " el indice numero ",
+          {"tag":"span", "content":["${var bad_index}"]},
+          " está fuera del limite. Se esperaba un numero entero entre 1 y ",
+          {"tag":"span", "content":["${var expected}"]},
+          ", pero se recibió ",
+          {"tag":"span", "content":["${var bad_value}", "."]}
+        ]
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":["Los indices que se usan al acceder a un arreglo deben ser mayores a 1 y menores a la dimension correspondiente del arreglo."]
+      }]
     }
   }
 }
