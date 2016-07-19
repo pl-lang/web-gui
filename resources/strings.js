@@ -235,6 +235,33 @@ const strings = {
         "tag":"p",
         "content":["Los indices que se usan al acceder a un arreglo deben ser mayores a 1 y menores a la dimension correspondiente del arreglo."]
       }]
+    },
+    "@array-too-many-indexes":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": ["Se usaron demasiados indices al acceder a un elemento de un arreglo"]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "Al acceder a un elemento de ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          " se recibieron ",
+          {"tag":"span", "content":["${var indexes}"]},
+          " indices pero el arreglo solo necesita ",
+          {"tag":"span", "content":["${var dimensions}"]},
+          "."
+        ]
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":["No debes usar mas indices de los necesarios para acceder a un elemento de un arreglo."]
+      }]
     }
   }
 }
