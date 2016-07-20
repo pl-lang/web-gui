@@ -346,6 +346,62 @@ const strings = {
           "."
         ]
       }]
+    },
+    "@assignment-undefined-variable":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": ["Se intentó asignar a una variable inexistente."]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "La variable ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          " no está declarada pero se intentó asignarle un valor."
+        ]
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":[
+          "Las variables deben ser declaradas antes de ser utilizadas."
+        ]
+      }]
+    },
+    "@assignment-undefined-variable-with-type":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": ["Se intentó asignar a una variable inexistente."]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "La variable ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          " no está declarada pero se intentó asignarle un valor de tipo ",
+          {"tag":"span", "class":"code", "content":["${var type}"]},
+          "."
+        ]
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":[
+          "Para solucionar este error declara una variable llamada ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          " de tipo ",
+          {"tag":"span", "class":"code", "content":["${var type}"]},
+          "."
+        ]
+      }]
     }
   }
 }
