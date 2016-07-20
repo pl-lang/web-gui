@@ -319,6 +319,33 @@ const strings = {
           "."
         ]
       }]
+    },
+    "var-isnt-array":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": ["Se intentó invocar una variable como si fuera un arreglo."]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "La variable ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          " no es un arreglo, no es necesario usar indices para acceder al valor que contiene."
+        ]
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":[
+          "Quita los indices de la invocacion de ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          "."
+        ]
+      }]
     }
   }
 }
