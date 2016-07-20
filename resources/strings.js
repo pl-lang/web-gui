@@ -289,6 +289,36 @@ const strings = {
         "tag":"p",
         "content":["No debes usar menos indices de los necesarios para acceder a un elemento de un arreglo."]
       }]
+    },
+    "@array-missing-index":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": ["Se intentó acceder a un arreglo sin especificar ningun indice."]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "No se especificó ningun indice al intentar acceder a un elemento del arreglo ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          ".",
+          " Los indices indican que elemento del arreglo se quiere obtener o modificar."
+        ]
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":[
+          "Modifica tu codigo para que use ",
+          {"tag":"span", "content":["${var expected}"]},
+          " indice/s al acceder elementos de a ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          "."
+        ]
+      }]
     }
   }
 }
