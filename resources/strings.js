@@ -402,6 +402,29 @@ const strings = {
           "."
         ]
       }]
+    },
+    "@leer-non-invocation-argument":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": [
+            "Uno de los argumentos en un llamado a ",
+            {"tag":"span", "class":"code", "content":["leer"]},
+            " no es una variable."
+          ]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "Todos los argumentos pasados a la funcion ",
+          {"tag":"span", "class":"code", "content":["leer"]},
+           " deben ser variables o elementos de un arrreglo."
+        ]
+      }]
     }
   }
 }
