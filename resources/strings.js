@@ -262,6 +262,33 @@ const strings = {
         "tag":"p",
         "content":["No debes usar mas indices de los necesarios para acceder a un elemento de un arreglo."]
       }]
+    },
+    "@array-not-enough-indexes":{
+      "title":[{
+        "tag": "div",
+        "class": "bar flex-row space-between center-align error-bar",
+        "content":[{
+          "tag": "span",
+          "class": "title small-title error-title",
+          "content": ["Se usaron menos indices de los necesarios al acceder a un elemento de un arreglo"]
+        }]
+      }],
+      "description":[{
+        "tag":"p",
+        "content":[
+          "Al acceder a un elemento de ",
+          {"tag":"span", "class":"code", "content":["${var name}"]},
+          " se usó ",
+          {"tag":"span", "content":["${var indexes}"]},
+          " indice/s pero el arreglo necesita ",
+          {"tag":"span", "content":["${var dimensions}"]},
+          "."
+        ]
+      }],
+      "suggestion":[{
+        "tag":"p",
+        "content":["No debes usar menos indices de los necesarios para acceder a un elemento de un arreglo."]
+      }]
     }
   }
 }
