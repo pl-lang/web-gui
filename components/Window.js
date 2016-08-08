@@ -15,12 +15,9 @@ export default class Window {
     this.container.append($('<div class="line"></div>'))
   }
 
-  write(values_array) {
-    let new_line = ($('<div class="line"></div>'))
+  write(value) {
+    let new_line = ($(`<div class="line"><span>${value}</span></div>`))
     this.container.append(new_line)
-    for (let value of values_array) {
-      new_line.append($(`<span>${value}</span>`))
-    }
   }
 
   read(varlist) {
@@ -36,8 +33,8 @@ export default class Window {
   run(program) {
     this.interpreter = new Interpreter(program.modules, {event_logging:true})
 
-    this.interpreter.on('write', (event, values) => {
-      this.write(values)
+    this.interpreter.on('write', (event, value) => {
+      this.write(value)
     })
 
     this.interpreter.on('read', (event, varlist) => {
